@@ -1,4 +1,4 @@
-Paseo Pulse adds a Sessions page with a compact project-grouped list. Select a session to open it directly in Paseo. The sidebar badge shows the number of sessions in Attention and updates while the page is closed.
+Paseo Pulse adds a Pulse page with a compact project-grouped list. Select a session to open it directly in Paseo. The sidebar badge shows the number of sessions in Attention and updates while the page is closed.
 
 Attention includes running or starting sessions, permission requests, unread errors and replies, and conversations with messages from the last four hours. Sessions opened from this plugin at least three times in seven days also remain in Attention. Rapid repeat clicks within a minute count as one opening. Visit history is stored on the host and shared across connected devices. The SDK does not expose views made elsewhere in Paseo.
 

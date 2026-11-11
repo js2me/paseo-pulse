@@ -1,4 +1,4 @@
-Paseo Pulse ajoute une page Sessions avec une liste compacte regroupée par projet. Un clic ouvre directement la session dans Paseo. Le badge de la barre latérale indique le nombre de sessions dans « À suivre », même lorsque la page est fermée.
+Paseo Pulse ajoute une page Pulse avec une liste compacte regroupée par projet. Un clic ouvre directement la session dans Paseo. Le badge de la barre latérale indique le nombre de sessions dans « À suivre », même lorsque la page est fermée.
 
 « À suivre » comprend les sessions en cours, les demandes d’autorisation, les erreurs et réponses non lues, ainsi que les conversations dont le dernier message date de moins de quatre heures. Les sessions ouvertes depuis le plugin au moins trois fois en sept jours restent également affichées. Les clics répétés en moins d’une minute ne comptent qu’une fois. L’historique des ouvertures est conservé sur l’hôte et partagé entre les appareils ; les consultations ailleurs dans Paseo ne sont pas accessibles au SDK.
 

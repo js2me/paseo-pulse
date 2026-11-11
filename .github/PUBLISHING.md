@@ -43,13 +43,13 @@ Create/push the public GitHub repository before submitting it for review.
 After the version and artifact are final and npm authentication is configured:
 
 ```sh
-npm publish artifacts/paseo-pulse-0.13.1.tgz --access public
+npm publish artifacts/paseo-pulse-0.13.2.tgz --access public
 ```
 
 Test an exact published version on a separate daemon before submitting it:
 
 ```sh
-paseo plugin add npm:paseo-pulse@0.13.1 --host <test-daemon>
+paseo plugin add npm:paseo-pulse@0.13.2 --host <test-daemon>
 paseo plugin ls --host <test-daemon>
 ```
 

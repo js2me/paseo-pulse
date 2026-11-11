@@ -15,18 +15,20 @@ import { groupIconProject } from "../shared/project-icons";
 import { useSessionClock } from "./use-session-clock";
 import { useSessionVisits } from "./use-session-visits";
 import { directoryError, relativeTime, useMessages } from "./messages";
+import type { SessionDirectoryStore } from "./session-directory-store";
 
 const GROUP_PREVIEW_LIMIT = 6;
 const SESSION_DAY_MS = 24 * 60 * 60 * 1000;
-export function InboxScreen(props: PluginScreenProps) {
+type InboxProps = PluginScreenProps & { directory: SessionDirectoryStore };
+export function InboxScreen(props: InboxProps) {
   return <Inbox key={props.host.id} {...props} />;
 }
-function Inbox(props: PluginScreenProps) {
+function Inbox(props: InboxProps) {
   const { theme, layout } = props;
   const { t } = useMessages();
   const c = theme.colors;
   const iconProjects = useIconProjects(props.host.id);
-  const { entries: rawEntries, loading, error, retry } = useSessions();
+  const { entries: rawEntries, loading, error, retry } = useSessions(props.directory);
   const { entries: timedEntries, replies, verifying, previewError } = useSessionActivity(rawEntries, props.host.id);
   const { entries: visitedEntries, trackVisit } = useSessionVisits(timedEntries, props.host.id);
   const { entries, acknowledge, pending: ackPending, error: ackError, ready: ackReady } = useAcknowledgements(visitedEntries);

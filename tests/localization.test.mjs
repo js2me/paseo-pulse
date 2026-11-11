@@ -14,9 +14,9 @@ function runtime(initial = 'en') {
 
 test('app locales select English, Russian, French and Traditional Chinese; unsupported locales fall back to English', () => {
   const r = runtime();
-  for (const [locale, title] of [['en', 'Sessions'], ['en-US', 'Sessions'], ['ru', 'Сессии'], ['ru-RU', 'Сессии'],
-    ['fr', 'Sessions'], ['fr-CA', 'Sessions'], ['zh-TW', '工作階段'], ['zh-Hant', '工作階段'],
-    ['zh-HK', '工作階段'], ['zh-CN', '工作階段'], ['de-DE', 'Sessions']]) {
+  for (const [locale, title] of [['en', 'Pulse'], ['en-US', 'Pulse'], ['ru', 'Pulse'], ['ru-RU', 'Pulse'],
+    ['fr', 'Pulse'], ['fr-CA', 'Pulse'], ['zh-TW', 'Pulse'], ['zh-Hant', 'Pulse'],
+    ['zh-HK', 'Pulse'], ['zh-CN', 'Pulse'], ['de-DE', 'Pulse']]) {
     r.setLocale(locale);
     assert.equal(r.t('title'), title, locale);
   }
@@ -27,9 +27,9 @@ test('persistent screen/pill labels resolve again on app language changes withou
   const r = runtime('en'), pill = messages.message('openInInbox');
   let updates = 0;
   const stop = r.i18n.subscribe(() => updates++);
-  assert.equal(r.i18n.resolve(pill), 'Open in Sessions');
-  r.setLocale('fr'); assert.equal(r.i18n.resolve(pill), 'Ouvrir dans Sessions');
-  r.setLocale('zh-TW'); assert.equal(r.i18n.resolve(pill), '在「工作階段」中開啟');
+  assert.equal(r.i18n.resolve(pill), 'Open in Pulse');
+  r.setLocale('fr'); assert.equal(r.i18n.resolve(pill), 'Ouvrir dans Pulse');
+  r.setLocale('zh-TW'); assert.equal(r.i18n.resolve(pill), '在 Pulse 中開啟');
   assert.equal(updates, 2);
   stop(); r.i18n.dispose();
 });

@@ -6,6 +6,10 @@ import { InboxScreen } from '../../client/inbox';
 import { createInboxSidebar } from '../../client/inbox-sidebar';
 import { PluginTranslationProvider, PluginTranslationRuntime, Icon } from './host.jsx';
 import { entries } from './demo-data.js';
+import { demoApi } from './demo-data.js';
+import { createSessionDirectoryStore } from '../../client/session-directory-store';
+const directory = createSessionDirectoryStore(demoApi);
+directory.start();
 const runtime = new PluginTranslationRuntime({ getLocale: () => 'en', subscribe: () => () => {} });
 const query = new QueryClient();
 const sidebar = createInboxSidebar();
@@ -30,9 +34,9 @@ function Demo() {
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: compact ? 16 : 26,
         height: compact ? 54 : 60, borderBottomWidth: 1, borderColor: theme.colors.border }}>
         {compact && <Icon name="ArrowLeft" size={18} color={theme.colors.foregroundMuted} />}
-        <Text style={{ color: theme.colors.foreground, fontSize: compact ? 18 : 16, fontWeight: '600' }}>Sessions</Text>
+        <Text style={{ color: theme.colors.foreground, fontSize: compact ? 18 : 16, fontWeight: '600' }}>Pulse</Text>
       </View>
-      <InboxScreen {...props} />
+      <InboxScreen {...props} directory={directory} />
     </View>
   </View>;
 }
