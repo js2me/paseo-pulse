@@ -1,0 +1,81 @@
+# Paseo Pulse
+
+A project-grouped attention inbox for your Paseo sessions. Find the agents that need you, then open their native session with one click.
+
+![Paseo Pulse desktop session list](assets/desktop.png)
+
+## Install
+
+Requires **Paseo 0.15.0+**, **Node.js 24+**, and plugins enabled on the target daemon.
+
+From the public Git repository:
+
+```sh
+paseo plugin add git:js2me/paseo-pulse
+```
+
+Or from npm:
+
+```sh
+paseo plugin add npm:paseo-pulse
+```
+
+For a local checkout:
+
+```sh
+npm ci --ignore-scripts
+paseo plugin install "$PWD"
+```
+
+The Git/npm commands become available when those sources are published. Registry submission is prepared separately; there is no approved catalog ID yet.
+
+Open **Sessions** in the sidebar or **Open recent sessions** in the Command Center. The native composer also has an **Open in Sessions** shortcut back to this list.
+
+## What stays in Attention
+
+- Running or starting agents, permission requests, unread errors and new replies.
+- Conversations with messages in the last **four hours**, including read conversations.
+- Sessions opened from this plugin at least **three times in seven days**. Repeated clicks within a minute count once.
+
+Read sessions are gray. Running work stays blue, new replies green, permission requests yellow and errors red. Marking a reply **OK** clears that exact reply's attention marker; a later reply is highlighted again. The sidebar badge uses the same rules as the page.
+
+**All** starts with six recent sessions per project. **More** reveals the rest. Search covers projects, workspaces, titles, providers and paths. Each project has a **+** button to create a session in that project; the global **+** lets you choose another project and agent profile.
+
+<details>
+<summary>Compact view</summary>
+
+![Paseo Pulse compact session list](assets/mobile.png)
+
+</details>
+
+Screenshots render the actual plugin components with sample data in an isolated web harness. The compact image is not a physical-device test. Regenerate them with `npm run test:media`.
+
+## Languages
+
+English, Russian, French and Traditional Chinese follow the app's language setting. English is the fallback. Chinese variants, including Paseo's current `zh-CN` option, use Traditional characters. Language changes preserve search, expanded groups and new-session form values. User session names and conversation content are not translated.
+
+## Data and runtime
+
+The list uses the existing Paseo host connection and reads saved provider transcripts locally for short previews. Opening or refreshing the list does not start agents. OpenCode database reads are read-only. Project icons use Paseo's existing project metadata and local icon files. No external services or additional runtime dependency installation are used.
+
+OK marks are stored in host settings. Visit history is saved at `$PASEO_HOME/plugin-data/paseo-session-inbox/session-visits.json` (Paseo home defaults to `~/.paseo`). Native views outside this plugin are not exposed by the SDK and do not contribute to the frequency rule. Existing prototype drafts, queues and attachments are left on disk and are no longer processed.
+
+The stable runtime ID is **paseo-session-inbox**; the public package and repository are **paseo-pulse**. This keeps existing settings and data when the plugin is updated. The interface entry remains **Sessions** in the current app language.
+
+See [OVERVIEW.md](OVERVIEW.md) for listing copy and [publishing preparation](.github/PUBLISHING.md) for release steps.
+
+## Development
+
+```sh
+npm ci --ignore-scripts
+npm run typecheck
+npm test
+npm run release:check
+paseo plugin reload paseo-session-inbox
+```
+
+The runtime entries are `index.client.tsx` and `index.server.ts`. Client UI lives in `client/`, local transcript/index work in `server/`, and RPC schemas and attention rules in `shared/`. Development and CI use the committed `package-lock.json`.
+
+## License
+
+Original code: [MIT](LICENSE). Project icon discovery adapted from Paseo retains Apache-2.0 terms; see [third-party notices](THIRD_PARTY_LICENSES.md).

@@ -1,0 +1,93 @@
+{
+  "title": "工作階段",
+  "openInbox": "開啟最近的工作階段",
+  "openInInbox": "在「工作階段」中開啟",
+  "attention": "需關注",
+  "all": "全部",
+  "untitled": "未命名",
+  "reply": "回覆",
+  "ok": "完成",
+  "retry": "重試",
+  "newSession": "新增工作階段",
+  "closeSearch": "關閉搜尋",
+  "findSession": "尋找工作階段",
+  "searchPlaceholder": "專案或工作階段…",
+  "searchLabel": "搜尋工作階段",
+  "loading": "載入中…",
+  "listError": "無法更新清單：{{error}}",
+  "nothingFound": "找不到結果",
+  "nothingNeedsAttention": "目前沒有需要關注的項目",
+  "noSessions": "尚無工作階段",
+  "viewAll": "查看所有工作階段",
+  "sidebarCount_other": "{{count}} 個工作階段需要關注",
+  "projectSessions_other": "{{project}}，{{count}} 個工作階段",
+  "counts": {
+    "running": "{{count}} 個執行中",
+    "permission_other": "{{count}} 個待處理事項",
+    "error_other": "{{count}} 個錯誤",
+    "finished_other": "{{count}} 則回覆",
+    "recent_other": "{{count}} 個最近的工作階段"
+  },
+  "createInProject": "在 {{project}} 中新增工作階段",
+  "ackProject": "將 {{project}} 中顯示的回覆標示為已讀",
+  "ackSession": "將 {{session}} 標示為已讀",
+  "rowLabel": "{{title}}，{{status}}",
+  "readRowLabel": "{{title}}，已讀，{{status}}",
+  "lastMessage": "最後訊息：{{time}}",
+  "status": {
+    "permission": "需要操作",
+    "error": "錯誤",
+    "running": "執行中",
+    "finished": "新回覆",
+    "initializing": "啟動中",
+    "idle": "等待中",
+    "closed": "已關閉",
+    "recent": "最近",
+    "frequent": "經常開啟"
+  },
+  "collapseProject": "僅顯示 {{project}} 的六個工作階段",
+  "expandProject": "顯示 {{project}} 的其他工作階段",
+  "collapseToSix": "收合至 6 個",
+  "more": "更多（{{count}}）",
+  "time": {
+    "now": "剛剛",
+    "minutes": "{{count}} 分",
+    "hours": "{{count}} 小時",
+    "days": "{{count}} 天"
+  },
+  "preview": {
+    "loading": "最新回覆…",
+    "error": "無法載入回覆",
+    "limited": "開啟工作階段以閱讀對話",
+    "empty": "尚無回覆"
+  },
+  "ack": {
+    "conflict": "無法儲存標記。資料已更新，請重試。",
+    "saveError": "無法儲存標記。請檢查連線後重試。",
+    "readError": "無法載入標記。請檢查連線並重新開啟此畫面。"
+  },
+  "directory": {
+    "cancelled": "已取消載入工作階段。",
+    "timeout": "載入工作階段時伺服器未回應，請重試。",
+    "cursor": "無法繼續載入工作階段：游標遺失或重複。",
+    "live": "無法更新工作階段：{{error}}"
+  },
+  "new": {
+    "title": "新增工作階段",
+    "choicesError": "無法載入專案與設定檔：{{error}}",
+    "project": "專案",
+    "profile": "代理程式／設定檔",
+    "model": "模型",
+    "folder": "專案資料夾",
+    "folderPlaceholder": "專案資料夾的完整路徑",
+    "noAgents": "沒有可用的代理程式。重新整理",
+    "loadingModels": "載入模型中…",
+    "modelsError": "無法載入模型。重試",
+    "noModels": "此代理程式沒有可用的模型。",
+    "nameLabel": "新工作階段的標題",
+    "namePlaceholder": "標題（選填）",
+    "creationError": "無法建立工作階段：{{error}}",
+    "createLabel": "建立工作階段",
+    "submit": "建立並開啟"
+  }
+}
