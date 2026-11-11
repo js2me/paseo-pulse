@@ -60,7 +60,7 @@ The list uses the existing Paseo host connection and reads saved provider transc
 
 OK marks are stored in host settings. Visit history is saved at `$PASEO_HOME/plugin-data/paseo-session-inbox/session-visits.json` (Paseo home defaults to `~/.paseo`). Native views outside this plugin are not exposed by the SDK and do not contribute to the frequency rule. Existing prototype drafts, queues and attachments are left on disk and are no longer processed.
 
-The stable runtime ID is **paseo-session-inbox**; the public package and repository are **paseo-pulse**. This keeps existing settings and data when the plugin is updated. The interface entry is **Pulse** in every app language.
+The stable runtime ID is **paseo-session-inbox**; the public package and repository are **paseo-pulse**. This keeps existing settings and data when the plugin is updated. The interface entry is **Пульс** in Russian and **Pulse** in other app languages.
 
 See [OVERVIEW.md](OVERVIEW.md) for listing copy and [publishing preparation](.github/PUBLISHING.md) for release steps.
 
