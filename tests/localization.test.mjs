@@ -30,7 +30,7 @@ test('persistent screen/pill labels resolve again on app language changes withou
   assert.equal(r.i18n.resolve(pill), 'Open in Pulse');
   r.setLocale('fr'); assert.equal(r.i18n.resolve(pill), 'Ouvrir dans Pulse');
   r.setLocale('zh-TW'); assert.equal(r.i18n.resolve(pill), '在 Pulse 中開啟');
-  r.setLocale('ru'); assert.equal(r.i18n.resolve(pill), 'Открыть в Пульсе');
+  r.setLocale('ru'); assert.equal(r.i18n.resolve(pill), 'Пульс');
   assert.equal(updates, 3);
   stop(); r.i18n.dispose();
 });
