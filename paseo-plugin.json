@@ -5,20 +5,6 @@
     "paseo": ">=0.15.0"
   },
   "description": "A project-grouped attention inbox for Paseo sessions.",
-  "translations": {
-    "ru": {
-      "name": "Paseo Pulse",
-      "description": "Недавние сессии по проектам с индикаторами внимания и прямым переходом в Paseo."
-    },
-    "fr": {
-      "name": "Paseo Pulse",
-      "description": "Les sessions récentes regroupées par projet, avec indicateurs d’attention et accès direct."
-    },
-    "zh-TW": {
-      "name": "Paseo Pulse",
-      "description": "依專案分組的最近工作階段，提供關注指示與直接導覽。"
-    }
-  },
   "icon": "assets/icon.png",
   "media": [
     "assets/desktop.png",
