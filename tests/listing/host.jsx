@@ -3,7 +3,7 @@ import React from 'react';
 import { Pressable, View, Text, TextInput as NativeTextInput } from 'react-native-web';
 import { Inbox, Plus, Search, X, Check, CheckCheck, ChevronDown, ChevronUp, ChevronRight, CircleCheck, ArrowLeft } from 'lucide-react';
 export { defineTranslations, useTranslation, PluginTranslationRuntime, PluginTranslationProvider } from '../../node_modules/@getpaseo/plugin/dist/client/translations.js';
-import { demoApi, demoRpc } from './demo-data.js';
+import { demoApi, demoRpc, creationDemo } from './demo-data.js';
 const icons = { Inbox, Plus, Search, X, Check, CheckCheck, ChevronDown, ChevronUp, ChevronRight, CircleCheck, ArrowLeft };
 export function Icon({ name, size = 16, color = 'currentColor' }) {
   const Component = icons[name] ?? Inbox;
@@ -12,9 +12,18 @@ export function Icon({ name, size = 16, color = 'currentColor' }) {
 export const usePaseo = () => demoApi;
 export const useRpc = contract => React.useMemo(() => input => demoRpc(contract.name, input), [contract.name]);
 const seen = {};
-const readySettings = { status: 'ready', revision: 'sample', values: { seen }, saving: false,
+const readySettings = { status: 'ready', revision: 'sample', values: { seen }, saving: false, saveError: null,
   save: async () => { throw new Error('Sample media is read-only.'); } };
-export const useSettings = () => readySettings;
+// Match Paseo: schema parsing, callbacks and the result object are fresh on every render.
+export function useSettings() {
+  creationDemo.settingsRenders = (creationDemo.settingsRenders ?? 0) + 1;
+  if (creationDemo.settingsRenders > 1000) {
+    creationDemo.renderBudgetExceeded = true;
+    throw new Error('Render loop: useSettings exceeded its regression render budget');
+  }
+  return { ...readySettings, values: { seen: { ...seen } },
+    save: (...args) => readySettings.save(...args), reset: async () => false, reload: async () => {} };
+}
 export function SidebarRow({ icon, label, trailing, onPress }) {
   return <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, margin: 12, paddingHorizontal: 10,
     minHeight: 36, borderRadius: 7, backgroundColor: '#28312d' }}>

@@ -95,6 +95,7 @@ does not download runtime libraries. Rebuild it with `npm run build:runtime`.
 npm ci --ignore-scripts
 npm run typecheck
 npm test
+npm run test:ui
 npm run release:check
 paseo plugin reload paseo-session-inbox
 ```
@@ -104,3 +105,8 @@ The runtime entries are `index.client.tsx` and `index.server.ts`. Client UI live
 ## License
 
 Original code: [MIT](LICENSE). Project icon discovery adapted from Paseo retains Apache-2.0 terms; see [third-party notices](THIRD_PARTY_LICENSES.md).
+
+The UI regression fixture deliberately recreates the settings object, parsed
+values and callbacks on every render, matching Paseo’s SDK. It checks idle render
+counts with the screen open and closed, repeated host updates and navigation.
+A render budget stops feedback loops inside the isolated test browser.

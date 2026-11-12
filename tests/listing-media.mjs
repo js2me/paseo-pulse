@@ -8,6 +8,7 @@ import { build } from 'esbuild';
 import puppeteer from 'puppeteer-core';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const assets = join(root, 'assets');
+const writeMedia = !process.argv.includes('--verify');
 const temp = await mkdtemp(join(tmpdir(), 'paseo-pulse-media-'));
 let browser, server;
 try {
@@ -36,7 +37,8 @@ try {
     page.on('pageerror', error => { errors.push(error.message); console.error(error.stack ?? error.message); });
     await page.setViewport({ width, height, deviceScaleFactor: scale });
     await page.goto(origin, { waitUntil: 'networkidle0' });
-    await page.waitForFunction(() => document.body.innerText.includes('Labels are consistent on desktop and mobile.'));
+    await page.waitForFunction(() => globalThis.__pulseDemo?.renderBudgetExceeded || document.body.innerText.includes('Labels are consistent on desktop and mobile.'));
+    assert.equal(await page.evaluate(() => !!globalThis.__pulseDemo?.renderBudgetExceeded), false, 'SDK settings must not trigger a React/MobX feedback loop');
     await page.evaluate(() => document.fonts.ready);
     const result = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > innerWidth,
       tabs: [...document.querySelectorAll('[role="tab"]')].map(element => element.textContent),
@@ -47,7 +49,22 @@ try {
     assert.ok(result.tabs.some(text => text.includes('Attention') && text.includes('9')), `${name} attention count`);
     assert.ok(result.readRows >= 3, `${name} read styling`);
     assert.equal(result.running, 2, `${name} running indicators`);
-    await page.screenshot({ path: join(assets, `${name}.png`) });
+    const idle = await page.evaluate(async () => {
+      const before = globalThis.__pulseDemo.settingsRenders;
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      return globalThis.__pulseDemo.settingsRenders - before;
+    });
+    assert.ok(idle <= 4, `${name} idle render count: ${idle}`);
+    const churn = await page.evaluate(async () => {
+      const before = globalThis.__pulseDemo.settingsRenders;
+      for (let i = 0; i < 40; i++) {
+        globalThis.__pulseDemo.updateHost();
+        await new Promise(requestAnimationFrame);
+      }
+      return globalThis.__pulseDemo.settingsRenders - before;
+    });
+    assert.ok(churn < 500, `${name} host updates must settle: ${churn}`);
+    if (writeMedia) await page.screenshot({ path: join(assets, `${name}.png`) });
     // Exercise the actual buttons against the fixture API, never a live daemon.
     const projectPlus = '[aria-label="Create a session in Horizon API"]';
     await page.waitForSelector(projectPlus);
@@ -82,6 +99,12 @@ try {
     const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
     await page.waitForFunction(() => !document.querySelector('[aria-label="New session"]'));
+    const closedIdle = await page.evaluate(async () => {
+      const before = globalThis.__pulseDemo.settingsRenders;
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      return globalThis.__pulseDemo.settingsRenders - before;
+    });
+    assert.ok(closedIdle <= 4, `${name} closed-screen/sidebar render count: ${closedIdle}`);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(true));
     await page.waitForSelector('[aria-label="New session"]');
     const reopened = await page.evaluate(() => ({ text: document.body.innerText,
@@ -89,15 +112,17 @@ try {
     assert.deepEqual(reopened.reads, reads, `${name} reopening must keep the owned directory`);
     assert.ok(reopened.text.includes('Labels are consistent on desktop and mobile.'), `${name} immediate cached previews`);
     assert.equal(reopened.text.includes('Loading…'), false, `${name} no repeat loading screen`);
+    console.log(`${name}: idle renders=${idle}, 40 host updates=${churn}, closed-screen idle renders=${closedIdle}`);
     assert.equal(errors.length, 0, errors.join('\n'));
     await page.close();
   }
   const icon = await browser.newPage();
   await icon.setViewport({ width: 512, height: 512, deviceScaleFactor: 1 });
   await icon.goto(`${origin}/icon`, { waitUntil: 'networkidle0' });
-  await icon.screenshot({ path: join(assets, 'icon.png'), omitBackground: true });
+  if (writeMedia) await icon.screenshot({ path: join(assets, 'icon.png'), omitBackground: true });
   await icon.close();
-  console.log('Captured actual session components with sample data: assets/desktop.png, assets/mobile.png and assets/icon.png.');
+  console.log(writeMedia ? 'Captured actual session components with sample data: assets/desktop.png, assets/mobile.png and assets/icon.png.'
+    : 'UI regression checks passed with fresh SDK settings snapshots and bounded render counts.');
 } finally {
   await browser?.close();
   if (server) await new Promise(resolve => server.close(resolve));

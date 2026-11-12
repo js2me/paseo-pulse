@@ -1,6 +1,6 @@
 {
   "name": "paseo-pulse",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "files": [
     "paseo-plugin.json",
     "index.client.tsx",
@@ -22,7 +22,8 @@
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "test:media": "npm run build:runtime && node tests/listing-media.mjs",
     "release:check": "npm run build:runtime && npm run typecheck && npm test && npm pack --dry-run --ignore-scripts",
-    "build:runtime": "node scripts/build-runtime.mjs"
+    "build:runtime": "node scripts/build-runtime.mjs",
+    "test:ui": "node tests/listing-media.mjs --verify"
   },
   "devDependencies": {
     "@getpaseo/client": "0.15.0",

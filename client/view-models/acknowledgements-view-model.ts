@@ -1,9 +1,4 @@
-import type { SettingsState } from "@getpaseo/plugin/client";
-import {
-  acknowledgementSettings,
-  acknowledgeSessions,
-  applyAcknowledgements,
-} from "../../shared/sessions/acknowledgements";
+import { acknowledgeSessions, applyAcknowledgements } from "../../shared/sessions/acknowledgements";
 import type { SessionEntry } from "../../shared/sessions/sessions";
 import {
   action,
@@ -15,8 +10,8 @@ import {
   type ViewModelParams,
 } from "../lib/mvvm";
 import { PulseViewModel } from "../lib/pulse-view-model";
+import type { AcknowledgementState } from "../data/sessions/acknowledgement-settings";
 
-export type AcknowledgementState = SettingsState<typeof acknowledgementSettings.schema>;
 type Payload = { settings: AcknowledgementState; entries: readonly SessionEntry[] };
 const emptySeen: Readonly<Record<string, string>> = {};
 export class AcknowledgementsViewModel extends PulseViewModel<Payload> {

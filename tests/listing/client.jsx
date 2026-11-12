@@ -21,6 +21,8 @@ const theme = { colors: { surface0: '#191e1b', surface1: '#222925', surface2: '#
 function Demo() {
   const compact = useWindowDimensions().width < 720;
   const [visible, setVisible] = React.useState(true);
+  const [, updateHost] = React.useState(0);
+  creationDemo.updateHost = () => updateHost(value => value + 1);
   creationDemo.setVisible = setVisible;
   const props = { host: { id: 'sample-host', label: 'Demo workspace' }, theme, layout: { compact, platform: 'web' },
     params: {}, navigation: { openAgent(agent) { creationDemo.opened.push(agent); } } };
