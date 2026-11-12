@@ -17,11 +17,10 @@ const Inbox = observer(function Inbox(props: InboxProps) {
       style={{
         flex: 1,
         flexDirection: "row",
-        justifyContent: "center",
         backgroundColor: props.theme.colors.surface0,
       }}
     >
-      <View style={{ flex: 1, minWidth: 0, maxWidth: 1000 }}>
+      <View style={{ flex: 1, minWidth: 0 }}>
         <InboxToolbar context={context} />
         <FlatList
           style={{ flex: 1 }}
