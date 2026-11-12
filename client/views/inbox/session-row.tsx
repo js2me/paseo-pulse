@@ -74,8 +74,8 @@ export const SessionRow = observer(function SessionRow({
             style={{
               color: read ? c.foregroundMuted : highlighted || withinDay ? c.foreground : c.foregroundMuted,
               opacity: read ? 0.85 : highlighted || recent || !withinDay ? 1 : 0.88,
-              fontSize: 13,
-              lineHeight: 18,
+              fontSize: 14,
+              lineHeight: 19,
               fontWeight: read ? "400" : highlighted ? "600" : withinDay ? "500" : "400",
             }}
           >
