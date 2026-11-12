@@ -72,3 +72,88 @@ test('installation stores never share sessions between hosts and stop after disp
   assert.equal(first.reads, 1);
   second.store.dispose();
 });
+
+function withWorkspaces({ read, delayedSubscription } = {}) {
+  let agentObserver, workspaceObserver, titles = [{ id: 'workspace', title: 'Renamed workspace' }];
+  let workspaceReleases = 0, workspaceDetaches = 0;
+  const original = { ...entry('agent'), agent: { ...entry('agent').agent,
+    workspaceId: 'workspace', title: 'Original agent title', updatedAt: '2026-01-01T00:00:00Z' } };
+  const subscription = {
+    subscribe(observer) { workspaceObserver = observer; observer.snapshot(page(titles));
+      return () => { workspaceDetaches++; }; },
+    async release() { workspaceReleases++; },
+  };
+  const store = createSessionDirectoryStore({
+    agents: { list: async options => options.subscribe ? { ...page([original]), subscription: {
+      subscribe(observer) { agentObserver = observer; observer.snapshot(page([original])); return () => {}; },
+      async release() {},
+    } } : page([original]) },
+    workspaces: { list: async options => options.subscribe
+      ? delayedSubscription ?? { ...page(titles), subscription }
+      : read ? read(options) : page(titles) },
+  });
+  store.start();
+  return { store, original, subscription, get workspaceReleases() { return workspaceReleases; },
+    get workspaceDetaches() { return workspaceDetaches; },
+    rename(title) { titles = [{ id: 'workspace', title }]; workspaceObserver.update({ type: 'workspace_update',
+      payload: { kind: 'upsert', workspace: titles[0] } }); },
+    remove() { workspaceObserver.update({ type: 'workspace_update', payload: { kind: 'remove', id: 'workspace' } }); },
+    agentTitle(title) { agentObserver.update({ type: 'agent_update', payload: { kind: 'upsert',
+      ...original, agent: { ...original.agent, title } } }); },
+    reconnect() { workspaceObserver.snapshot(page(titles)); },
+  };
+}
+
+test('workspace sidebar names load and rename live without waiting for an agent update', async () => {
+  const client = withWorkspaces();
+  try {
+    await flush();
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'Renamed workspace');
+    client.rename('Shared API client');
+    const current = client.store.getSnapshot();
+    assert.equal(current.entries[0].agent.title, 'Shared API client');
+    assert.equal(current.entries[0].project.workspaceName, 'Shared API client');
+    assert.equal(current.entries[0].agent.updatedAt, client.original.agent.updatedAt);
+    client.agentTitle('Agent changed its title');
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'Shared API client');
+    const before = client.store.getSnapshot();
+    client.rename('Shared API client');
+    assert.equal(client.store.getSnapshot(), before, 'status-only workspace updates do not rerender the list');
+    client.rename(null);
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'Agent changed its title');
+    client.rename('Another name'); client.remove();
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'Agent changed its title');
+  } finally { client.store.dispose(); }
+  await flush();
+  assert.equal(client.workspaceReleases, 1);
+  assert.equal(client.workspaceDetaches, 1);
+});
+
+test('workspace title paging and reconnect reads cannot overwrite a newer live rename', async () => {
+  let resolvePage, pending = false;
+  const client = withWorkspaces({ read: options => {
+    if (options.page.cursor) return pending ? new Promise(resolve => { resolvePage = resolve; })
+      : page([{ id: 'workspace', title: 'Page two title' }]);
+    return { ...page([{ id: 'other', title: 'Other' }]), pageInfo: { hasMore: true, nextCursor: 'next' } };
+  } });
+  try {
+    await flush();
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'Page two title');
+    pending = true; client.reconnect(); await flush();
+    client.rename('Live rename');
+    resolvePage(page([{ id: 'workspace', title: 'Stale page' }])); await flush();
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'Live rename');
+    client.store.dispose();
+    client.rename('After disposal');
+    assert.deepEqual(client.store.getSnapshot().entries, []);
+  } finally { client.store.dispose(); }
+});
+
+test('a workspace subscription resolving after disposal is immediately released', async () => {
+  let resolve;
+  const client = withWorkspaces({ delayedSubscription: new Promise(done => { resolve = done; }) });
+  await flush(); client.store.dispose();
+  resolve({ ...page([]), subscription: client.subscription }); await flush();
+  assert.equal(client.workspaceReleases, 1);
+  assert.equal(client.workspaceDetaches, 0);
+});
