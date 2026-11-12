@@ -79,21 +79,10 @@
     "live": "Could not update sessions: {{error}}"
   },
   "new": {
-    "title": "New session",
-    "choicesError": "Could not load projects and profiles: {{error}}",
-    "project": "Project",
-    "profile": "Agent / profile",
-    "model": "Model",
-    "folder": "Project folder",
-    "folderPlaceholder": "Full path to the project folder",
-    "noAgents": "No agents available. Refresh",
-    "loadingModels": "Loading models…",
-    "modelsError": "Could not load models. Retry",
-    "noModels": "No models available for this agent.",
-    "nameLabel": "New session title",
-    "namePlaceholder": "Title (optional)",
     "creationError": "Could not create the session: {{error}}",
-    "createLabel": "Create session",
-    "submit": "Create and open"
+    "noProject": "No project is available for a new session.",
+    "noAgents": "No agent providers are available.",
+    "noModels": "No selectable models are available for this agent.",
+    "sourceMissing": "The previous session is no longer available. Try again."
   }
 }

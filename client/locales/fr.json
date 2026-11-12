@@ -79,21 +79,10 @@
     "live": "Impossible de mettre à jour les sessions : {{error}}"
   },
   "new": {
-    "title": "Nouvelle session",
-    "choicesError": "Impossible de charger les projets et les profils : {{error}}",
-    "project": "Projet",
-    "profile": "Agent / profil",
-    "model": "Modèle",
-    "folder": "Dossier du projet",
-    "folderPlaceholder": "Chemin complet du dossier du projet",
-    "noAgents": "Aucun agent disponible. Actualiser",
-    "loadingModels": "Chargement des modèles…",
-    "modelsError": "Impossible de charger les modèles. Réessayer",
-    "noModels": "Aucun modèle disponible pour cet agent.",
-    "nameLabel": "Titre de la nouvelle session",
-    "namePlaceholder": "Titre (facultatif)",
     "creationError": "Impossible de créer la session : {{error}}",
-    "createLabel": "Créer une session",
-    "submit": "Créer et ouvrir"
+    "noProject": "Aucun projet disponible pour une nouvelle session.",
+    "noAgents": "Aucun fournisseur d’agent disponible.",
+    "noModels": "Aucun modèle sélectionnable disponible pour cet agent.",
+    "sourceMissing": "La session précédente n’est plus disponible. Réessayez."
   }
 }

@@ -9,7 +9,7 @@ import { canAcknowledge } from "../shared/acknowledgements";
 import { useAcknowledgements } from "./use-acknowledgements";
 import { SessionReplyPreview } from "./session-reply-preview";
 import { useSessionActivity } from "./use-session-activity";
-import { NewSessionDialog } from "./new-session";
+import { useCreateSession } from "./use-create-session";
 import { ProjectLogo, useIconProjects } from "./project-logo";
 import { groupIconProject } from "../shared/project-icons";
 import { useSessionClock } from "./use-session-clock";
@@ -34,7 +34,11 @@ function Inbox(props: InboxProps) {
   const { entries, acknowledge, pending: ackPending, error: ackError, ready: ackReady } = useAcknowledgements(visitedEntries);
   const [search, setSearch] = useState("");
   const [searchOpen, showSearch] = useState(false);
-  const [creationContext, setCreationContext] = useState<{ cwd?: string; provider?: string } | null>(null);
+  const creation = useCreateSession(rawEntries, (agentId) => {
+    trackVisit(agentId);
+    props.navigation?.openAgent({ agentId, serverId: props.host.id });
+  });
+  const creationDisabled = loading || creation.pending !== null || !props.navigation;
   const [onlyAttention, setOnlyAttention] = useState(true);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
@@ -61,12 +65,10 @@ function Inbox(props: InboxProps) {
           </View>
           <View style={{ flex: 1 }} />
           <Pressable accessibilityRole="button" accessibilityLabel={t("newSession")} hitSlop={6}
-            onPress={() => {
-              const source = groups[0]?.entries[0]
-                ?? [...entries].sort((a, b) => activity(b.agent) - activity(a.agent))[0];
-              setCreationContext({ cwd: source?.agent.cwd, provider: source?.agent.provider });
-            }} style={{ padding: 6 }}>
-            <Icon name="Plus" size={18} color={c.foreground} />
+            disabled={creationDisabled} accessibilityState={{ disabled: creationDisabled, busy: creation.pending === "global" }}
+            onPress={() => void creation.create()} style={{ padding: 6, opacity: creationDisabled ? 0.5 : 1 }}>
+            {creation.pending === "global" ? <ActivityIndicator size="small" color={c.foreground} />
+              : <Icon name="Plus" size={18} color={c.foreground} />}
           </Pressable>
           <Pressable accessibilityRole="button" accessibilityLabel={searchOpen ? t("closeSearch") : t("findSession")}
             accessibilityState={{ expanded: searchOpen }} hitSlop={6}
@@ -85,6 +87,7 @@ function Inbox(props: InboxProps) {
         ListHeaderComponent={<>
         {!groups.length && (loading || verifying || (!ackReady && !ackError)) &&
           <Text style={{ color: c.foregroundMuted, fontSize: 13 }}>{t("loading")}</Text>}
+        {creation.error && <Text accessibilityRole="alert" style={{ color: c.statusDanger, fontSize: 12 }}>{creation.error}</Text>}
         {ackError && <Text accessibilityRole="alert" style={{ color: c.statusDanger, fontSize: 12 }}>{ackError}</Text>}
         {error && <View style={{ gap: 6 }}>
           <Text style={{ color: c.statusDanger, fontSize: 12 }}>{t("listError", { error: directoryError(error, t) })}</Text>
@@ -132,15 +135,14 @@ function Inbox(props: InboxProps) {
               </View>
             </Pressable>
             <Pressable accessibilityRole="button" accessibilityLabel={t("createInProject", { project: group.name })}
-              onPress={() => {
-                const source = [...group.entries].sort((a, b) => activity(b.agent) - activity(a.agent))[0];
-                setCreationContext({ cwd: iconProject?.projectRootPath ?? source?.agent.cwd,
-                  provider: source?.agent.provider });
-              }}
+              disabled={creationDisabled} accessibilityState={{ disabled: creationDisabled, busy: creation.pending === group.key }}
+              onPress={() => void creation.create({ projectKey: group.key, cwd: iconProject?.projectRootPath })}
               style={({ pressed }) => ({ alignItems: "center", justifyContent: "center", alignSelf: "center",
                 minWidth: layout.compact ? 36 : 32, minHeight: layout.compact ? 36 : 32,
+                opacity: creationDisabled ? 0.5 : 1,
                 borderRadius: 5, backgroundColor: pressed ? c.surface2 : "transparent" })}>
-              <Icon name="Plus" size={16} color={c.foregroundMuted} />
+              {creation.pending === group.key ? <ActivityIndicator size="small" color={c.foregroundMuted} />
+                : <Icon name="Plus" size={16} color={c.foregroundMuted} />}
             </Pressable>
             {isExpanded && acknowledgeableCount > 1 && <Pressable accessibilityRole="button"
               accessibilityLabel={t("ackProject", { project: group.name })} disabled={!ackReady || ackPending}
@@ -210,11 +212,5 @@ function Inbox(props: InboxProps) {
           </View>;
         }} />
     </View>
-    {creationContext && <NewSessionDialog {...props} initialCwd={creationContext.cwd}
-      initialProvider={creationContext.provider} onClose={() => setCreationContext(null)}
-      onCreated={(agentId) => {
-        setCreationContext(null);
-        if (props.navigation) { trackVisit(agentId); props.navigation.openAgent({ agentId, serverId: props.host.id }); }
-      }} />}
   </View>;
 }

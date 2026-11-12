@@ -1,6 +1,6 @@
 {
   "name": "paseo-pulse",
-  "version": "0.13.2",
+  "version": "0.13.3",
   "files": [
     "paseo-plugin.json",
     "index.client.tsx",

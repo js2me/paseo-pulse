@@ -39,7 +39,7 @@ Open **Pulse** in the sidebar or **Open Pulse** in the Command Center. The nativ
 
 Read sessions are gray. Running work stays blue, new replies green, permission requests yellow and errors red. Marking a reply **OK** clears that exact reply's attention marker; a later reply is highlighted again. The sidebar badge uses the same rules as the page.
 
-**All** starts with six recent sessions per project. **More** reveals the rest. Search covers projects, workspaces, titles, providers and paths. Each project has a **+** button to create a session in that project; the global **+** lets you choose another project and agent profile.
+**All** starts with six recent sessions per project. **More** reveals the rest. Search covers projects, workspaces, titles, providers and paths. The project **+** creates and opens an unnamed session immediately, reusing the model, mode, thinking level and feature settings of the last session used in that project. The global **+** uses the last session overall and its folder. Recency follows user prompts and session creation, not background status changes; search and attention filters do not affect the choice. Settings are refreshed before creation. If a project has no prior session, the most recent global session supplies the settings. With no history, an available host profile or provider default is used. No selection dialog or title is required.
 
 <details>
 <summary>Compact view</summary>
@@ -52,7 +52,7 @@ Screenshots render the actual plugin components with sample data in an isolated 
 
 ## Languages
 
-English, Russian, French and Traditional Chinese follow the app's language setting. English is the fallback. Chinese variants, including Paseo's current `zh-CN` option, use Traditional characters. Language changes preserve search, expanded groups and new-session form values. User session names and conversation content are not translated.
+English, Russian, French and Traditional Chinese follow the app's language setting. English is the fallback. Chinese variants, including Paseo's current `zh-CN` option, use Traditional characters. Language changes preserve search and expanded groups. User session names and conversation content are not translated.
 
 ## Data and runtime
 

@@ -48,6 +48,29 @@ try {
     assert.ok(result.readRows >= 3, `${name} read styling`);
     assert.equal(result.running, 2, `${name} running indicators`);
     await page.screenshot({ path: join(assets, `${name}.png`) });
+    // Exercise the actual buttons against the fixture API, never a live daemon.
+    const projectPlus = '[aria-label="Create a session in Horizon API"]';
+    await page.waitForSelector(projectPlus);
+    await page.$eval(projectPlus, button => { button.click(); button.click(); });
+    await page.waitForFunction(() => globalThis.__pulseDemo.opened.length === 1);
+    const projectCreation = await page.evaluate(() => globalThis.__pulseDemo.created);
+    assert.equal(projectCreation.length, 1, `${name} duplicate tap guard`);
+    assert.deepEqual(projectCreation[0].config, { provider: 'codex/model-horizon', modeId: 'auto',
+      thinkingOptionId: 'high', featureValues: { sandbox: false } });
+    assert.equal(projectCreation[0].cwd, '/projects/horizon-api');
+    assert.equal('title' in projectCreation[0], false);
+    assert.equal(await page.$('[role="dialog"]'), null, `${name} creation should not open a dialog`);
+    await page.click('[aria-label="New session"]');
+    await page.waitForFunction(() => globalThis.__pulseDemo.opened.length === 2);
+    const globalCreation = await page.evaluate(() => globalThis.__pulseDemo.created[1]);
+    assert.equal(globalCreation.cwd, '/projects/atlas-studio');
+    assert.equal(globalCreation.config.provider, 'codex/model-atlas');
+    await page.evaluate(() => { globalThis.__pulseDemo.fail = true; });
+    await page.click('[aria-label="New session"]');
+    await page.waitForFunction(() => document.body.innerText.includes('Sample creation error'));
+    assert.equal(await page.evaluate(() => globalThis.__pulseDemo.opened.length), 2, `${name} failed creation must not navigate`);
+    assert.notEqual(await page.$eval('[aria-label="New session"]', button => button.getAttribute('aria-disabled')), 'true');
+    assert.equal(errors.length, 0, errors.join('\n'));
     await page.close();
   }
   const icon = await browser.newPage();

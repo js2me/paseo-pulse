@@ -73,21 +73,10 @@
     "live": "無法更新工作階段：{{error}}"
   },
   "new": {
-    "title": "新增工作階段",
-    "choicesError": "無法載入專案與設定檔：{{error}}",
-    "project": "專案",
-    "profile": "代理程式／設定檔",
-    "model": "模型",
-    "folder": "專案資料夾",
-    "folderPlaceholder": "專案資料夾的完整路徑",
-    "noAgents": "沒有可用的代理程式。重新整理",
-    "loadingModels": "載入模型中…",
-    "modelsError": "無法載入模型。重試",
-    "noModels": "此代理程式沒有可用的模型。",
-    "nameLabel": "新工作階段的標題",
-    "namePlaceholder": "標題（選填）",
     "creationError": "無法建立工作階段：{{error}}",
-    "createLabel": "建立工作階段",
-    "submit": "建立並開啟"
+    "noProject": "沒有可用於建立工作階段的專案。",
+    "noAgents": "沒有可用的代理程式提供者。",
+    "noModels": "此代理程式沒有可選用的模型。",
+    "sourceMissing": "先前的工作階段已無法使用，請重試。"
   }
 }
