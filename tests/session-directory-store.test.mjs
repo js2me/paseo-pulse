@@ -95,7 +95,7 @@ function withWorkspaces({ read, delayedSubscription } = {}) {
   store.start();
   return { store, original, subscription, get workspaceReleases() { return workspaceReleases; },
     get workspaceDetaches() { return workspaceDetaches; },
-    rename(title) { titles = [{ id: 'workspace', title }]; workspaceObserver.update({ type: 'workspace_update',
+    rename(title, pinnedAt = null) { titles = [{ id: 'workspace', title, pinnedAt }]; workspaceObserver.update({ type: 'workspace_update',
       payload: { kind: 'upsert', workspace: titles[0] } }); },
     remove() { workspaceObserver.update({ type: 'workspace_update', payload: { kind: 'remove', id: 'workspace' } }); },
     agentTitle(title) { agentObserver.update({ type: 'agent_update', payload: { kind: 'upsert',
@@ -156,4 +156,21 @@ test('a workspace subscription resolving after disposal is immediately released'
   resolve({ ...page([]), subscription: client.subscription }); await flush();
   assert.equal(client.workspaceReleases, 1);
   assert.equal(client.workspaceDetaches, 0);
+});
+
+
+test('native workspace pins load, update and clear without an agent event', async () => {
+  const client = withWorkspaces({ read: () => page([{ id: 'workspace', title: null, pinnedAt: '2026-11-12T10:00:00Z' }]) });
+  try {
+    await flush();
+    assert.equal(client.store.getSnapshot().entries[0].agent.pinnedAt, '2026-11-12T10:00:00Z');
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'Original agent title');
+    client.rename(null, '2026-11-12T11:00:00Z');
+    assert.equal(client.store.getSnapshot().entries[0].agent.pinnedAt, '2026-11-12T11:00:00Z');
+    client.agentTitle('New agent title');
+    assert.equal(client.store.getSnapshot().entries[0].agent.pinnedAt, '2026-11-12T11:00:00Z');
+    client.rename(null);
+    assert.equal(!!client.store.getSnapshot().entries[0].agent.pinnedAt, false);
+    assert.equal(client.store.getSnapshot().entries[0].agent.title, 'New agent title');
+  } finally { client.store.dispose(); }
 });

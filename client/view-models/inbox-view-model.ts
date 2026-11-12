@@ -69,7 +69,8 @@ export class InboxViewModel extends PulseViewModel<Payload> {
       const orderedEntries = this.onlyAttention
         ? group.entries
         : [...group.entries].sort(
-            (a, b) => activity(b.agent) - activity(a.agent) || a.agent.id.localeCompare(b.agent.id),
+            (a, b) => Number(!!b.agent.pinnedAt) - Number(!!a.agent.pinnedAt) ||
+              activity(b.agent) - activity(a.agent) || a.agent.id.localeCompare(b.agent.id),
           );
       const showAll = this.revealed.has(group.key);
       const visibleEntries =

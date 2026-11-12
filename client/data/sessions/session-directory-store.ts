@@ -1,31 +1,32 @@
 import type { PaseoApi } from "@getpaseo/client";
 import { observeSessionDirectory, type SessionDirectoryState } from "./session-directory";
-import { observeWorkspaceTitles } from "./workspace-titles";
+import { observeWorkspaceMetadata, type WorkspaceMetadata } from "./workspace-metadata";
 
 /** Owned by the plugin installation, rather than any mounted screen. */
 export function createSessionDirectoryStore(paseo: Pick<PaseoApi, "agents"> & Partial<Pick<PaseoApi, "workspaces">>) {
   let state: SessionDirectoryState = { entries: [], loading: true, error: null };
   let source = state;
-  let titles: ReadonlyMap<string, string> = new Map();
+  let workspaces: ReadonlyMap<string, WorkspaceMetadata> = new Map();
   const listeners = new Set<() => void>();
   let stop: (() => void) | undefined;
-  let stopTitles: (() => void) | undefined;
+  let stopMetadata: (() => void) | undefined;
   let disposed = false;
   const publish = (next: SessionDirectoryState) => {
     // Keep the last complete list visible during a manual retry.
     source = next.loading && source.entries.length ? { ...next, entries: source.entries } : next;
     state = { ...source, entries: source.entries.map((entry) => {
-      const title = entry.agent.workspaceId ? titles.get(entry.agent.workspaceId) : undefined;
-      return title ? { ...entry, agent: { ...entry.agent, title },
-        project: { ...entry.project, workspaceName: title } } : entry;
+      const metadata = entry.agent.workspaceId ? workspaces.get(entry.agent.workspaceId) : undefined;
+      return metadata ? { ...entry, agent: { ...entry.agent,
+        title: metadata.title ?? entry.agent.title, pinnedAt: metadata.pinnedAt },
+        project: metadata.title ? { ...entry.project, workspaceName: metadata.title } : entry.project } : entry;
     }) };
     for (const listener of listeners) listener();
   };
   const start = () => {
     if (disposed || stop) return;
     stop = observeSessionDirectory(paseo, publish);
-    if (paseo.workspaces && !stopTitles) stopTitles = observeWorkspaceTitles({ workspaces: paseo.workspaces }, (next) => {
-      titles = next;
+    if (paseo.workspaces && !stopMetadata) stopMetadata = observeWorkspaceMetadata({ workspaces: paseo.workspaces }, (next) => {
+      workspaces = next;
       publish(source);
     });
   };
@@ -39,21 +40,21 @@ export function createSessionDirectoryStore(paseo: Pick<PaseoApi, "agents"> & Pa
     retry() {
       if (disposed) return;
       stop?.();
-      stopTitles?.();
+      stopMetadata?.();
       stop = undefined;
-      stopTitles = undefined;
+      stopMetadata = undefined;
       start();
     },
     dispose() {
       disposed = true;
       stop?.();
-      stopTitles?.();
+      stopMetadata?.();
       stop = undefined;
-      stopTitles = undefined;
+      stopMetadata = undefined;
       listeners.clear();
       state = { entries: [], loading: true, error: null };
       source = state;
-      titles = new Map();
+      workspaces = new Map();
     },
   };
 }

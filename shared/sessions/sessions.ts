@@ -3,6 +3,7 @@ export interface Session {
   id: string;
   workspaceId?: string | null;
   title: string | null;
+  pinnedAt?: string | null;
   provider: string;
   model?: string | null;
   thinkingOptionId?: string | null;

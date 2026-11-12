@@ -148,3 +148,25 @@ test('continuous directory updates advance the clock even when they postpone its
     }
   } finally { model.unmount(); }
 });
+
+
+test('All puts pinned sessions first within their project, while Attention keeps its existing priority', () => {
+  const entries = [entry('running', { status: 'running', lastUserMessageAt: at(0.5) }),
+    entry('pinned', { pinnedAt: at(10), lastUserMessageAt: at(120) }),
+    ...Array.from({ length: 7 }, (_, i) => entry(`recent-${i}`, { lastUserMessageAt: at(i + 1) }))];
+  const payload = { entries, replies: new Map(), iconProjects: [], now, hostId: 'host', trackVisit() {} };
+  const model = new InboxViewModel({ id: 'pin-order', payload });
+  const attentionOrder = model.groups[0].orderedEntries.map(({ agent }) => agent.id);
+  assert.equal(attentionOrder[0], 'running');
+  assert.equal(attentionOrder.at(-1), 'pinned');
+  model.setOnlyAttention(false);
+  assert.equal(model.groups[0].rows.length, 6);
+  assert.equal(model.groups[0].rows[0].agent.id, 'pinned', 'pin is visible before expanding More');
+  assert.equal(model.groups[0].rows[1].agent.id, 'running');
+  model.setOnlyAttention(true);
+  assert.deepEqual(model.groups[0].orderedEntries.map(({ agent }) => agent.id), attentionOrder);
+  model.setOnlyAttention(false);
+  model.setPayload({ ...payload, entries: entries.map(item => item.agent.id === 'pinned'
+    ? { ...item, agent: { ...item.agent, pinnedAt: null } } : item) });
+  assert.equal(model.groups[0].rows[0].agent.id, 'running');
+});
