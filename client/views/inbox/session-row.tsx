@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { observer } from "../../lib/mvvm";
 import type { InboxRow } from "../../view-models/inbox-view-model";
 import { relativeTime, useMessages } from "../../i18n/messages";
+import { sessionTextColors } from "../shared/session-text-colors";
 import { statusColor } from "../shared/status-color";
 import { SessionReplyPreview } from "./session-reply-preview";
 import type { InboxViewContext } from "./types";
@@ -22,6 +23,7 @@ export const SessionRow = observer(function SessionRow({
     c = theme.colors;
   const color = (reason: Parameters<typeof statusColor>[1]) => statusColor(theme, reason);
   const rowColor = reason ? color(reason) : c.foregroundMuted;
+  const textColors = sessionTextColors(theme, row.emphasis);
   const rowLabel = t(`status.${row.status}`);
   return (
     <View key={agent.id} style={{ flexDirection: "row", alignItems: "center" }}>
@@ -72,11 +74,10 @@ export const SessionRow = observer(function SessionRow({
           <Text
             numberOfLines={1}
             style={{
-              color: read ? c.foregroundMuted : highlighted || withinDay ? c.foreground : c.foregroundMuted,
-              opacity: read ? 0.85 : highlighted || recent || !withinDay ? 1 : 0.88,
+              color: textColors.title,
               fontSize: 14,
               lineHeight: 19,
-              fontWeight: read ? "400" : highlighted ? "600" : withinDay ? "500" : "400",
+              fontWeight: row.emphasis.weight,
             }}
           >
             {agent.title || t("untitled")}
@@ -87,19 +88,15 @@ export const SessionRow = observer(function SessionRow({
             limited={row.reply?.limited}
             loading={verifying}
             error={previewError}
-            color={
-              read ? c.foregroundMuted : reason === "finished" || withinDay ? c.foreground : c.foregroundMuted
-            }
-            opacity={read ? 0.75 : reason === "finished" || !withinDay ? 1 : recent ? 0.9 : 0.75}
+            color={textColors.preview}
           />
         </View>
         <Text
           accessibilityLabel={t("lastMessage", { time: relativeTime(lastActivity, t, now) })}
           style={{
-            color: read ? c.foregroundMuted : withinDay ? c.foreground : c.foregroundMuted,
+            color: textColors.time,
             fontSize: 11,
-            fontWeight: !read && withinDay ? "500" : "400",
-            opacity: read ? 0.75 : !withinDay || recent ? 1 : 0.85,
+            fontWeight: reason ? "600" : row.emphasis.time >= 0.5 ? "500" : "400",
             minWidth: 32,
             textAlign: "right",
           }}

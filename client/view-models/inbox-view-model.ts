@@ -16,6 +16,8 @@ import type { LatestReplyQueryData } from "../data/sessions/latest-reply";
 import { action, computed, makeObservable, observable, type ViewModelParams } from "../lib/mvvm";
 import { PulseViewModel } from "../lib/pulse-view-model";
 
+import { sessionEmphasis } from "./session-emphasis";
+
 export const GROUP_PREVIEW_LIMIT = 6;
 type Payload = {
   entries: readonly SessionEntry[];
@@ -92,6 +94,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
           const withinDay =
             lastActivity > 0 && lastActivity <= now && now - lastActivity < 24 * 60 * 60 * 1000;
           return {
+            emphasis: sessionEmphasis(agent, now),
             sessionEntry,
             agent,
             reason,
