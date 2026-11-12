@@ -14,8 +14,8 @@ const resolver = registerHooks({ resolve(specifier, context, next) {
   }
   return next(specifier, context);
 } });
-const { createSessionVisits } = await import('../server/session-visits.ts');
-const { VISIT_WINDOW_MS, MIN_VISIT_INTERVAL_MS, recordSessionVisitRpc } = await import('../shared/session-visits.ts');
+const { createSessionVisits } = await import('../server/sessions/session-visits.ts');
+const { VISIT_WINDOW_MS, MIN_VISIT_INTERVAL_MS, recordSessionVisitRpc } = await import('../shared/sessions/session-visits.ts');
 resolver.deregister();
 
 async function fixture(t) {

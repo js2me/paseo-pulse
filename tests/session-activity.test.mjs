@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { withSessionActivity } from '../client/session-activity.ts';
-import { sessionReplyToken } from '../client/latest-reply.ts';
-import { activity, groupSessions, isRecentSession } from '../shared/sessions.ts';
+import { withSessionActivity } from '../client/data/sessions/session-activity.ts';
+import { sessionReplyToken } from '../client/data/sessions/latest-reply.ts';
+import { activity, groupSessions, isRecentSession } from '../shared/sessions/sessions.ts';
 
 const now = Date.parse('2026-11-10T12:00:00Z');
 const time = (minutes) => new Date(now - minutes * 60_000).toISOString();

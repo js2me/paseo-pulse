@@ -28,11 +28,11 @@ export const entries = [
   session('relay', 'safe-areas', 'Adjust safe-area spacing', 'Screen edges and bottom spacing are aligned.', 192),
 ];
 const page = { entries: entries.map(({ preview, ...entry }) => entry), pageInfo: { hasMore: false, nextCursor: null, prevCursor: null } };
-export const creationDemo = { created: [], opened: [], fail: false };
+export const creationDemo = { created: [], opened: [], fail: false, directoryReads: 0, subscriptions: 0 };
 export const demoApi = {
-  agents: { list: async options => options?.subscribe ? { ...page, subscription: {
+  agents: { list: async options => { if (options?.subscribe) creationDemo.subscriptions++; else creationDemo.directoryReads++; return options?.subscribe ? { ...page, subscription: {
     subscribe(observer) { observer.snapshot(page); return () => {}; }, release: async () => {},
-  } } : page,
+  } } : page; },
     ref: id => ({ refresh: async () => {
       const agent = entries.find(({ agent }) => agent.id === id)?.agent;
       return agent ? { agent: { ...agent, model: `model-${agent.workspaceId}`, currentModeId: 'auto',

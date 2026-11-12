@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { importClientModule } from './plugin-translations.mjs';
-const { createInboxPills } = await importClientModule('../client/inbox-pills.ts');
+const { createInboxPills } = await importClientModule('../client/app/inbox-pills.ts');
 
 const entry = (id, overrides = {}) => ({ agent: { id, workspaceId: 'workspace', ...overrides } });
 function setup() {

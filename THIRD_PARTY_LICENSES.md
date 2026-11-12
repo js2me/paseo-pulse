@@ -4,7 +4,7 @@ Original Paseo Pulse code is MIT-licensed. The following incorporated code retai
 
 ## Paseo project icon discovery
 
-`server/project-icon-discovery.ts` is adapted from Paseo's
+`server/projects/project-icon-discovery.ts` is adapted from Paseo's
 `packages/server/src/utils/project-icon.ts`:
 https://github.com/getpaseo/paseo
 
@@ -37,3 +37,13 @@ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+## Bundled MVVM libraries
+
+The runtime in `client/generated/mvvm.js` contains MobX 6.16.1,
+MobX React Lite 4.1.1, mobx-view-model 11.0.1, mobx-view-model-react 11.0.1,
+and the used parts of yummies 7.20.1. Their complete MIT notices are included
+in [client/generated/LICENSES.txt](client/generated/LICENSES.txt).
+The adjacent source map embeds the sources used to create the bundle.
+`scripts/build-runtime.mjs` reproduces it from the committed development lock.
+React and its renderer are supplied by Paseo and are not bundled.

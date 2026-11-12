@@ -5,11 +5,11 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { registerHooks } from 'node:module';
 import { zstdCompressSync } from 'node:zlib';
-import { sessionIndexRpc } from '../shared/session-index.ts';
+import { sessionIndexRpc } from '../shared/sessions/session-index.ts';
 const resolver = registerHooks({ resolve(specifier, context, nextResolve) {
-  return nextResolve(['../shared/session-index', './opencode-index'].includes(specifier) ? `${specifier}.ts` : specifier, context);
+  return nextResolve(['../../shared/sessions/session-index', './opencode-index'].includes(specifier) ? `${specifier}.ts` : specifier, context);
 } });
-const { createSessionIndex, parseSessionTranscript } = await import('../server/session-index.ts');
+const { createSessionIndex, parseSessionTranscript } = await import('../server/sessions/session-index.ts');
 resolver.deregister();
 
 const now = Date.parse('2026-11-10T12:00:00Z');

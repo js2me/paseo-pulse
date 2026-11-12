@@ -16,3 +16,4 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run release:check
+      - run: git diff --exit-code -- client/generated

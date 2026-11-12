@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { importClientModule } from './plugin-translations.mjs';
-const { createSessionDirectoryStore } = await importClientModule('../client/session-directory-store.ts');
+const { createSessionDirectoryStore } = await importClientModule('../client/data/sessions/session-directory-store.ts');
 const page = entries => ({ entries, pageInfo: { hasMore: false, nextCursor: null, prevCursor: null } });
 const entry = id => ({ agent: { id, cwd: '/project', status: 'closed', pendingPermissions: [] },
   project: { projectKey: '/project', projectName: 'Project' } });

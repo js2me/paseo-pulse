@@ -12,8 +12,9 @@ export function Icon({ name, size = 16, color = 'currentColor' }) {
 export const usePaseo = () => demoApi;
 export const useRpc = contract => React.useMemo(() => input => demoRpc(contract.name, input), [contract.name]);
 const seen = {};
-export const useSettings = () => ({ status: 'ready', revision: 'sample', values: { seen }, saving: false,
-  save: async () => { throw new Error('Sample media is read-only.'); } });
+const readySettings = { status: 'ready', revision: 'sample', values: { seen }, saving: false,
+  save: async () => { throw new Error('Sample media is read-only.'); } };
+export const useSettings = () => readySettings;
 export function SidebarRow({ icon, label, trailing, onPress }) {
   return <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, margin: 12, paddingHorizontal: 10,
     minHeight: 36, borderRadius: 7, backgroundColor: '#28312d' }}>

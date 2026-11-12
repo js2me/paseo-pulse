@@ -4,7 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { createOpenCodeIndex } from '../server/opencode-index.ts';
+import { createOpenCodeIndex } from '../server/sessions/opencode-index.ts';
 
 const now = Date.parse('2026-11-10T12:00:00Z');
 const time = age => now - age * 60_000;

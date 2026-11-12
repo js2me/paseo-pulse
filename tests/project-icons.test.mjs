@@ -6,10 +6,10 @@ import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { registerHooks } from 'node:module';
 const resolver = registerHooks({ resolve(specifier, context, nextResolve) {
-  return nextResolve(['../shared/project-icons', './project-icon-discovery'].includes(specifier) ? `${specifier}.ts` : specifier, context);
+  return nextResolve(['../../shared/projects/project-icons', './project-icon-discovery'].includes(specifier) ? `${specifier}.ts` : specifier, context);
 } });
-const { createProjectIconReader } = await import('../server/project-icons.ts');
-const { groupIconProject, projectIconRpc } = await import('../shared/project-icons.ts');
+const { createProjectIconReader } = await import('../server/projects/project-icons.ts');
+const { groupIconProject, projectIconRpc } = await import('../shared/projects/project-icons.ts');
 resolver.deregister();
 const png = (size) => {
   const bytes = Buffer.alloc(24);

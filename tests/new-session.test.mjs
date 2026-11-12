@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { importClientModule } from './plugin-translations.mjs';
-const { latestCreationSource, prepareNewSession, createSessionLauncher } = await importClientModule('../client/new-session.ts');
+const { latestCreationSource, prepareNewSession, createSessionLauncher } = await importClientModule('../client/services/session-creation.ts');
 
 const at = day => `2026-11-${String(day).padStart(2, '0')}T12:00:00Z`;
 const entry = (id, projectKey, day, overrides = {}) => ({ project: { projectKey, projectName: projectKey },

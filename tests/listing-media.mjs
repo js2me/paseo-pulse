@@ -33,7 +33,7 @@ try {
   for (const [name, width, height, scale] of [['desktop', 1360, 900, 1], ['mobile', 390, 844, 2]]) {
     const page = await browser.newPage();
     const errors = [];
-    page.on('pageerror', error => errors.push(error.message));
+    page.on('pageerror', error => { errors.push(error.message); console.error(error.stack ?? error.message); });
     await page.setViewport({ width, height, deviceScaleFactor: scale });
     await page.goto(origin, { waitUntil: 'networkidle0' });
     await page.waitForFunction(() => document.body.innerText.includes('Labels are consistent on desktop and mobile.'));
@@ -70,6 +70,25 @@ try {
     await page.waitForFunction(() => document.body.innerText.includes('Sample creation error'));
     assert.equal(await page.evaluate(() => globalThis.__pulseDemo.opened.length), 2, `${name} failed creation must not navigate`);
     assert.notEqual(await page.$eval('[aria-label="New session"]', button => button.getAttribute('aria-disabled')), 'true');
+    await page.click('[aria-label="Find a session"]');
+    await page.type('[aria-label="Search sessions"]', 'Horizon');
+    await page.waitForFunction(() => !document.body.innerText.includes('Atlas Studio'));
+    await page.click('[aria-label="Close search"]');
+    await page.waitForFunction(() => document.body.innerText.includes('Atlas Studio'));
+    await page.$eval('[aria-label="Atlas Studio, 4 sessions"]', button => button.click());
+    await page.waitForFunction(() => !document.body.innerText.includes('Approve the navigation plan'));
+    await page.$eval('[aria-label="Atlas Studio, 4 sessions"]', button => button.click());
+    await page.waitForFunction(() => document.body.innerText.includes('Approve the navigation plan'));
+    const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
+    await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
+    await page.waitForFunction(() => !document.querySelector('[aria-label="New session"]'));
+    await page.evaluate(() => globalThis.__pulseDemo.setVisible(true));
+    await page.waitForSelector('[aria-label="New session"]');
+    const reopened = await page.evaluate(() => ({ text: document.body.innerText,
+      reads: [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions] }));
+    assert.deepEqual(reopened.reads, reads, `${name} reopening must keep the owned directory`);
+    assert.ok(reopened.text.includes('Labels are consistent on desktop and mobile.'), `${name} immediate cached previews`);
+    assert.equal(reopened.text.includes('Loading…'), false, `${name} no repeat loading screen`);
     assert.equal(errors.length, 0, errors.join('\n'));
     await page.close();
   }

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { acknowledgementSettings, acknowledgementToken, canAcknowledge, acknowledgeSessions, applyAcknowledgements } from '../shared/acknowledgements.ts';
+import { acknowledgementSettings, acknowledgementToken, canAcknowledge, acknowledgeSessions, applyAcknowledgements } from '../shared/sessions/acknowledgements.ts';
 
 const entry = (id, overrides = {}) => ({
   agent: { id, title: id, provider: 'codex', cwd: '/repo', status: 'idle',

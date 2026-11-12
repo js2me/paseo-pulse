@@ -6,7 +6,7 @@ The form supplies the label that starts review.
 
 - **Title:** Paseo Pulse
 - **Source:** https://github.com/js2me/paseo-pulse
-- **npm alternative:** paseo-pulse@0.13.3
+- **npm alternative:** paseo-pulse@0.13.4
 - **Revision:** the exact public commit to review (`git rev-parse HEAD`).
 - **Categories:** Workspaces, Utils.
 - **Suggested listing slug:** pulse.

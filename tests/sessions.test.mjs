@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { activity, attention, directoryActivity, groupSessions, isReadSession, isRecentDirectoryCandidate, isFrequentlyViewedSession,
-  isRecentSession, RECENT_SESSION_WINDOW_MS } from '../shared/sessions.ts';
-import { acknowledgeSessions, applyAcknowledgements } from '../shared/acknowledgements.ts';
+  isRecentSession, RECENT_SESSION_WINDOW_MS } from '../shared/sessions/sessions.ts';
+import { acknowledgeSessions, applyAcknowledgements } from '../shared/sessions/acknowledgements.ts';
 
 const session = (id, overrides = {}) => ({
   id, title: id, provider: 'codex', cwd: '/repo', status: 'idle',

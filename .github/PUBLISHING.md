@@ -13,10 +13,20 @@ npm ci --ignore-scripts
 npm run release:check
 ```
 
-Only host-provided libraries are used at runtime. Development tools are in
-`devDependencies`; production dependencies and manifest build commands are
-intentionally absent. The committed package lock makes development and CI
-reproducible. An npm shrinkwrap is unnecessary for this host-only package.
+Paseo supplies React, React Native, React Query and the SDK at runtime. MobX 6,
+`mobx-view-model`, `mobx-view-model-react` and `mobx-react-lite` are bundled into
+`client/generated/mvvm.js`, with a source map and license notices. All package
+inputs are development dependencies pinned by the committed lock. There are
+no installed production dependencies, lifecycle scripts or manifest preparation
+commands, so no npm shrinkwrap is required.
+
+`release:check` first regenerates this shared runtime with `build:runtime`.
+Commit the generated files with their sources. CI verifies they are in sync.
+The runtime exports the real library hooks and observer; it uses Paseo’s React
+instance. Its batching adapter relies on React 19 automatic batching, and its
+external-store adapter uses React’s built-in hook. Neither adapter imports React
+DOM, a second React copy or a platform renderer. The build checks its external
+imports. Ordinary plugin installation uses the committed bundle directly.
 
 To refresh the sample-data screenshots and icon, with Chrome installed:
 
@@ -43,13 +53,13 @@ Create/push the public GitHub repository before submitting it for review.
 After the version and artifact are final and npm authentication is configured:
 
 ```sh
-npm publish artifacts/paseo-pulse-0.13.3.tgz --access public
+npm publish artifacts/paseo-pulse-0.13.4.tgz --access public
 ```
 
 Test an exact published version on a separate daemon before submitting it:
 
 ```sh
-paseo plugin add npm:paseo-pulse@0.13.3 --host <test-daemon>
+paseo plugin add npm:paseo-pulse@0.13.4 --host <test-daemon>
 paseo plugin ls --host <test-daemon>
 ```
 

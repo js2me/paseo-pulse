@@ -2,13 +2,13 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { View, Text, useWindowDimensions } from 'react-native-web';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { InboxScreen } from '../../client/inbox';
-import { createInboxSidebar } from '../../client/inbox-sidebar';
+import { InboxScreen } from '../../client/views/inbox/inbox-screen';
+import { createInboxSidebar } from '../../client/views/sidebar/inbox-sidebar';
 import { PluginTranslationProvider, PluginTranslationRuntime, Icon } from './host.jsx';
 import { entries } from './demo-data.js';
 import { demoApi, creationDemo } from './demo-data.js';
 globalThis.__pulseDemo = creationDemo;
-import { createSessionDirectoryStore } from '../../client/session-directory-store';
+import { createSessionDirectoryStore } from '../../client/data/sessions/session-directory-store';
 const directory = createSessionDirectoryStore(demoApi);
 directory.start();
 const runtime = new PluginTranslationRuntime({ getLocale: () => 'en', subscribe: () => () => {} });
@@ -20,6 +20,8 @@ const theme = { colors: { surface0: '#191e1b', surface1: '#222925', surface2: '#
   statusSuccess: '#86cc9a', statusWarning: '#dfbc76', statusDanger: '#e5908c' } };
 function Demo() {
   const compact = useWindowDimensions().width < 720;
+  const [visible, setVisible] = React.useState(true);
+  creationDemo.setVisible = setVisible;
   const props = { host: { id: 'sample-host', label: 'Demo workspace' }, theme, layout: { compact, platform: 'web' },
     params: {}, navigation: { openAgent(agent) { creationDemo.opened.push(agent); } } };
   return <View style={{ flex: 1, flexDirection: 'row', backgroundColor: theme.colors.surface0 }}>
@@ -37,7 +39,7 @@ function Demo() {
         {compact && <Icon name="ArrowLeft" size={18} color={theme.colors.foregroundMuted} />}
         <Text style={{ color: theme.colors.foreground, fontSize: compact ? 18 : 16, fontWeight: '600' }}>Pulse</Text>
       </View>
-      <InboxScreen {...props} directory={directory} />
+      {visible && <InboxScreen {...props} directory={directory} />}
     </View>
   </View>;
 }

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanReplyText, fetchLatestReply, latestReplyQueryOptions, sessionReplyToken } from '../client/latest-reply.ts';
-import { isRecentSession } from '../shared/sessions.ts';
+import { cleanReplyText, fetchLatestReply, latestReplyQueryOptions, sessionReplyToken } from '../client/data/sessions/latest-reply.ts';
+import { isRecentSession } from '../shared/sessions/sessions.ts';
 import { QueryClient, QueryObserver, onlineManager } from '@tanstack/react-query';
 
 const baseTime = Date.now() - 6 * 60 * 60_000;

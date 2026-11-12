@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { importClientModule, PluginTranslationRuntime } from './plugin-translations.mjs';
-const { messages, relativeTime, directoryError } = await importClientModule('../client/messages.ts');
+const { messages, relativeTime, directoryError } = await importClientModule('../client/i18n/messages.ts');
 
 function runtime(initial = 'en') {
   let locale = initial;

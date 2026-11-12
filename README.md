@@ -64,6 +64,31 @@ The stable runtime ID is **paseo-session-inbox**; the public package and reposit
 
 See [OVERVIEW.md](OVERVIEW.md) for listing copy and [publishing preparation](.github/PUBLISHING.md) for release steps.
 
+## Code structure
+
+The UI follows MVVM with MobX **6.16.1** and **mobx-view-model-react 11.0.1**.
+React bindings create and dispose view models through `useCreateViewModel`;
+`observer` subscribes views to their observable state. `mobx-view-model` supplies
+the view-model lifecycle. Timers and acknowledgement reactions are disposed
+when their view model unmounts.
+
+| Directory | Responsibility |
+| --- | --- |
+| `client/app` | Paseo contribution registration and native composer shortcuts |
+| `client/views` | React Native screen, toolbar, groups, rows, sidebar and logos |
+| `client/view-models` | Observable UI state, computed presentation and commands |
+| `client/bindings` | SDK hooks, React Query and view-model payload adapters |
+| `client/data` | Live directory, caching and transcript-derived activity |
+| `client/services` | Session creation and settings inheritance |
+| `client/i18n` | Translations and formatting |
+| `client/lib`, `client/generated` | Shared library facade and bundled MVVM runtime |
+| `shared/sessions`, `shared/projects` | Domain rules, types and RPC contracts |
+| `server/sessions`, `server/projects` | Host transcript, visit and icon access |
+
+The shared MVVM bundle keeps all models on one MobX instance and uses Paseo’s
+React instance. It ships with source maps and third-party notices; installation
+does not download runtime libraries. Rebuild it with `npm run build:runtime`.
+
 ## Development
 
 ```sh

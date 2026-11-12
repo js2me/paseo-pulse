@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { observeSessionDirectory } from '../client/session-directory.ts';
+import { observeSessionDirectory } from '../client/data/sessions/session-directory.ts';
 
 const entry = (id, overrides = {}) => ({ agent: { id, title: id, provider: 'codex', cwd: '/project',
   createdAt: '2026-01-01T12:00:00Z', updatedAt: '2026-01-01T12:00:00Z', status: 'closed',
