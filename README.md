@@ -8,16 +8,16 @@ A project-grouped attention inbox for your Paseo sessions. Find the agents that 
 
 Requires **Paseo 0.15.0+**, **Node.js 24+**, and plugins enabled on the target daemon.
 
-From the public Git repository:
+From the Paseo plugin catalog:
+
+```sh
+paseo plugin add js2me/pulse
+```
+
+Or directly from Git:
 
 ```sh
 paseo plugin add git:js2me/paseo-pulse
-```
-
-Or from npm:
-
-```sh
-paseo plugin add npm:paseo-pulse
 ```
 
 For a local checkout:
@@ -26,8 +26,6 @@ For a local checkout:
 npm ci --ignore-scripts
 paseo plugin install "$PWD"
 ```
-
-The Git/npm commands become available when those sources are published. Registry submission is prepared separately; there is no approved catalog ID yet.
 
 Open **Pulse** in the sidebar or **Open Pulse** in the Command Center. The native composer also has an **Open in Pulse** shortcut back to this list.
 
@@ -39,7 +37,7 @@ Open **Pulse** in the sidebar or **Open Pulse** in the Command Center. The nativ
 
 Read sessions are gray. Running work stays blue, new replies green, permission requests yellow and errors red. Marking a reply **OK** clears that exact reply's attention marker; a later reply is highlighted again. The sidebar badge uses the same rules as the page.
 
-**All** starts with six recent sessions per project. **More** reveals the rest. Search covers projects, workspaces, titles, providers and paths. The project **+** creates and opens an unnamed session immediately, reusing the model, mode, thinking level and feature settings of the last session used in that project. The global **+** uses the last session overall and its folder. Recency follows user prompts and session creation, not background status changes; search and attention filters do not affect the choice. Settings are refreshed before creation. If a project has no prior session, the most recent global session supplies the settings. With no history, an available host profile or provider default is used. No selection dialog or title is required.
+**All** starts with six sessions per project, with native sidebar pins first and the rest ordered by message recency. Pins do not change Attention priorities. Native sidebar renames and pin changes synchronize live. The list fills the available width; title, preview and time contrast distinguish minutes, hours and days, including for read sessions. **More** reveals the rest. Search covers projects, workspaces, titles, providers and paths. The project **+** creates and opens an unnamed session immediately, reusing the model, mode, thinking level and feature settings of the last session used in that project. The global **+** uses the last session overall and its folder. Recency follows user prompts and session creation, not background status changes; search and attention filters do not affect the choice. Settings are refreshed before creation. If a project has no prior session, the most recent global session supplies the settings. With no history, an available host profile or provider default is used. No selection dialog or title is required.
 
 <details>
 <summary>Compact view</summary>

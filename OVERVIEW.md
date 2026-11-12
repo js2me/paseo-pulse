@@ -1,5 +1,7 @@
 Paseo Pulse adds a Pulse page with a compact project-grouped list. Select a session to open it directly in Paseo. The sidebar badge shows the number of sessions in Attention and updates while the page is closed.
 
+The list uses the full available width. Custom names and pins from the native Paseo sidebar update live. In All, pinned sessions appear first within each project and count toward the six visible rows; Attention keeps its existing priority order. Title, preview and time contrast reflect message age, with separate levels for minutes, hours and days. Read sessions remain subdued while retaining these age differences. Active states keep their blue, green, yellow or red accents; pins emphasize names without making old message timestamps look fresh.
+
 Attention includes running or starting sessions, permission requests, unread errors and replies, and conversations with messages from the last four hours. Sessions opened from this plugin at least three times in seven days also remain in Attention. Rapid repeat clicks within a minute count as one opening. Visit history is stored on the host and shared across connected devices. The SDK does not expose views made elsewhere in Paseo.
 
 Running sessions use a blue spinner; unread replies are green, actions yellow and errors red. Read sessions and replies marked OK are muted gray. OK clears the specific reply or error, while recent or frequently opened sessions remain listed. New replies regain their attention indicators. Marks are stored on the host and synchronized between clients.
