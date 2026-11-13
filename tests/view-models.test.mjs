@@ -171,3 +171,26 @@ test('All puts pinned sessions first within their project, while Attention keeps
     ? { ...item, agent: { ...item.agent, pinnedAt: null } } : item) });
   assert.equal(model.groups[0].rows[0].agent.id, 'running');
 });
+
+test('sidebar splits active work and unread completions without counting read or recent sessions as finished', () => {
+  const payload = { now, entries: [
+    entry('running', { status: 'running' }),
+    entry('starting', { status: 'initializing' }),
+    entry('answer', { requiresAttention: true, attentionReason: 'finished' }),
+    entry('read', { requiresAttention: false, attentionReason: 'finished' }),
+    entry('recent'),
+    entry('permission', { pendingPermissions: [{}], requiresAttention: true, attentionReason: 'permission' }),
+    entry('error', { status: 'error', requiresAttention: true, attentionReason: 'error' }),
+    entry('archived', { status: 'running', archivedAt: at(1) }),
+    entry('internal', { status: 'running', internal: true }),
+  ] };
+  const model = new SidebarViewModel({ id: 'split-badges', payload });
+  assert.equal(model.progressCount, 2);
+  assert.equal(model.finishedCount, 1);
+  model.setPayload({ ...payload, entries: [entry('running', { requiresAttention: true, attentionReason: 'finished' })] });
+  assert.equal(model.progressCount, 0);
+  assert.equal(model.finishedCount, 1);
+  model.setPayload({ ...payload, entries: [] });
+  assert.equal(model.progressCount, 0);
+  assert.equal(model.finishedCount, 0);
+});

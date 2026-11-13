@@ -1,4 +1,4 @@
-Paseo Pulse adds a Pulse page with a compact project-grouped list. Select a session to open it directly in Paseo. The sidebar badge shows the number of sessions in Attention and updates while the page is closed.
+Paseo Pulse adds a Pulse page with a compact project-grouped list. Select a session to open it directly in Paseo. Two sidebar badges update while the page is closed: blue counts running or starting sessions, and green counts new completed replies. Read, recent and frequently viewed sessions do not increase the green badge.
 
 The list uses the full available width. Custom names and pins from the native Paseo sidebar update live. In All, pinned sessions appear first within each project and count toward the six visible rows; Attention keeps its existing priority order. Title, preview and time contrast reflect message age, with separate levels for minutes, hours and days. Read sessions remain subdued while retaining these age differences. Active states keep their blue, green, yellow or red accents; pins emphasize names without making old message timestamps look fresh.
 

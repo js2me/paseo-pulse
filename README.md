@@ -35,7 +35,7 @@ Open **Pulse** in the sidebar or **Open Pulse** in the Command Center. The nativ
 - Conversations with messages in the last **four hours**, including read conversations.
 - Sessions opened from this plugin at least **three times in seven days**. Repeated clicks within a minute count once.
 
-Read sessions are gray. Running work stays blue, new replies green, permission requests yellow and errors red. Marking a reply **OK** clears that exact reply's attention marker; a later reply is highlighted again. The sidebar badge uses the same rules as the page.
+Read sessions are gray. Running work stays blue, new replies green, permission requests yellow and errors red. Marking a reply **OK** clears that exact reply's attention marker; a later reply is highlighted again. The sidebar shows two counters: blue for running or starting sessions, green for new completed replies. Read or merely recent sessions do not increase the green counter.
 
 **All** starts with six sessions per project, with native sidebar pins first and the rest ordered by message recency. Pins do not change Attention priorities. Native sidebar renames and pin changes synchronize live. The list fills the available width; title, preview and time contrast distinguish minutes, hours and days, including for read sessions. **More** reveals the rest. Search covers projects, workspaces, titles, providers and paths. The project **+** opens Paseo’s native **New workspace** screen with that project selected. The global **+** opens it on the selected host. You choose the settings and submit the native form before anything is created. Older clients without plugin New workspace navigation show an update notice.
 

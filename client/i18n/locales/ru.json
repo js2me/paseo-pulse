@@ -1,4 +1,6 @@
 {
+  "sidebarProgressCount": "Сессий в работе: {{count}}",
+  "sidebarFinishedCount": "Новых завершённых ответов: {{count}}",
   "title": "Пульс",
   "openInbox": "Открыть Пульс",
   "openInInbox": "Пульс",

@@ -49,6 +49,15 @@ try {
     assert.ok(result.tabs.some(text => text.includes('Attention') && text.includes('9')), `${name} attention count`);
     assert.ok(result.readRows >= 3, `${name} read styling`);
     assert.equal(result.running, 2, `${name} running indicators`);
+    if (name === 'desktop') {
+      assert.equal(await page.$eval('[aria-label="Sessions in progress: 2"]', badge => badge.textContent), '2');
+      assert.equal(await page.$eval('[aria-label="New completed replies: 1"]', badge => badge.textContent), '1');
+      const badgeColors = await page.evaluate(() => [
+        getComputedStyle(document.querySelector('[aria-label="Sessions in progress: 2"]')).backgroundColor,
+        getComputedStyle(document.querySelector('[aria-label="New completed replies: 1"]')).backgroundColor,
+      ]);
+      assert.notEqual(badgeColors[0], badgeColors[1]);
+    }
     const idle = await page.evaluate(async () => {
       const before = globalThis.__pulseDemo.settingsRenders;
       await new Promise(resolve => setTimeout(resolve, 1200));

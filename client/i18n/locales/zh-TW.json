@@ -1,4 +1,6 @@
 {
+  "sidebarProgressCount": "執行中的工作階段：{{count}}",
+  "sidebarFinishedCount": "新的已完成回覆：{{count}}",
   "title": "Pulse",
   "openInbox": "開啟 Pulse",
   "openInInbox": "在 Pulse 中開啟",
