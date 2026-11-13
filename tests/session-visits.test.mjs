@@ -29,7 +29,7 @@ async function fixture(t) {
   return { path, store, open, get now() { return time; }, advance(ms) { time += ms; } };
 }
 
-test('three distinct opens qualify for one week, rapid taps/retries do not inflate frequency', async t => {
+test('three distinct opens qualify for 24 hours, rapid taps/retries do not inflate frequency', async t => {
   const f = await fixture(t), first = f.now;
   await Promise.all(Array.from({ length: 5 }, () => f.store.record({ agentId: 'a' })));
   assert.deepEqual(await f.store.list(), { sessions: [] });
@@ -42,9 +42,22 @@ test('three distinct opens qualify for one week, rapid taps/retries do not infla
   assert.deepEqual(await f.store.list(), { sessions: [{ agentId: 'a', frequentlyViewedUntil: first + VISIT_WINDOW_MS }] });
   assert.equal((await stat(f.path)).mode & 0o777, 0o600);
   f.advance(VISIT_WINDOW_MS - 2 * MIN_VISIT_INTERVAL_MS);
-  assert.equal((await f.store.list()).sessions.length, 1, 'the exact week boundary is inclusive');
+  assert.equal((await f.store.list()).sessions.length, 1, 'the exact day boundary is inclusive');
   f.advance(1);
   assert.deepEqual(await f.store.list(), { sessions: [] });
+});
+
+test('saved visits from earlier days no longer keep old sessions in Attention after reload', async t => {
+  const f = await fixture(t);
+  const hour = 60 * 60 * 1000;
+  assert.equal(VISIT_WINDOW_MS, 24 * hour);
+  await writeFile(f.path, JSON.stringify({ sessions: [
+    { agentId: 'old', visits: [f.now - 60 * hour, f.now - 40 * hour, f.now - 30 * hour] },
+    { agentId: 'recent', visits: [f.now - 20 * hour, f.now - 10 * hour, f.now - hour] },
+  ] }));
+  assert.deepEqual(await f.store.list(), { sessions: [
+    { agentId: 'recent', frequentlyViewedUntil: f.now + 4 * hour },
+  ] });
 });
 
 test('views survive reload and remain separate between agents and host stores', async t => {

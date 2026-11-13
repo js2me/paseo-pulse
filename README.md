@@ -33,7 +33,7 @@ Open **Pulse** in the sidebar or **Open Pulse** in the Command Center. The nativ
 
 - Running or starting agents, permission requests, unread errors and new replies.
 - Conversations with messages in the last **four hours**, including read conversations.
-- Sessions opened from this plugin at least **three times in seven days**. Repeated clicks within a minute count once.
+- Sessions opened from this plugin at least **three times in 24 hours**. Repeated clicks within a minute count once.
 
 Read sessions are gray. Running work stays blue, new replies green, permission requests yellow and errors red. Marking a reply **OK** clears that exact reply's attention marker; a later reply is highlighted again. The sidebar shows two counters: blue for running or starting sessions, green for new completed replies. Read or merely recent sessions do not increase the green counter.
 
