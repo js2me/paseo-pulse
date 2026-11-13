@@ -66,27 +66,22 @@ try {
     assert.ok(churn < 500, `${name} host updates must settle: ${churn}`);
     if (writeMedia) await page.screenshot({ path: join(assets, `${name}.png`) });
     // Exercise the actual buttons against the fixture API, never a live daemon.
-    const projectPlus = '[aria-label="Create a session in Horizon API"]';
+    const projectPlus = '[aria-label="New workspace in Horizon API"]';
     await page.waitForSelector(projectPlus);
     await page.$eval(projectPlus, button => { button.click(); button.click(); });
     await page.waitForFunction(() => globalThis.__pulseDemo.opened.length === 1);
-    const projectCreation = await page.evaluate(() => globalThis.__pulseDemo.created);
-    assert.equal(projectCreation.length, 1, `${name} duplicate tap guard`);
-    assert.deepEqual(projectCreation[0].config, { provider: 'codex/model-horizon', modeId: 'auto',
-      thinkingOptionId: 'high', featureValues: { sandbox: false } });
-    assert.equal(projectCreation[0].cwd, '/projects/horizon-api');
-    assert.equal('title' in projectCreation[0], false);
-    assert.equal(await page.$('[role="dialog"]'), null, `${name} creation should not open a dialog`);
-    await page.click('[aria-label="New session"]');
+    const projectDraft = await page.evaluate(() => globalThis.__pulseDemo.opened[0]);
+    assert.deepEqual(projectDraft, { serverId: 'sample-host', projectId: 'horizon',
+      sourceDirectory: '/projects/horizon-api', displayName: 'Horizon API' });
+    assert.equal(await page.evaluate(() => globalThis.__pulseDemo.created.length), 0, `${name} plus must not create agents`);
+    await page.click('[aria-label="New workspace"]');
     await page.waitForFunction(() => globalThis.__pulseDemo.opened.length === 2);
-    const globalCreation = await page.evaluate(() => globalThis.__pulseDemo.created[1]);
-    assert.equal(globalCreation.cwd, '/projects/atlas-studio');
-    assert.equal(globalCreation.config.provider, 'codex/model-atlas');
+    assert.deepEqual(await page.evaluate(() => globalThis.__pulseDemo.opened[1]), { serverId: 'sample-host' });
     await page.evaluate(() => { globalThis.__pulseDemo.fail = true; });
-    await page.click('[aria-label="New session"]');
+    await page.click('[aria-label="New workspace"]');
     await page.waitForFunction(() => document.body.innerText.includes('Sample creation error'));
     assert.equal(await page.evaluate(() => globalThis.__pulseDemo.opened.length), 2, `${name} failed creation must not navigate`);
-    assert.notEqual(await page.$eval('[aria-label="New session"]', button => button.getAttribute('aria-disabled')), 'true');
+    assert.notEqual(await page.$eval('[aria-label="New workspace"]', button => button.getAttribute('aria-disabled')), 'true');
     await page.click('[aria-label="Find a session"]');
     await page.type('[aria-label="Search sessions"]', 'Horizon');
     await page.waitForFunction(() => !document.body.innerText.includes('Atlas Studio'));
@@ -98,7 +93,7 @@ try {
     await page.waitForFunction(() => document.body.innerText.includes('Approve the navigation plan'));
     const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
-    await page.waitForFunction(() => !document.querySelector('[aria-label="New session"]'));
+    await page.waitForFunction(() => !document.querySelector('[aria-label="New workspace"]'));
     const closedIdle = await page.evaluate(async () => {
       const before = globalThis.__pulseDemo.settingsRenders;
       await new Promise(resolve => setTimeout(resolve, 1200));
@@ -106,7 +101,7 @@ try {
     });
     assert.ok(closedIdle <= 4, `${name} closed-screen/sidebar render count: ${closedIdle}`);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(true));
-    await page.waitForSelector('[aria-label="New session"]');
+    await page.waitForSelector('[aria-label="New workspace"]');
     const reopened = await page.evaluate(() => ({ text: document.body.innerText,
       reads: [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions] }));
     assert.deepEqual(reopened.reads, reads, `${name} reopening must keep the owned directory`);

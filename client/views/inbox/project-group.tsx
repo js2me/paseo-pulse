@@ -111,7 +111,8 @@ export const ProjectGroup = observer(function ProjectGroup({
           accessibilityLabel={t("createInProject", { project: group.name })}
           disabled={creationDisabled}
           accessibilityState={{ disabled: creationDisabled, busy: creation.pending === group.key }}
-          onPress={() => void creation.create({ projectKey: group.key, cwd: iconProject?.projectRootPath })}
+          onPress={() => void creation.create({ projectKey: group.key, projectId: iconProject?.projectId,
+            sourceDirectory: iconProject?.projectRootPath ?? group.entries[0]?.agent.cwd, displayName: group.name })}
           style={({ pressed }) => ({
             alignItems: "center",
             justifyContent: "center",

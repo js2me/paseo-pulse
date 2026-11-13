@@ -100,23 +100,24 @@ test('failed or conflicted OK persistence restores attention and exposes an acti
   }
 });
 
-test('creation VM blocks duplicate commands and cancels navigation when the view unmounts', async () => {
-  const source = entry('source');
-  let resolve, created = 0;
+test('plus opens a native draft with project and host context, without creating an agent', async () => {
   const opened = [];
-  const paseo = { agents: { ref: () => ({ refresh: async () => ({ agent: source.agent }) }), create: async () => {
-    created++; return new Promise(done => { resolve = done; });
-  } } };
-  const model = new SessionCreationViewModel({ id: 'create-test', payload: { entries: [source], paseo,
-    onCreated: id => opened.push(id) } });
+  const model = new SessionCreationViewModel({ id: 'create-test', payload: {
+    hostId: 'host', openNewWorkspace: input => opened.push(input) } });
   model.mount();
-  const first = model.create(); void model.create();
-  await flush();
-  assert.equal(created, 1);
-  assert.equal(model.pending, 'global');
-  model.unmount();
-  resolve({ id: 'created-agent' }); await first;
-  assert.deepEqual(opened, []);
+  const first = model.create({ projectKey: 'group', projectId: 'project', sourceDirectory: '/repo', displayName: 'Repo' });
+  void model.create(); await first;
+  assert.deepEqual(opened, [{ serverId: 'host', projectId: 'project', sourceDirectory: '/repo', displayName: 'Repo' }]);
+  await model.create();
+  assert.deepEqual(opened[1], { serverId: 'host' });
+  const pending = model.create(); model.unmount(); await pending;
+  assert.equal(opened.length, 2);
+});
+
+test('old clients show an update requirement instead of creating a workspace automatically', async () => {
+  const model = new SessionCreationViewModel({ id: 'old-client', payload: { hostId: 'host' } });
+  await model.create();
+  assert.equal(model.error.message, 'NEW_WORKSPACE_NAVIGATION_UNAVAILABLE');
   assert.equal(model.pending, null);
 });
 

@@ -8,7 +8,7 @@
   "reply": "réponse",
   "ok": "OK",
   "retry": "Réessayer",
-  "newSession": "Nouvelle session",
+  "newSession": "Nouvel espace de travail",
   "closeSearch": "Fermer la recherche",
   "findSession": "Rechercher une session",
   "searchPlaceholder": "Projet ou session…",
@@ -34,7 +34,7 @@
     "recent_one": "{{count}} récente",
     "recent_other": "{{count}} récentes"
   },
-  "createInProject": "Créer une session dans {{project}}",
+  "createInProject": "Nouvel espace de travail dans {{project}}",
   "ackProject": "Marquer les réponses affichées de {{project}} comme lues",
   "ackSession": "Marquer {{session}} comme lu",
   "rowLabel": "{{title}}, {{status}}",
@@ -79,6 +79,7 @@
     "live": "Impossible de mettre à jour les sessions : {{error}}"
   },
   "new": {
+    "navigationUnavailable": "Mettez à jour Paseo pour ouvrir son écran de nouvel espace de travail depuis les extensions.",
     "creationError": "Impossible de créer la session : {{error}}",
     "noProject": "Aucun projet disponible pour une nouvelle session.",
     "noAgents": "Aucun fournisseur d’agent disponible.",

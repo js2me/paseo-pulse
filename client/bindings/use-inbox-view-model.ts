@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useCreateViewModel } from "../lib/mvvm";
 import { InboxViewModel } from "../view-models/inbox-view-model";
 import type { InboxProps } from "../views/inbox/types";
@@ -18,14 +17,7 @@ export function useInboxViewModel(props: InboxProps) {
   const visits = useSessionVisits(activity.entries, props.host.id);
   const ack = useAcknowledgements(visits.entries);
   const now = useSessionClock(ack.entries);
-  const onCreated = useCallback(
-    (agentId: string) => {
-      visits.trackVisit(agentId);
-      props.navigation?.openAgent({ agentId, serverId: props.host.id });
-    },
-    [visits.trackVisit, props.navigation, props.host.id],
-  );
-  const creation = useCreateSession(directory.entries, onCreated);
+  const creation = useCreateSession(props.navigation, props.host.id);
   const model = useCreateViewModel(InboxViewModel, {
     entries: ack.entries,
     replies: activity.replies,
@@ -48,6 +40,6 @@ export function useInboxViewModel(props: InboxProps) {
     ackPending: ack.pending,
     ackReady: ack.ready,
     ackError: ack.error,
-    creationDisabled: directory.loading || creation.pending !== null || !props.navigation,
+    creationDisabled: creation.pending !== null || !props.navigation,
   };
 }

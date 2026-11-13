@@ -8,7 +8,7 @@
   "reply": "回覆",
   "ok": "完成",
   "retry": "重試",
-  "newSession": "新增工作階段",
+  "newSession": "新增工作區",
   "closeSearch": "關閉搜尋",
   "findSession": "尋找工作階段",
   "searchPlaceholder": "專案或工作階段…",
@@ -28,7 +28,7 @@
     "finished_other": "{{count}} 則回覆",
     "recent_other": "{{count}} 個最近的工作階段"
   },
-  "createInProject": "在 {{project}} 中新增工作階段",
+  "createInProject": "在 {{project}} 中新增工作區",
   "ackProject": "將 {{project}} 中顯示的回覆標示為已讀",
   "ackSession": "將 {{session}} 標示為已讀",
   "rowLabel": "{{title}}，{{status}}",
@@ -73,6 +73,7 @@
     "live": "無法更新工作階段：{{error}}"
   },
   "new": {
+    "navigationUnavailable": "請更新 Paseo 應用程式，以從外掛開啟原生的新增工作區畫面。",
     "creationError": "無法建立工作階段：{{error}}",
     "noProject": "沒有可用於建立工作階段的專案。",
     "noAgents": "沒有可用的代理程式提供者。",

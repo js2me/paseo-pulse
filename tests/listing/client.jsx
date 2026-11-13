@@ -25,7 +25,10 @@ function Demo() {
   creationDemo.updateHost = () => updateHost(value => value + 1);
   creationDemo.setVisible = setVisible;
   const props = { host: { id: 'sample-host', label: 'Demo workspace' }, theme, layout: { compact, platform: 'web' },
-    params: {}, navigation: { openAgent(agent) { creationDemo.opened.push(agent); } } };
+    params: {}, navigation: { openNewWorkspace(input) {
+      if (creationDemo.fail) throw new Error('Sample creation error');
+      creationDemo.opened.push(input);
+    }, openAgent(agent) { creationDemo.opened.push(agent); } } };
   return <View style={{ flex: 1, flexDirection: 'row', backgroundColor: theme.colors.surface0 }}>
     {!compact && <View style={{ width: 220, borderRightWidth: 1, borderColor: theme.colors.border }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 22 }}>

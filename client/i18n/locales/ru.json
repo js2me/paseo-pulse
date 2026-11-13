@@ -8,7 +8,7 @@
   "reply": "ответ",
   "ok": "ОК",
   "retry": "Повторить",
-  "newSession": "Новая сессия",
+  "newSession": "Новое рабочее пространство",
   "closeSearch": "Закрыть поиск",
   "findSession": "Найти сессию",
   "searchPlaceholder": "Проект или сессия…",
@@ -46,7 +46,7 @@
     "recent_many": "{{count}} недавних",
     "recent_other": "{{count}} недавние"
   },
-  "createInProject": "Создать сессию в проекте {{project}}",
+  "createInProject": "Новое рабочее пространство в проекте {{project}}",
   "ackProject": "Отметить показанные ответы проекта {{project}} ОК",
   "ackSession": "Отметить {{session}} ОК",
   "rowLabel": "{{title}}, {{status}}",
@@ -91,6 +91,7 @@
     "live": "Не удалось обновлять сессии: {{error}}"
   },
   "new": {
+    "navigationUnavailable": "Обновите приложение Paseo для открытия родного экрана «Новое рабочее пространство» из плагина.",
     "creationError": "Не удалось создать сессию: {{error}}",
     "noProject": "Нет проекта для создания сессии.",
     "noAgents": "Нет доступных провайдеров агентов.",

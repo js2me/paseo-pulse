@@ -8,7 +8,7 @@
   "reply": "reply",
   "ok": "OK",
   "retry": "Retry",
-  "newSession": "New session",
+  "newSession": "New workspace",
   "closeSearch": "Close search",
   "findSession": "Find a session",
   "searchPlaceholder": "Project or session…",
@@ -34,7 +34,7 @@
     "recent_one": "{{count}} recent",
     "recent_other": "{{count}} recent"
   },
-  "createInProject": "Create a session in {{project}}",
+  "createInProject": "New workspace in {{project}}",
   "ackProject": "Mark displayed replies in {{project}} as OK",
   "ackSession": "Mark {{session}} as OK",
   "rowLabel": "{{title}}, {{status}}",
@@ -79,6 +79,7 @@
     "live": "Could not update sessions: {{error}}"
   },
   "new": {
+    "navigationUnavailable": "Update the Paseo app to open the native New workspace screen from plugins.",
     "creationError": "Could not create the session: {{error}}",
     "noProject": "No project is available for a new session.",
     "noAgents": "No agent providers are available.",
