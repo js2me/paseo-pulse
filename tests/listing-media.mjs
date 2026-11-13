@@ -58,6 +58,11 @@ try {
       ]);
       assert.notEqual(badgeColors[0], badgeColors[1]);
     }
+    const textOffsets = await page.evaluate(() => [
+      document.querySelector('[aria-label$=", Working"]'),
+      document.querySelector('[aria-label^="Align settings labels,"]'),
+    ].map(row => row.children[1].getBoundingClientRect().left - row.getBoundingClientRect().left));
+    assert.equal(textOffsets[0], textOffsets[1], `${name} running and idle text must align`);
     const idle = await page.evaluate(async () => {
       const before = globalThis.__pulseDemo.settingsRenders;
       await new Promise(resolve => setTimeout(resolve, 1200));

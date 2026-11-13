@@ -50,16 +50,15 @@ export const SessionRow = observer(function SessionRow({
           backgroundColor: pressed ? c.surface2 : c.surface0,
         })}
       >
-        {reason === "running" ? (
-          <View style={{ width: 12, height: 12, alignItems: "center", justifyContent: "center" }}>
+        <View style={{ width: 12, height: 12, flexShrink: 0, alignItems: "center", justifyContent: "center" }}>
+          {reason === "running" ? (
             <ActivityIndicator
               animating
               size="small"
               color={color(reason)}
               style={{ transform: [{ scale: 0.6 }] }}
             />
-          </View>
-        ) : (
+          ) : (
           <View
             style={{
               width: 5,
@@ -69,7 +68,8 @@ export const SessionRow = observer(function SessionRow({
               opacity: read ? 0.45 : highlighted || recent ? 1 : withinDay ? 0.75 : 0.4,
             }}
           />
-        )}
+          )}
+        </View>
         <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
           <Text
             numberOfLines={1}
