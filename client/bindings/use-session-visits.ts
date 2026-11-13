@@ -21,14 +21,14 @@ export function useSessionVisits(entries: readonly SessionEntry[], hostId: strin
   });
   const enriched = useMemo(() => {
     const frequent = new Map(
-      (query.data?.sessions ?? []).map(({ agentId, frequentlyViewedUntil }) => [
+      (query.data?.sessions ?? []).map(({ agentId, frequentlyViewedUntil, revisitedUntil }) => [
         agentId,
-        frequentlyViewedUntil,
+        { frequentlyViewedUntil, revisitedUntil },
       ]),
     );
     return entries.map((entry) =>
       frequent.has(entry.agent.id)
-        ? { ...entry, agent: { ...entry.agent, frequentlyViewedUntil: frequent.get(entry.agent.id) } }
+        ? { ...entry, agent: { ...entry.agent, ...frequent.get(entry.agent.id) } }
         : entry,
     );
   }, [entries, query.data]);

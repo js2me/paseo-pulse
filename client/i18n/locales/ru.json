@@ -1,6 +1,8 @@
 {
   "sidebarProgressCount": "Сессий в работе: {{count}}",
   "sidebarFinishedCount": "Новых завершённых ответов: {{count}}",
+  "collapseExtra": "Свернуть",
+  "collapseExtraProject": "Скрыть дополнительные сессии в проекте {{project}}",
   "title": "Пульс",
   "openInbox": "Открыть Пульс",
   "openInInbox": "Пульс",

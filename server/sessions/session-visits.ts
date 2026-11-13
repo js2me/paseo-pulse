@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import process from "node:process";
 import { z } from "zod";
 import { FREQUENT_VISIT_COUNT, MIN_VISIT_INTERVAL_MS, VISIT_WINDOW_MS,
-  listSessionVisitsRpc, recordSessionVisitRpc } from "../../shared/sessions/session-visits";
+  REVISIT_WINDOW_MS, REVISIT_COUNT, listSessionVisitsRpc, recordSessionVisitRpc } from "../../shared/sessions/session-visits";
 
 const schema = z.object({ sessions: z.array(z.object({ agentId: recordSessionVisitRpc.input.shape.agentId,
   visits: z.array(z.number().int().positive()).max(20) })).max(2000) });
@@ -30,7 +30,7 @@ export function createSessionVisits(options: { path?: string; now?: () => number
     const time = now();
     const result = new Map<string, number[]>();
     for (const [agentId, visits] of sessions) {
-      const recent = visits.filter((timestamp) => timestamp <= time && time - timestamp <= VISIT_WINDOW_MS);
+      const recent = visits.filter((timestamp) => timestamp <= time && time - timestamp <= REVISIT_WINDOW_MS);
       if (recent.length) result.set(agentId, recent);
     }
     return result;
@@ -69,8 +69,18 @@ export function createSessionVisits(options: { path?: string; now?: () => number
     if (closed) throw new Error("Плагин перезагружается.");
     await serial.catch(() => {});
     await initialize();
-    return { sessions: [...current()].filter(([, visits]) => visits.length >= FREQUENT_VISIT_COUNT)
-      .map(([agentId, visits]) => ({ agentId, frequentlyViewedUntil: visits[visits.length - FREQUENT_VISIT_COUNT] + VISIT_WINDOW_MS })) };
+    const time = now();
+    return { sessions: [...current()].flatMap(([agentId, visits]) => {
+      const daily = visits.filter(timestamp => time - timestamp <= VISIT_WINDOW_MS);
+      const frequentlyViewedUntil = daily.length >= FREQUENT_VISIT_COUNT
+        ? daily[daily.length - FREQUENT_VISIT_COUNT] + VISIT_WINDOW_MS : undefined;
+      const revisitedUntil = visits.length >= REVISIT_COUNT
+        ? visits[visits.length - REVISIT_COUNT] + REVISIT_WINDOW_MS : undefined;
+      return frequentlyViewedUntil || revisitedUntil ? [{ agentId,
+        ...(frequentlyViewedUntil ? { frequentlyViewedUntil } : {}),
+        ...(revisitedUntil ? { revisitedUntil } : {}),
+      }] : [];
+    }) };
   }
   return { record, list, async cleanup() { closed = true; await serial.catch(() => {}); } };
 }

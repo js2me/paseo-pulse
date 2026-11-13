@@ -194,3 +194,38 @@ test('sidebar splits active work and unread completions without counting read or
   assert.equal(model.progressCount, 0);
   assert.equal(model.finishedCount, 0);
 });
+
+
+test("Attention hides weekly-only revisits under More, while active and daily sessions stay visible", () => {
+  const payload = { now, entries: [
+    entry("running", { status: "running", revisitedUntil: now + 1000 }),
+    entry("daily", { lastUserMessageAt: at(3000), frequentlyViewedUntil: now + 1000 }),
+    entry("weekly", { lastUserMessageAt: at(3000), revisitedUntil: now + 1000 }),
+  ], replies: new Map(), iconProjects: [], hostId: "host", trackVisit() {} };
+  const model = new InboxViewModel({ id: "weekly-more", payload });
+  assert.deepEqual(model.groups[0].rows.map(row => row.agent.id), ["running", "daily"]);
+  assert.equal(model.groups[0].hiddenCount, 1);
+  model.toggleRevealed("project");
+  assert.deepEqual(model.groups[0].rows.map(row => row.agent.id), ["running", "daily", "weekly"]);
+  model.setOnlyAttention(false);
+  assert.equal(model.groups[0].showAll, false, "All and Attention expand independently");
+  model.setOnlyAttention(true);
+  model.toggleRevealed("project");
+  model.setSearch("weekly");
+  assert.deepEqual(model.groups[0].rows.map(row => row.agent.id), ["weekly"], "search reveals matching extras");
+  model.setSearch("");
+  model.setPayload({ ...payload, now: now + 1001 });
+  assert.equal(model.groups[0].hiddenCount, 0);
+  assert.deepEqual(model.groups[0].rows.map(row => row.agent.id), ["running"]);
+});
+
+test("a project containing only weekly revisits offers More without showing old sessions immediately", () => {
+  const model = new InboxViewModel({ id: "weekly-only", payload: { now,
+    entries: [entry("weekly", { lastUserMessageAt: at(3000), revisitedUntil: now + 1000 })],
+    replies: new Map(), iconProjects: [], hostId: "host", trackVisit() {} } });
+  assert.equal(model.groups.length, 1);
+  assert.equal(model.groups[0].rows.length, 0);
+  assert.equal(model.groups[0].hiddenCount, 1);
+  model.toggleRevealed("project");
+  assert.equal(model.groups[0].rows[0].agent.id, "weekly");
+});

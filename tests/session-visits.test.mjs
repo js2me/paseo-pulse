@@ -15,7 +15,7 @@ const resolver = registerHooks({ resolve(specifier, context, next) {
   return next(specifier, context);
 } });
 const { createSessionVisits } = await import('../server/sessions/session-visits.ts');
-const { VISIT_WINDOW_MS, MIN_VISIT_INTERVAL_MS, recordSessionVisitRpc } = await import('../shared/sessions/session-visits.ts');
+const { VISIT_WINDOW_MS, REVISIT_WINDOW_MS, MIN_VISIT_INTERVAL_MS, recordSessionVisitRpc } = await import('../shared/sessions/session-visits.ts');
 resolver.deregister();
 
 async function fixture(t) {
@@ -79,7 +79,7 @@ test('renewed visits extend qualification and old history is bounded', async t =
   const saved = JSON.parse(await readFile(f.path, 'utf8'));
   assert.equal(saved.sessions[0].visits.length, 20);
   assert.equal((await f.store.list()).sessions[0].frequentlyViewedUntil, saved.sessions[0].visits.at(-3) + VISIT_WINDOW_MS);
-  f.advance(VISIT_WINDOW_MS + 1);
+  f.advance(REVISIT_WINDOW_MS + 1);
   await f.store.record({ agentId: 'b' });
   assert.deepEqual(JSON.parse(await readFile(f.path, 'utf8')).sessions.map(s => s.agentId), ['b']);
 });
@@ -102,4 +102,16 @@ test('corrupted data is preserved and invalid agent IDs are rejected', async t =
   await assert.rejects(f.store.list());
   assert.equal(await readFile(f.path, 'utf8'), '{corrupted');
   for (const agentId of ['', 'bad\u0000id', 'x'.repeat(257)]) assert.equal(recordSessionVisitRpc.input.safeParse({ agentId }).success, false);
+});
+
+
+test("four weekly opens qualify only for extra attention after daily qualification expires", async t => {
+  const f = await fixture(t), hour = 60 * 60 * 1000;
+  await writeFile(f.path, JSON.stringify({ sessions: [
+    { agentId: "weekly", visits: [f.now - 100 * hour, f.now - 80 * hour, f.now - 60 * hour, f.now - 30 * hour] },
+    { agentId: "only-three", visits: [f.now - 100 * hour, f.now - 60 * hour, f.now - 30 * hour] },
+  ] }));
+  assert.deepEqual(await f.store.list(), { sessions: [{ agentId: "weekly", revisitedUntil: f.now + 68 * hour }] });
+  f.advance(68 * hour + 1);
+  assert.deepEqual(await f.store.list(), { sessions: [] });
 });

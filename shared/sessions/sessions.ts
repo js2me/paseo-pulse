@@ -23,6 +23,7 @@ export interface Session {
   lastChatMessageAt?: string | null;
   chatActivityKnown?: boolean;
   frequentlyViewedUntil?: number;
+  revisitedUntil?: number;
   attentionTimestamp?: string | null;
   requiresAttention?: boolean;
   attentionReason?: Exclude<Attention, "running">;
@@ -69,6 +70,13 @@ export function isRecentSession(session: Session, now = Date.now()): boolean {
 export function isFrequentlyViewedSession(session: Session, now = Date.now()): boolean {
   return Number.isFinite(session.frequentlyViewedUntil) && (session.frequentlyViewedUntil ?? 0) >= now;
 }
+export function isRevisitedSession(session: Session, now = Date.now()): boolean {
+  return Number.isFinite(session.revisitedUntil) && (session.revisitedUntil ?? 0) >= now;
+}
+export function isSecondaryAttentionSession(session: Session, now = Date.now()): boolean {
+  return isRevisitedSession(session, now) && !attention(session) &&
+    !isRecentSession(session, now) && !isFrequentlyViewedSession(session, now);
+}
 const rank = { permission: 4, error: 3, running: 2, finished: 1 };
 export interface SessionGroup {
   key: string;
@@ -89,7 +97,7 @@ export function groupSessions(entries: readonly SessionEntry[], search = "", onl
     if (agent.archivedAt || agent.internal) continue;
     const reason = attention(agent);
     const recent = !reason && isRecentSession(agent, now);
-    if (onlyAttention && !reason && !recent && !isFrequentlyViewedSession(agent, now)) continue;
+    if (onlyAttention && !reason && !recent && !isFrequentlyViewedSession(agent, now) && !isRevisitedSession(agent, now)) continue;
     if (query && ![agent.title, agent.cwd, agent.provider, project.projectName, project.workspaceName]
       .some((value) => value?.toLocaleLowerCase().includes(query))) continue;
     let group = groups.get(project.projectKey);

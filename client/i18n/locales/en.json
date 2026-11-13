@@ -1,6 +1,8 @@
 {
   "sidebarProgressCount": "Sessions in progress: {{count}}",
   "sidebarFinishedCount": "New completed replies: {{count}}",
+  "collapseExtra": "Collapse",
+  "collapseExtraProject": "Hide extra sessions in {{project}}",
   "title": "Pulse",
   "openInbox": "Open Pulse",
   "openInInbox": "Open in Pulse",

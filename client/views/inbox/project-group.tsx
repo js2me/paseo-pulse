@@ -1,7 +1,7 @@
 import { Icon } from "@getpaseo/plugin/client/ui";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { observer } from "../../lib/mvvm";
-import { GROUP_PREVIEW_LIMIT, type InboxGroup } from "../../view-models/inbox-view-model";
+import { type InboxGroup } from "../../view-models/inbox-view-model";
 import { useMessages } from "../../i18n/messages";
 import { statusColor } from "../shared/status-color";
 import { ProjectLogo } from "../projects/project-logo";
@@ -21,7 +21,7 @@ export const ProjectGroup = observer(function ProjectGroup({
   const { onlyAttention } = model;
   const {
     isExpanded,
-    orderedEntries,
+    hiddenCount,
     showAll,
     visibleEntries,
     readGroup,
@@ -150,10 +150,10 @@ export const ProjectGroup = observer(function ProjectGroup({
         )}
       </View>
       {isExpanded && group.rows.map((row) => <SessionRow key={row.agent.id} context={context} row={row} />)}
-      {isExpanded && !onlyAttention && orderedEntries.length > GROUP_PREVIEW_LIMIT && (
+      {isExpanded && hiddenCount > 0 && !model.search.trim() && (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={t(showAll ? "collapseProject" : "expandProject", { project: group.name })}
+          accessibilityLabel={t(showAll ? (onlyAttention ? "collapseExtraProject" : "collapseProject") : "expandProject", { project: group.name })}
           accessibilityState={{ expanded: showAll }}
           onPress={() => model.toggleRevealed(group.key)}
           style={{
@@ -166,7 +166,7 @@ export const ProjectGroup = observer(function ProjectGroup({
         >
           <Icon name={showAll ? "ChevronUp" : "ChevronDown"} size={12} color={c.foregroundMuted} />
           <Text style={{ color: c.foregroundMuted, fontSize: 12 }}>
-            {showAll ? t("collapseToSix") : t("more", { count: orderedEntries.length - GROUP_PREVIEW_LIMIT })}
+            {showAll ? t(onlyAttention ? "collapseExtra" : "collapseToSix") : t("more", { count: hiddenCount })}
           </Text>
         </Pressable>
       )}

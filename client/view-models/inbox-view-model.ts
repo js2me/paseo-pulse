@@ -7,6 +7,8 @@ import {
   attention,
   groupSessions,
   isFrequentlyViewedSession,
+  isSecondaryAttentionSession,
+  isRevisitedSession,
   isReadSession,
   isRecentSession,
   sessionStatus,
@@ -68,20 +70,25 @@ export class InboxViewModel extends PulseViewModel<Payload> {
     return groupSessions(entries, this.search, this.onlyAttention, now).map((group) => {
       const expansionKey = `${this.onlyAttention ? "attention" : "all"}:${group.key}`;
       const isExpanded = !!this.search.trim() || (this.expanded.get(expansionKey) ?? true);
+      const primaryEntries = group.entries.filter(({ agent }) => !isSecondaryAttentionSession(agent, now));
+      const secondaryEntries = group.entries.filter(({ agent }) => isSecondaryAttentionSession(agent, now));
       const orderedEntries = this.onlyAttention
-        ? group.entries
+        ? [...primaryEntries, ...secondaryEntries]
         : [...group.entries].sort(
             (a, b) => Number(!!b.agent.pinnedAt) - Number(!!a.agent.pinnedAt) ||
               activity(b.agent) - activity(a.agent) || a.agent.id.localeCompare(b.agent.id),
           );
-      const showAll = this.revealed.has(group.key);
-      const visibleEntries =
-        this.onlyAttention || showAll ? orderedEntries : orderedEntries.slice(0, GROUP_PREVIEW_LIMIT);
+      const revealKey = `${this.onlyAttention ? "attention" : "all"}:${group.key}`;
+      const showAll = !!this.search.trim() || this.revealed.has(revealKey);
+      const previewCount = this.onlyAttention ? primaryEntries.length : GROUP_PREVIEW_LIMIT;
+      const hiddenCount = Math.max(0, orderedEntries.length - previewCount);
+      const visibleEntries = showAll ? orderedEntries : orderedEntries.slice(0, previewCount);
       return {
         ...group,
         isExpanded,
         orderedEntries,
         showAll,
+        hiddenCount,
         visibleEntries,
         readGroup: group.entries.every(({ agent }) => isReadSession(agent)),
         iconProject: groupIconProject(group, iconProjects),
@@ -109,7 +116,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
               ? sessionStatus(agent)
               : recent
                 ? "recent"
-                : isFrequentlyViewedSession(agent, now)
+                : (isFrequentlyViewedSession(agent, now) || isRevisitedSession(agent, now))
                   ? "frequent"
                   : sessionStatus(agent)) as ReturnType<typeof sessionStatus> | "recent" | "frequent",
           };
@@ -132,8 +139,9 @@ export class InboxViewModel extends PulseViewModel<Payload> {
     if (group) this.expanded.set(`${this.onlyAttention ? "attention" : "all"}:${key}`, !group.isExpanded);
   }
   toggleRevealed(key: string) {
-    if (this.revealed.has(key)) this.revealed.delete(key);
-    else this.revealed.add(key);
+    const revealKey = `${this.onlyAttention ? "attention" : "all"}:${key}`;
+    if (this.revealed.has(revealKey)) this.revealed.delete(revealKey);
+    else this.revealed.add(revealKey);
   }
   openSession(id: string) {
     if (!this.payload.navigation) return;
