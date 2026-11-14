@@ -6,6 +6,7 @@ import {
   activity,
   attention,
   groupSessions,
+  INACTIVE_GROUP_WINDOW_MS,
   isFrequentlyViewedSession,
   isSecondaryAttentionSession,
   isRevisitedSession,
@@ -69,7 +70,13 @@ export class InboxViewModel extends PulseViewModel<Payload> {
     const { entries, now, replies, iconProjects } = this.payload;
     return groupSessions(entries, this.search, this.onlyAttention, now).map((group) => {
       const expansionKey = `${this.onlyAttention ? "attention" : "all"}:${group.key}`;
-      const isExpanded = !!this.search.trim() || (this.expanded.get(expansionKey) ?? true);
+      const inactive = this.onlyAttention && group.entries.every(({ agent }) => {
+        const timestamp = activity(agent);
+        const reason = attention(agent);
+        return timestamp > 0 && now - timestamp > INACTIVE_GROUP_WINDOW_MS &&
+          reason !== "running" && reason !== "permission";
+      });
+      const isExpanded = !!this.search.trim() || (this.expanded.get(expansionKey) ?? !inactive);
       const primaryEntries = group.entries.filter(({ agent }) => !isSecondaryAttentionSession(agent, now));
       const secondaryEntries = group.entries.filter(({ agent }) => isSecondaryAttentionSession(agent, now));
       const orderedEntries = this.onlyAttention

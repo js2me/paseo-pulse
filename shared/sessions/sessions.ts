@@ -58,6 +58,7 @@ export function directoryActivity(session: Session): number {
     .map((value) => value ? Date.parse(value) || 0 : 0));
 }
 export const RECENT_SESSION_WINDOW_MS = 4 * 60 * 60 * 1000;
+export const INACTIVE_GROUP_WINDOW_MS = 10 * 60 * 60 * 1000;
 /** Directory timestamps select candidates for verification, never prove freshness. */
 export function isRecentDirectoryCandidate(session: Session, now = Date.now()): boolean {
   const timestamp = directoryActivity(session);

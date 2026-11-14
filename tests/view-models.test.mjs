@@ -229,3 +229,41 @@ test("a project containing only weekly revisits offers More without showing old 
   model.toggleRevealed("project");
   assert.equal(model.groups[0].rows[0].agent.id, "weekly");
 });
+
+
+test("Attention defaults old groups to collapsed after ten hours, with explicit toggles and search preserved", () => {
+  const payload = { now, entries: [
+    entry("old", { lastUserMessageAt: at(601), frequentlyViewedUntil: now + 100000 }),
+    entry("older", { lastUserMessageAt: at(3000), revisitedUntil: now + 100000 }),
+  ], replies: new Map(), iconProjects: [], hostId: "host", trackVisit() {} };
+  const model = new InboxViewModel({ id: "inactive-groups", payload });
+  assert.equal(model.groups[0].isExpanded, false);
+  model.toggleGroup("project");
+  assert.equal(model.groups[0].isExpanded, true);
+  model.setPayload({ ...payload, now: now + 60000 });
+  assert.equal(model.groups[0].isExpanded, true, "manual reopening wins over age");
+  model.toggleGroup("project");
+  model.setSearch("older");
+  assert.equal(model.groups[0].isExpanded, true);
+  model.setSearch("");
+  assert.equal(model.groups[0].isExpanded, false);
+  model.setOnlyAttention(false);
+  assert.equal(model.groups[0].isExpanded, true, "All retains its default expansion");
+});
+
+test("ten-hour collapse uses real message activity and leaves active or unknown groups open", () => {
+  const base = { now, entries: [], replies: new Map(), iconProjects: [], hostId: "host", trackVisit() {} };
+  const model = new InboxViewModel({ id: "collapse-boundary", payload: base });
+  const old = { lastUserMessageAt: at(600), frequentlyViewedUntil: now + 100000 };
+  model.setPayload({ ...base, entries: [entry("boundary", old)] });
+  assert.equal(model.groups[0].isExpanded, true);
+  model.setPayload({ ...base, now: now + 1, entries: [entry("boundary", old)] });
+  assert.equal(model.groups[0].isExpanded, false);
+  for (const extra of [{ status: "running" }, { status: "initializing" },
+    { pendingPermissions: [{}] }, { lastUserMessageAt: null }, { lastUserMessageAt: at(1) }]) {
+    model.setPayload({ ...base, entries: [entry("old", { ...old, lastUserMessageAt: at(3000), ...extra })] });
+    assert.equal(model.groups[0].isExpanded, true);
+  }
+  model.setPayload({ ...base, entries: [entry("old", { ...old, lastUserMessageAt: at(3000), updatedAt: at(0) })] });
+  assert.equal(model.groups[0].isExpanded, false, "metadata updates cannot revive old groups");
+});

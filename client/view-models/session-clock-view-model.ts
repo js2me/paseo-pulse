@@ -1,5 +1,5 @@
 import type { SessionEntry } from "../../shared/sessions/sessions";
-import { activity, RECENT_SESSION_WINDOW_MS } from "../../shared/sessions/sessions";
+import { activity, RECENT_SESSION_WINDOW_MS, INACTIVE_GROUP_WINDOW_MS } from "../../shared/sessions/sessions";
 import { makeObservable, observable, reaction, runInAction, type ViewModelParams } from "../lib/mvvm";
 import { PulseViewModel } from "../lib/pulse-view-model";
 
@@ -35,7 +35,7 @@ export class SessionClockViewModel extends PulseViewModel<{ entries: readonly Se
       for (const until of [agent.frequentlyViewedUntil, agent.revisitedUntil])
         if (until && until >= now) delay = Math.min(delay, until - now + 1);
       const timestamp = activity(agent);
-      for (const window of [RECENT_SESSION_WINDOW_MS, 24 * 60 * 60 * 1000]) {
+      for (const window of [RECENT_SESSION_WINDOW_MS, INACTIVE_GROUP_WINDOW_MS, 24 * 60 * 60 * 1000]) {
         const next = timestamp > now ? timestamp - now : timestamp + window - now + 1;
         if (timestamp > 0 && next > 0) delay = Math.min(delay, next);
       }
