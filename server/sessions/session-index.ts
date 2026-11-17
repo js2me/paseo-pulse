@@ -1,6 +1,5 @@
 /// <reference types="node" />
-import type { PluginServerContext } from "@getpaseo/plugin/server";
-import type { PaseoApi } from "@getpaseo/client";
+import type { PluginHandlerContext, PluginServerContext } from "@getpaseo/plugin/server";
 import { Buffer } from "node:buffer";
 import { constants } from "node:fs";
 import { open, readdir } from "node:fs/promises";
@@ -111,7 +110,7 @@ export function parseSessionTranscript(provider: Provider, source: string,
 }
 
 export interface SessionIndexOptions {
-  paseo: Pick<PaseoApi, "agents">;
+  paseo: Pick<PluginHandlerContext["paseo"], "agents">;
   codexHome?: string;
   claudeHome?: string;
   openCodeDataHome?: string;

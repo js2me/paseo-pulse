@@ -1,4 +1,5 @@
 import { build } from "esbuild";
+import { generateDtsBundle } from "dts-bundle-generator";
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
@@ -49,5 +50,17 @@ for (const name of [...packages].sort()) {
   licenses.push(`\n## ${name}@${version}\n\n${license}`);
 }
 await writeFile(join(root, "client/generated/LICENSES.txt"), licenses.join("\n"));
-const types = await readFile(join(root, "scripts/mvvm-runtime.ts"), "utf8");
-await writeFile(join(root, "client/generated/mvvm.d.ts"), types);
+const [types] = generateDtsBundle([{
+  filePath: join(root, "scripts/mvvm-runtime.ts"),
+  libraries: {
+    inlinedLibraries: ["mobx", "mobx-view-model", "mobx-view-model-react", "mobx-react-lite", "yummies"],
+    importedLibraries: ["react"],
+    allowedTypesLibraries: [],
+  },
+  output: { noBanner: true },
+}], { preferredConfigPath: join(root, "tsconfig.json") });
+// Declarations are inspected by Paseo even though runtime imports were bundled.
+for (const match of types.matchAll(/(?:from\s*|import\s*\()(["'])([^"']+)\1/g)) {
+  if (match[2] !== "react") throw new Error(`Unexpected declaration import: ${match[2]}`);
+}
+await writeFile(join(root, "client/generated/mvvm.d.ts"), types.replace(/[\t ]+$/gm, ""));

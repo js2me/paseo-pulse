@@ -1,4 +1,4 @@
-import type { PaseoApi, PaseoWorkspaceListResult, PaseoWorkspaceUpdate } from "@getpaseo/client";
+import type { PaseoApi, PaseoWorkspaceListResult, PaseoWorkspaceUpdate } from "../paseo-types";
 
 export interface WorkspaceMetadata { title: string | null; pinnedAt: string | null }
 

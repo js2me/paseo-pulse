@@ -88,6 +88,8 @@ The shared MVVM bundle keeps all models on one MobX instance and uses Paseo’s
 React instance. It ships with source maps and third-party notices; installation
 does not download runtime libraries. Rebuild it with `npm run build:runtime`.
 
+Runtime bundles and their type declarations are committed and self-contained. Loading the installed plugin does not require a local `node_modules` directory. Run `npm ci --ignore-scripts` before developing or rebuilding it.
+
 ## Development
 
 ```sh

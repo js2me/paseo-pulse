@@ -1,4 +1,4 @@
-import type { PaseoApi } from "@getpaseo/client";
+import type { PaseoApi } from "../paseo-types";
 import { observeSessionDirectory, type SessionDirectoryState } from "./session-directory";
 import { observeWorkspaceMetadata, type WorkspaceMetadata } from "./workspace-metadata";
 

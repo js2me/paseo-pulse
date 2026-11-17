@@ -1,6 +1,5 @@
 /// <reference types="node" />
-import type { PluginServerContext } from "@getpaseo/plugin/server";
-import type { PaseoApi } from "@getpaseo/client";
+import type { PluginHandlerContext, PluginServerContext } from "@getpaseo/plugin/server";
 import { createHash } from "node:crypto";
 import { open } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -11,7 +10,7 @@ import { extractIcoPngFrame, getImageDimensions, getProjectIcon, sniffMimeType, 
 
 type DisplayIcon = { uri: string | null; svg: string | null } | null;
 const TTL = 60_000;
-export function createProjectIconReader(paseo: Pick<PaseoApi, "projects">,
+export function createProjectIconReader(paseo: Pick<PluginHandlerContext["paseo"], "projects">,
   home = process.env.PASEO_HOME || join(homedir(), ".paseo")) {
   let catalog: { expires: number; value: Promise<IconProject[]> } | undefined;
   const cache = new Map<string, { signature: string; expires: number; value: Promise<DisplayIcon> }>();

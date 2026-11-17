@@ -1,4 +1,4 @@
-import type { PaseoApi, PaseoAgentListResult, PaseoAgentUpdate } from "@getpaseo/client";
+import type { PaseoApi, PaseoAgentListResult, PaseoAgentUpdate } from "../paseo-types";
 import type { SessionEntry } from "../../../shared/sessions/sessions";
 
 export interface SessionDirectoryState {
