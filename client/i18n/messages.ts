@@ -8,6 +8,15 @@ import zhTW from "./locales/zh-TW.json" with { type: "json" };
 export const messages = defineTranslations({ resources: { en, ru, fr, zh: zhTW, "zh-TW": zhTW, "zh-Hant": zhTW } });
 export const useMessages = () => useTranslation(messages);
 export type Translate = ReturnType<typeof useMessages>["t"];
+const tokenFormatters = new Map<string, Intl.NumberFormat>();
+export function formatTokenCount(value: number, locale: string): string {
+  let formatter = tokenFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 });
+    tokenFormatters.set(locale, formatter);
+  }
+  return formatter.format(value);
+}
 
 export function relativeTime(timestamp: number, t: Translate, now = Date.now()) {
   if (!timestamp || timestamp > now) return "—";

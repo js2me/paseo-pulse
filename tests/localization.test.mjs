@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { importClientModule, PluginTranslationRuntime } from './plugin-translations.mjs';
-const { messages, relativeTime, directoryError } = await importClientModule('../client/i18n/messages.ts');
+const { messages, relativeTime, directoryError, formatTokenCount } = await importClientModule('../client/i18n/messages.ts');
 
 function runtime(initial = 'en') {
   let locale = initial;
@@ -66,4 +66,11 @@ test('each UI key is translated in all four resources, including accessible labe
     const available = new Set(flatten(messages.resources[locale]).map(key => key.replace(/_(one|few|many|other)$/, '')));
     for (const key of keys) assert.ok(available.has(key), `${locale}: ${key}`);
   }
+});
+
+
+test('token amounts use localized compact notation', () => {
+  assert.equal(formatTokenCount(12345, 'en'), '12.3K');
+  assert.ok(formatTokenCount(12345, 'ru').includes('тыс.'));
+  assert.equal(formatTokenCount(0, 'fr'), '0');
 });

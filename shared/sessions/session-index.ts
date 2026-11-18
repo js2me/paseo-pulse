@@ -9,6 +9,7 @@ export const sessionIndexEntrySchema = z.object({
   activityKnown: z.boolean(),
   latestReplyAt: z.string().datetime().nullable(),
   limited: z.boolean(),
+  totalTokens: z.number().int().nonnegative().safe().optional(),
 });
 export type SessionIndexEntry = z.infer<typeof sessionIndexEntrySchema>;
 export const sessionIndexRpc = defineRpc({

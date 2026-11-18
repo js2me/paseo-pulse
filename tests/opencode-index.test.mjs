@@ -149,3 +149,17 @@ test('confirmed empty sessions are distinct from missing sessions and cleanup pr
     assert.equal(await f.index.read(sessionId), null);
   } finally { await f.cleanup(); }
 });
+
+test('OpenCode token totals cover the full session beyond preview limits and include cache/reasoning once', async () => {
+  const f = await fixture();
+  try {
+    const tokens = { input: 10, output: 5, reasoning: 3, cache: { read: 20, write: 2 } };
+    for (let i = 0; i < 40; i++) f.message(`usage-${i}`, 'assistant', i + 1,
+      [{ type: 'text', text: 'Done' }], { tokens });
+    f.message('reported-total', 'assistant', 0, [{ type: 'text', text: 'Done' }],
+      { tokens: { ...tokens, total: 100 } });
+    f.message('other-session', 'assistant', 0, [{ type: 'text', text: 'Other' }],
+      { tokens: { ...tokens, total: 999999 } }, 'ses_other');
+    assert.equal((await f.index.read(sessionId)).totalTokens, 40 * 40 + 100);
+  } finally { await f.cleanup(); }
+});

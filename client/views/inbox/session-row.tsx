@@ -2,7 +2,7 @@ import { Icon } from "@getpaseo/plugin/client/ui";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { observer } from "../../lib/mvvm";
 import type { InboxRow } from "../../view-models/inbox-view-model";
-import { relativeTime, useMessages } from "../../i18n/messages";
+import { formatTokenCount, relativeTime, useMessages } from "../../i18n/messages";
 import { sessionTextColors } from "../shared/session-text-colors";
 import { statusColor } from "../shared/status-color";
 import { SessionReplyPreview } from "./session-reply-preview";
@@ -19,7 +19,7 @@ export const SessionRow = observer(function SessionRow({
   const { theme, layout } = props;
   const { model, acknowledge, ackPending, ackReady, now, verifying, previewError } = binding;
   const { sessionEntry, agent, reason, recent, lastActivity, withinDay, highlighted, read } = row;
-  const { t } = useMessages(),
+  const { t, locale } = useMessages(),
     c = theme.colors;
   const color = (reason: Parameters<typeof statusColor>[1]) => statusColor(theme, reason);
   const rowColor = reason ? color(reason) : c.foregroundMuted;
@@ -91,18 +91,28 @@ export const SessionRow = observer(function SessionRow({
             color={textColors.preview}
           />
         </View>
-        <Text
-          accessibilityLabel={t("lastMessage", { time: relativeTime(lastActivity, t, now) })}
-          style={{
-            color: textColors.time,
-            fontSize: 11,
-            fontWeight: reason ? "600" : row.emphasis.time >= 0.5 ? "500" : "400",
-            minWidth: 32,
-            textAlign: "right",
-          }}
-        >
-          {relativeTime(lastActivity, t, now)}
-        </Text>
+        <View style={{ alignItems: "flex-end", gap: 2, flexShrink: 0 }}>
+          <Text
+            accessibilityLabel={t("lastMessage", { time: relativeTime(lastActivity, t, now) })}
+            style={{
+              color: textColors.time,
+              fontSize: 11,
+              fontWeight: reason ? "600" : row.emphasis.time >= 0.5 ? "500" : "400",
+              minWidth: 32,
+              textAlign: "right",
+            }}
+          >
+            {relativeTime(lastActivity, t, now)}
+          </Text>
+          {row.reply?.totalTokens !== undefined && (
+            <Text
+              accessibilityLabel={t("tokenUsageLabel", { count: row.reply.totalTokens })}
+              style={{ color: c.foregroundMuted, fontSize: 10, lineHeight: 14 }}
+            >
+              {t("tokenUsage", { amount: formatTokenCount(row.reply.totalTokens, locale) })}
+            </Text>
+          )}
+        </View>
       </Pressable>
       {row.acknowledgeable && (
         <Pressable

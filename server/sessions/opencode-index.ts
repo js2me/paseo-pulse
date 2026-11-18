@@ -6,7 +6,7 @@ import { join, resolve } from "node:path";
 import process from "node:process";
 
 type Summary = { text: string | null; lastActivityAt: string | null; activityKnown: boolean;
-  latestReplyAt: string | null; limited: boolean };
+  latestReplyAt: string | null; limited: boolean; totalTokens?: number };
 type DatabaseState = { database: DatabaseSync; identity: string; signature: string; summaries: Map<string, Summary | null> };
 const SESSION_ID = /^ses_[a-zA-Z0-9]{1,128}$/;
 const object = (value: unknown): Record<string, unknown> | null =>
@@ -74,6 +74,26 @@ export function createOpenCodeIndex(options: { dataHome?: string; now?: () => nu
         state.summaries.set(sessionId, result);
         return result;
       }
+      // Aggregate every saved assistant usage record, independently of the 32-message preview limit.
+      // OpenCode stores cache and reasoning separately from ordinary input/output tokens.
+      const paths = ["input", "output", "reasoning", "cache.read", "cache.write"];
+      const usageFields = paths.map((path, index) =>
+        `coalesce(json_extract(data, '$.tokens.${path}'), ${index < 2 ? "NULL" : "0"})`);
+      const validFields = usageFields.map(field => `(typeof(${field}) IN ('integer','real') AND ${field} >= 0)`);
+      const usage = state.database.prepare(`WITH usage AS (
+        SELECT CASE
+          WHEN typeof(json_extract(data, '$.tokens.total')) IN ('integer','real')
+            AND json_extract(data, '$.tokens.total') >= 0 THEN json_extract(data, '$.tokens.total')
+          WHEN ${validFields.join(" AND ")} THEN ${usageFields.join(" + ")}
+        END AS tokens
+        FROM message WHERE session_id = ? AND json_valid(data)
+          AND json_extract(data, '$.role') = 'assistant'
+          AND coalesce(json_extract(data, '$.synthetic'), 0) != 1
+          AND coalesce(json_extract(data, '$.ignored'), 0) != 1
+          AND json_type(data, '$.tokens') = 'object'
+      ) SELECT sum(tokens) AS total, count(*) - count(tokens) AS invalid FROM usage`).get(sessionId);
+      const totalTokens = usage && usage.invalid === 0 && typeof usage.total === "number" &&
+        Number.isSafeInteger(usage.total) && usage.total >= 0 ? usage.total : undefined;
       // JSON extraction prevents large tool/reasoning payloads crossing into JS.
       const parts = state.database.prepare(`SELECT
         json_extract(data, '$.type') AS type,
@@ -108,7 +128,8 @@ export function createOpenCodeIndex(options: { dataHome?: string; now?: () => nu
         }
       }
       const result = { text, lastActivityAt, activityKnown: sawChat ? lastActivityAt !== null : messages.length < 32 && !malformed,
-        latestReplyAt, limited: malformed || (!text && messages.length >= 32) };
+        latestReplyAt, limited: malformed || (!text && messages.length >= 32),
+        ...(totalTokens !== undefined ? { totalTokens } : {}) };
       if (state.summaries.size >= 1000) state.summaries.delete(state.summaries.keys().next().value!);
       state.summaries.set(sessionId, result);
       return result;

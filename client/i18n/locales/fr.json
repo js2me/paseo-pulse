@@ -3,6 +3,8 @@
   "sidebarFinishedCount": "Nouvelles réponses terminées : {{count}}",
   "collapseExtra": "Réduire",
   "collapseExtraProject": "Masquer les sessions supplémentaires de {{project}}",
+  "tokenUsage": "≈{{amount}} jetons",
+  "tokenUsageLabel": "Jetons de la session, entrée et sortie avec cache : {{count}}",
   "title": "Pulse",
   "openInbox": "Ouvrir Pulse",
   "openInInbox": "Ouvrir dans Pulse",

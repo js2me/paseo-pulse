@@ -52,7 +52,8 @@ export async function demoRpc(name, input) {
   if (name === 'session-index.read') return { entries: input.agentIds.map(agentId => {
     const entry = entries.find(({ agent }) => agent.id === agentId);
     return { agentId, text: entry.preview, limited: false, latestReplyAt: entry.agent.lastUserMessageAt,
-      lastActivityAt: entry.agent.lastUserMessageAt, activityKnown: true };
+      lastActivityAt: entry.agent.lastUserMessageAt, activityKnown: true,
+      ...(agentId === "checkout" ? { totalTokens: 12345 } : {}) };
   }) };
   if (name === 'project-icon.read') return { icon: null };
   if (name === 'session-visits.list') return { sessions: [] };

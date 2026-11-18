@@ -3,6 +3,8 @@
   "sidebarFinishedCount": "New completed replies: {{count}}",
   "collapseExtra": "Collapse",
   "collapseExtraProject": "Hide extra sessions in {{project}}",
+  "tokenUsage": "≈{{amount}} tokens",
+  "tokenUsageLabel": "Session tokens, input and output including cache: {{count}}",
   "title": "Pulse",
   "openInbox": "Open Pulse",
   "openInInbox": "Open in Pulse",

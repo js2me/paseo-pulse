@@ -272,3 +272,44 @@ test('an active Codex transcript takes precedence over an old archive with the s
     assert.equal(entries[0].lastActivityAt, at(1));
   } finally { await f.cleanup(); }
 });
+
+test('Codex tokens use the latest cumulative total, never last-request or cache/reasoning subtotals', () => {
+  const usage = (total, last = 1) => ({ type: 'event_msg', payload: { type: 'token_count',
+    info: { total_token_usage: total, last_token_usage: { total_tokens: last } } } });
+  const source = jsonl(usage({ total_tokens: 100 }), codex('assistant', 'Done'),
+    usage({ total_tokens: 12000, input_tokens: 10000, output_tokens: 2000,
+      cached_input_tokens: 9000, reasoning_output_tokens: 1000 }, 600));
+  assert.equal(parseSessionTranscript('codex', source, { now }).totalTokens, 12000);
+  assert.equal(parseSessionTranscript('codex', 'partial\n' + source, { now, truncatedStart: true }).totalTokens, 12000);
+  assert.equal(parseSessionTranscript('codex', jsonl(usage({ input_tokens: 10, output_tokens: 3 })), { now }).totalTokens, 13);
+  assert.equal(parseSessionTranscript('codex', jsonl(usage({ total_tokens: -1 })), { now }).totalTokens, undefined);
+  assert.equal(parseSessionTranscript('codex', jsonl({ type: 'event_msg', payload: { type: 'token_count',
+    info: { last_token_usage: { total_tokens: 100 } } } }), { now }).totalTokens, undefined);
+});
+
+test('Claude totals sum requests, include cache once, and deduplicate streaming message snapshots', () => {
+  const row = (id, output) => ({ type: 'assistant', message: { id, role: 'assistant',
+    content: [{ type: 'text', text: 'Done' }], usage: { input_tokens: 10, output_tokens: output,
+      cache_read_input_tokens: 20, cache_creation_input_tokens: 30 } } });
+  const source = jsonl(row('one', 2), row('one', 5), row('two', 3));
+  assert.equal(parseSessionTranscript('claude', source, { now }).totalTokens, 128);
+  assert.equal(parseSessionTranscript('claude', 'partial\n' + source, { now, truncatedStart: true }).totalTokens, undefined);
+  assert.equal(parseSessionTranscript('claude', source + '{broken', { now }).totalTokens, undefined);
+  const missingId = row('one', 2); delete missingId.message.id;
+  assert.equal(parseSessionTranscript('claude', jsonl(missingId), { now }).totalTokens, undefined);
+});
+
+test('usage keeps advancing when a tool-heavy tail no longer contains chat text', async () => {
+  const f = await fixture([agent(1)]);
+  const usage = total => ({ type: 'event_msg', payload: { type: 'token_count',
+    info: { total_token_usage: { total_tokens: total } } } });
+  try {
+    const path = await f.file('codex', uid(1), jsonl(codex('assistant', 'Done'), usage(100)));
+    assert.equal((await f.index.read({ agentIds: ['1'] })).entries[0].totalTokens, 100);
+    await appendFile(path, jsonl({ type: 'tool', content: 'x'.repeat(1100000) }, usage(200)));
+    const result = (await f.index.read({ agentIds: ['1'] })).entries[0];
+    assert.equal(result.totalTokens, 200);
+    assert.equal(result.text, 'Done');
+    assert.equal(result.lastActivityAt, at(2));
+  } finally { await f.cleanup(); }
+});

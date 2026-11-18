@@ -79,12 +79,53 @@ function chatRecord(provider: Provider, record: Record<string, unknown>): { role
   return { role: record.type, text, time: record.timestamp };
 }
 
+const tokenCount = (value: unknown): number | undefined =>
+  typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : undefined;
+
+/** Codex reports cumulative totals; Claude usage records belong to individual message IDs. */
+function transcriptTokenTotal(provider: Provider, lines: string[], truncated: boolean): number | undefined {
+  if (provider === "claude" && truncated) return undefined;
+  const messages = new Map<string, number>();
+  for (let index = lines.length - 1; index >= 0; index--) {
+    let record: Record<string, unknown> | null;
+    if (!lines[index].trim()) continue;
+    try { record = object(JSON.parse(lines[index])); }
+    catch { if (provider === "claude") return undefined; continue; }
+    if (!record) continue;
+    if (provider === "codex") {
+      const payload = object(record.payload);
+      if (record.type !== "event_msg" || payload?.type !== "token_count") continue;
+      const usage = object(object(payload.info)?.total_token_usage);
+      if (!usage) continue;
+      const total = tokenCount(usage.total_tokens);
+      if (total !== undefined) return total;
+      const input = tokenCount(usage.input_tokens), output = tokenCount(usage.output_tokens);
+      if (input !== undefined && output !== undefined) return tokenCount(input + output);
+      // A newer invalid cumulative record must not silently fall back to an older total.
+      return undefined;
+    }
+    if (record.type !== "assistant" || record.isMeta === true || record.isCompactSummary === true) continue;
+    const message = object(record.message), usage = object(message?.usage);
+    if (!usage) continue;
+    if (typeof message?.id !== "string" || !message.id) return undefined;
+    const fields = [usage.input_tokens, usage.output_tokens,
+      usage.cache_read_input_tokens ?? 0, usage.cache_creation_input_tokens ?? 0].map(tokenCount);
+    if (fields.some(value => value === undefined)) return undefined;
+    const total = tokenCount(fields.reduce<number>((sum, value) => sum + (value ?? 0), 0));
+    if (total === undefined) return undefined;
+    // Streaming snapshots can repeat an assistant message with increasing output usage.
+    messages.set(message.id, Math.max(messages.get(message.id) ?? 0, total));
+  }
+  return messages.size ? tokenCount([...messages.values()].reduce((sum, count) => sum + count, 0)) : undefined;
+}
+
 /** Parses only a bounded tail, newest records first; tool activity never proves freshness. */
 export function parseSessionTranscript(provider: Provider, source: string,
   options: { truncatedStart?: boolean; now?: number } = {}): Summary {
   const now = options.now ?? Date.now();
   const lines = source.split("\n");
   if (options.truncatedStart) lines.shift();
+  const totalTokens = transcriptTokenTotal(provider, lines, !!options.truncatedStart);
   let sawChat = false;
   let malformed = false;
   let latestChatTime: string | null = null;
@@ -106,7 +147,8 @@ export function parseSessionTranscript(provider: Provider, source: string,
   }
   return { text, lastActivityAt: latestChatTime,
     activityKnown: sawChat ? latestChatTime !== null : !options.truncatedStart && !malformed,
-    latestReplyAt, limited: malformed || (!!options.truncatedStart && !text) };
+    latestReplyAt, limited: malformed || (!!options.truncatedStart && !text),
+    ...(totalTokens !== undefined ? { totalTokens } : {}) };
 }
 
 export interface SessionIndexOptions {
@@ -258,7 +300,9 @@ export function createSessionIndex(options: SessionIndexOptions) {
           stats.tailReads++;
           stats.bytesRead += received;
           const parsed = parseSessionTranscript(provider, content, { truncatedStart, now: now() });
-          const summary = !parsed.activityKnown && previous?.summary.activityKnown ? previous.summary : parsed;
+          const summary = !parsed.activityKnown && previous?.summary.activityKnown
+            ? { ...previous.summary, ...(parsed.totalTokens !== undefined ? { totalTokens: parsed.totalTokens } : {}) }
+            : parsed;
           if (cache.size >= 1000) cache.delete(cache.keys().next().value!);
           cache.set(path, { signature, summary });
           return summary;
@@ -299,7 +343,8 @@ export function createSessionIndex(options: SessionIndexOptions) {
       result = path ? await boundedRead(path, provider) : unknown();
     }
     if (previous?.identity === identity && previous.summary.activityKnown) {
-      if (!result.activityKnown) result = previous.summary;
+      if (!result.activityKnown) result = { ...previous.summary,
+        ...(result.totalTokens !== undefined ? { totalTokens: result.totalTokens } : {}) };
       else if (result.limited && !result.text && previous.summary.text) {
         result = { ...result, text: previous.summary.text, latestReplyAt: previous.summary.latestReplyAt };
       }

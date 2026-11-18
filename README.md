@@ -49,6 +49,8 @@ Read sessions are gray. Running work stays blue, new replies green, permission r
 
 Screenshots render the actual plugin components with sample data in an isolated web harness. The compact image is not a physical-device test. Regenerate them with `npm run test:media`.
 
+Session rows show approximate total processed tokens below the time when reliable saved usage is available. Codex uses cumulative totals; OpenCode sums per-message usage; Claude deduplicates messages only when its complete log fits the bounded 1 MiB read. Cache and reasoning are counted once. Missing totals are hidden. This is usage across requests, not current context size or monetary cost.
+
 ## Languages
 
 English, Russian, French and Traditional Chinese follow the app's language setting. English is the fallback. Chinese variants, including Paseo's current `zh-CN` option, use Traditional characters. Language changes preserve search and expanded groups. User session names and conversation content are not translated.

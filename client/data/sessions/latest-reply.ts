@@ -18,6 +18,7 @@ interface Timeline {
   refetch(options: { direction: "before"; projection: "projected"; limit: number; cursor?: Cursor }): Promise<TimelinePage>;
 }
 export interface LatestReply {
+  totalTokens?: number;
   text: string | null;
   limited: boolean;
   latestReplyAt: string | null;
