@@ -3,7 +3,7 @@
   "sidebarFinishedCount": "新的已完成回覆：{{count}}",
   "collapseExtra": "收合",
   "collapseExtraProject": "隱藏 {{project}} 的其他工作階段",
-  "tokenUsage": "≈{{amount}} tokens",
+  "tokenUsage": "≈{{amount}} ◈",
   "tokenUsageLabel": "工作階段用量，包含快取的輸入與輸出：{{count}} tokens",
   "title": "Pulse",
   "openInbox": "開啟 Pulse",

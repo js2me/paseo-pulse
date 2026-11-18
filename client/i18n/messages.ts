@@ -15,7 +15,7 @@ export function formatTokenCount(value: number, locale: string): string {
     formatter = new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 });
     tokenFormatters.set(locale, formatter);
   }
-  return formatter.format(value);
+  return formatter.format(value).replace(/\s+/gu, "");
 }
 
 export function relativeTime(timestamp: number, t: Translate, now = Date.now()) {

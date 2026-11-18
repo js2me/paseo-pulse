@@ -72,5 +72,6 @@ test('each UI key is translated in all four resources, including accessible labe
 test('token amounts use localized compact notation', () => {
   assert.equal(formatTokenCount(12345, 'en'), '12.3K');
   assert.ok(formatTokenCount(12345, 'ru').includes('тыс.'));
+  assert.equal(formatTokenCount(2700000, 'ru'), '2,7млн');
   assert.equal(formatTokenCount(0, 'fr'), '0');
 });

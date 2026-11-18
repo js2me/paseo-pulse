@@ -3,7 +3,7 @@
   "sidebarFinishedCount": "Новых завершённых ответов: {{count}}",
   "collapseExtra": "Свернуть",
   "collapseExtraProject": "Скрыть дополнительные сессии в проекте {{project}}",
-  "tokenUsage": "≈{{amount}} ток.",
+  "tokenUsage": "≈{{amount}} ◈",
   "tokenUsageLabel": "Токены сессии: вход и выход с учётом кеша — {{count}}",
   "title": "Пульс",
   "openInbox": "Открыть Пульс",
