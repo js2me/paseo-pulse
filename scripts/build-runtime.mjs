@@ -12,6 +12,8 @@ const result = await build({
   platform: "browser",
   format: "esm",
   target: "es2020",
+  // Keep dependency bindings from renaming Paseo's Hermes interop helper key.
+  minifyIdentifiers: true,
   sourcemap: "linked",
   external: ["react", "react/jsx-runtime"],
   alias: {
@@ -31,6 +33,7 @@ const animations = await build({
   platform: "browser",
   format: "esm",
   target: "es2020",
+  minifyIdentifiers: true,
   sourcemap: "linked",
   external: ["react", "react/jsx-runtime", "react-native"],
   define: { "process.env.NODE_ENV": '"production"' },
