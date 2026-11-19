@@ -22,6 +22,9 @@ import { PulseViewModel } from "../lib/pulse-view-model";
 import { sessionEmphasis } from "./session-emphasis";
 
 export const GROUP_PREVIEW_LIMIT = 6;
+export type InboxGrouping = "workspace" | "status" | "none";
+export const STATUS_GROUPS = ["action", "running", "finished", "other"] as const;
+export type InboxStatusGroup = typeof STATUS_GROUPS[number];
 type Payload = {
   entries: readonly SessionEntry[];
   replies: ReadonlyMap<string, LatestReplyQueryData>;
@@ -35,7 +38,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
   search = "";
   searchOpen = false;
   onlyAttention = true;
-  groupByProject = true;
+  grouping: InboxGrouping = "workspace";
   private expanded = new Map<string, boolean>();
   private revealed = new Set<string>();
   constructor(params: ViewModelParams<Payload>) {
@@ -44,7 +47,10 @@ export class InboxViewModel extends PulseViewModel<Payload> {
       search: observable,
       searchOpen: observable,
       onlyAttention: observable,
-      groupByProject: observable,
+      grouping: observable,
+      groupByProject: computed,
+      statusGroups: computed,
+      statusItems: computed,
       expanded: observable.shallow,
       revealed: observable.shallow,
       groups: computed,
@@ -55,7 +61,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
       setSearch: action.bound,
       toggleSearch: action.bound,
       setOnlyAttention: action.bound,
-      setGroupByProject: action.bound,
+      setGrouping: action.bound,
       toggleGroup: action.bound,
       toggleRevealed: action.bound,
       openSession: action.bound,
@@ -138,8 +144,30 @@ export class InboxViewModel extends PulseViewModel<Payload> {
   get flatRows() {
     return this.groups.flatMap((group) => group.rows);
   }
-  setGroupByProject(value: boolean) {
-    this.groupByProject = value;
+  get groupByProject() {
+    return this.grouping === "workspace";
+  }
+  get statusGroups() {
+    const groups = new Map<InboxStatusGroup, InboxRow[]>(STATUS_GROUPS.map((key) => [key, []]));
+    for (const row of this.flatRows) {
+      const key = row.reason === "permission" || row.reason === "error" ? "action"
+        : row.reason === "running" ? "running"
+        : row.reason === "finished" ? "finished" : "other";
+      groups.get(key)!.push(row);
+    }
+    return STATUS_GROUPS.flatMap((key) => {
+      const rows = groups.get(key)!;
+      return rows.length ? [{ key, rows }] : [];
+    });
+  }
+  get statusItems(): StatusListItem[] {
+    return this.statusGroups.flatMap(({ key, rows }) => [
+      { kind: "header", key: `status:${key}`, status: key, count: rows.length } as const,
+      ...rows.map((row) => ({ kind: "session", key: `session:${row.agent.id}`, row } as const)),
+    ]);
+  }
+  setGrouping(value: InboxGrouping) {
+    this.grouping = value;
   }
   setSearch(value: string) {
     this.search = value;
@@ -168,3 +196,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
 }
 export type InboxGroup = InboxViewModel["groups"][number];
 export type InboxRow = InboxGroup["rows"][number];
+
+export type StatusListItem =
+  | { kind: "header"; key: string; status: InboxStatusGroup; count: number }
+  | { kind: "session"; key: string; row: InboxRow };

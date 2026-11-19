@@ -1,4 +1,11 @@
 {
+  "groupByStatus": "By status",
+  "statusGroups": {
+    "action": "Needs action",
+    "running": "In progress",
+    "finished": "Reply ready",
+    "other": "Other"
+  },
   "grouping": "Grouping",
   "groupByWorkspace": "By workspace",
   "noGrouping": "None",

@@ -1,4 +1,11 @@
 {
+  "groupByStatus": "По статусу",
+  "statusGroups": {
+    "action": "Требуют действия",
+    "running": "В работе",
+    "finished": "Ответ готов",
+    "other": "Остальные"
+  },
   "grouping": "Группировка",
   "groupByWorkspace": "По пространствам",
   "noGrouping": "Нет",

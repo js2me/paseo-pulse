@@ -1,4 +1,11 @@
 {
+  "groupByStatus": "依狀態",
+  "statusGroups": {
+    "action": "需要處理",
+    "running": "進行中",
+    "finished": "回覆已就緒",
+    "other": "其他"
+  },
   "grouping": "分組",
   "groupByWorkspace": "依工作區",
   "noGrouping": "無",

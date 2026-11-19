@@ -8,7 +8,7 @@ import type { InboxViewContext } from "./types";
 export const InboxToolbar = observer(function InboxToolbar({ context }: { context: InboxViewContext }) {
   const { props, binding } = context;
   const { model, creation, creationDisabled } = binding;
-  const { search, searchOpen, onlyAttention, groupByProject, totalAttention, attentionGroups } = model;
+  const { search, searchOpen, onlyAttention, totalAttention, attentionGroups } = model;
   const { t } = useMessages(),
     c = props.theme.colors;
   const countColor =
@@ -27,7 +27,7 @@ export const InboxToolbar = observer(function InboxToolbar({ context }: { contex
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <View
-          style={{ flexDirection: "row", gap: 2, borderRadius: 6, backgroundColor: c.surface1, padding: 2 }}
+          style={{ flexDirection: "row", flexWrap: "wrap", gap: 2, borderRadius: 6, backgroundColor: c.surface1, padding: 2 }}
         >
           {[
             { value: true, label: t("attention"), count: totalAttention },
@@ -65,39 +65,7 @@ export const InboxToolbar = observer(function InboxToolbar({ context }: { contex
             </Pressable>
           ))}
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <Text style={{ color: c.foregroundMuted, fontSize: 12 }}>{t("grouping")}:</Text>
-          <View
-            accessibilityRole="radiogroup"
-            accessibilityLabel={t("grouping")}
-            style={{ flexDirection: "row", gap: 2, borderRadius: 6, backgroundColor: c.surface1, padding: 2 }}
-          >
-            {[
-              { value: true, label: t("groupByWorkspace") },
-              { value: false, label: t("noGrouping") },
-            ].map((option) => (
-              <Pressable
-                key={option.label}
-                accessibilityRole="radio"
-                aria-checked={groupByProject === option.value}
-                accessibilityState={{ checked: groupByProject === option.value }}
-                onPress={() => model.setGroupByProject(option.value)}
-                style={{
-                  paddingHorizontal: 9,
-                  paddingVertical: 6,
-                  borderRadius: 4,
-                  backgroundColor: groupByProject === option.value ? c.surface2 : c.surface1,
-                }}
-              >
-                <Text style={{
-                  color: groupByProject === option.value ? c.foreground : c.foregroundMuted,
-                  fontSize: 13,
-                  fontWeight: groupByProject === option.value ? "600" : "400",
-                }}>{option.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
+        {!props.layout.compact && <InboxGroupingToggle context={context} />}
         <View style={{ flex: 1 }} />
         <Pressable
           accessibilityRole="button"
@@ -125,6 +93,7 @@ export const InboxToolbar = observer(function InboxToolbar({ context }: { contex
           <Icon name={searchOpen ? "X" : "Search"} size={16} color={c.foregroundMuted} />
         </Pressable>
       </View>
+      {props.layout.compact && <InboxGroupingToggle context={context} />}
       {searchOpen && (
         <TextInput
           value={search}
@@ -147,5 +116,49 @@ export const InboxToolbar = observer(function InboxToolbar({ context }: { contex
         />
       )}
     </View>
+  );
+});
+
+const InboxGroupingToggle = observer(function InboxGroupingToggle({ context }: { context: InboxViewContext }) {
+  const { props, binding: { model } } = context;
+  const { grouping } = model;
+  const { t } = useMessages();
+  const c = props.theme.colors;
+  return (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <Text style={{ color: c.foregroundMuted, fontSize: 12 }}>{t("grouping")}:</Text>
+          <View
+            accessibilityRole="radiogroup"
+            accessibilityLabel={t("grouping")}
+            style={{ flexDirection: "row", flexWrap: "wrap", gap: 2, borderRadius: 6, backgroundColor: c.surface1, padding: 2 }}
+          >
+            {([
+              { value: "workspace", label: t("groupByWorkspace") },
+              { value: "status", label: t("groupByStatus") },
+              { value: "none", label: t("noGrouping") },
+            ] as const).map((option) => (
+              <Pressable
+                key={option.label}
+                accessibilityRole="radio"
+                accessibilityLabel={option.label}
+                aria-checked={grouping === option.value}
+                accessibilityState={{ checked: grouping === option.value }}
+                onPress={() => model.setGrouping(option.value)}
+                style={{
+                  paddingHorizontal: 9,
+                  paddingVertical: 6,
+                  borderRadius: 4,
+                  backgroundColor: grouping === option.value ? c.surface2 : c.surface1,
+                }}
+              >
+                <Text style={{
+                  color: grouping === option.value ? c.foreground : c.foregroundMuted,
+                  fontSize: 13,
+                  fontWeight: grouping === option.value ? "600" : "400",
+                }}>{option.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
   );
 });

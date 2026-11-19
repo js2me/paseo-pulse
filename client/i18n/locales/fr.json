@@ -1,4 +1,11 @@
 {
+  "groupByStatus": "Par statut",
+  "statusGroups": {
+    "action": "Action requise",
+    "running": "En cours",
+    "finished": "Réponse prête",
+    "other": "Autres"
+  },
   "grouping": "Regroupement",
   "groupByWorkspace": "Par espace de travail",
   "noGrouping": "Aucun",

@@ -280,7 +280,7 @@ test('ungrouped inbox shows every matching session in global order and preserves
   assert.equal(model.groupByProject, true);
   assert.equal(model.groups.length, 2);
   model.toggleGroup('project-0');
-  model.setGroupByProject(false);
+  model.setGrouping("none");
   assert.equal(model.flatRows.length, 10);
   assert.equal(model.flatRows[0].agent.id, 'session-8', 'attention priority applies across projects');
   model.setOnlyAttention(false);
@@ -293,6 +293,44 @@ test('ungrouped inbox shows every matching session in global order and preserves
   assert.deepEqual(model.flatRows, []);
   model.setSearch('');
   model.setOnlyAttention(true);
-  model.setGroupByProject(true);
+  model.setGrouping("workspace");
   assert.equal(model.groups.find(group => group.key === 'project-0').isExpanded, false);
+});
+
+
+test('status grouping partitions filtered sessions, omits empty groups and reacts to status changes', () => {
+  const entries = [
+    entry('permission', { pendingPermissions: [{}] }),
+    entry('error', { status: 'error', requiresAttention: true }),
+    entry('running', { status: 'running' }),
+    entry('starting', { status: 'initializing' }),
+    entry('finished', { requiresAttention: true, attentionReason: 'finished' }),
+    entry('read', { requiresAttention: false, attentionReason: 'finished' }),
+    entry('old', { lastUserMessageAt: at(3000) }),
+    entry('weekly', { lastUserMessageAt: at(3000), revisitedUntil: now + 1000 }),
+    entry('archived', { status: 'running', archivedAt: at(1) }),
+    entry('internal', { status: 'running', internal: true }),
+  ].map((value, i) => ({ ...value, project: { projectKey: `p-${i}`, projectName: `Project ${i}` } }));
+  const payload = { entries, now, replies: new Map(), iconProjects: [], hostId: 'host', trackVisit() {} };
+  const model = new InboxViewModel({ id: 'status-grouping', payload });
+  model.setGrouping('status');
+  const groups = () => model.statusGroups.map(group => [group.key, group.rows.map(row => row.agent.id)]);
+  assert.deepEqual(groups(), [
+    ['action', ['permission', 'error']], ['running', ['running', 'starting']],
+    ['finished', ['finished']], ['other', ['read', 'weekly']],
+  ]);
+  assert.equal(model.statusItems.filter(item => item.kind === 'header').length, 4);
+  assert.equal(model.statusItems.filter(item => item.kind === 'session').length, 7);
+  model.setOnlyAttention(false);
+  assert.deepEqual(groups().at(-1), ['other', ['read', 'old', 'weekly']]);
+  model.setSearch('Project 4');
+  assert.deepEqual(groups(), [['finished', ['finished']]]);
+  model.setSearch('missing');
+  assert.deepEqual(model.statusItems, []);
+  model.setSearch('');
+  model.setOnlyAttention(true);
+  model.setPayload({ ...payload, entries: [entry('finished', { status: 'running' })] });
+  assert.deepEqual(groups(), [['running', ['finished']]]);
+  model.setPayload({ ...payload, entries: [entry('finished', { requiresAttention: false })] });
+  assert.deepEqual(groups(), [['other', ['finished']]], 'read replies leave Reply ready');
 });

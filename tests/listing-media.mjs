@@ -108,12 +108,26 @@ try {
     await page.waitForFunction(() => document.body.innerText.includes('Approve the navigation plan'));
     const grouped = '[role="radio"][aria-checked="true"]';
     assert.equal(await page.$eval(grouped, element => element.textContent), 'By workspace');
-    await page.$eval('[role="radio"][aria-checked="false"]', button => button.click());
+    await page.$eval('[role="radio"][aria-label="None"]', button => button.click());
     await page.waitForFunction(() => !document.querySelector('[aria-label="Atlas Studio, 4 sessions"]'));
     assert.equal(await page.$eval(grouped, element => element.textContent), 'None');
     assert.ok(await page.$('[aria-label^="Approve the navigation plan,"]'), `${name} flat sessions remain visible`);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${name} grouping control overflows`);
-    await page.$eval('[role="radio"][aria-checked="false"]', button => button.click());
+    await page.click('[role="radio"][aria-label="By status"]');
+    await page.waitForFunction(() => document.body.innerText.includes('Needs action'));
+    assert.equal(await page.$eval(grouped, element => element.textContent), 'By status');
+    assert.deepEqual(await page.$$eval('[role="heading"]', headers => headers.map(header => header.textContent)),
+      ['Needs action', 'In progress', 'Reply ready', 'Other']);
+    assert.equal(await page.$('[aria-label="New workspace in Horizon API"]'), null, `${name} status groups have no project actions`);
+    assert.ok(await page.$('[aria-label^="Approve the navigation plan,"]'), `${name} status sessions remain visible`);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${name} status control overflows`);
+    await page.click('[aria-label="Find a session"]');
+    await page.type('[aria-label="Search sessions"]', 'Approve the navigation');
+    await page.waitForFunction(() => document.querySelectorAll('[role="heading"]').length === 1);
+    assert.equal(await page.$eval('[role="heading"]', header => header.textContent), 'Needs action');
+    await page.click('[aria-label="Close search"]');
+    await page.waitForFunction(() => document.querySelectorAll('[role="heading"]').length === 4);
+    await page.click('[role="radio"][aria-label="By workspace"]');
     await page.waitForSelector('[aria-label="Atlas Studio, 4 sessions"]');
     const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
