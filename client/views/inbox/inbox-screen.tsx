@@ -1,3 +1,4 @@
+import { TextAnimationProvider } from "../shared/animated-text";
 import { FlatList, View } from "react-native";
 import { observer } from "../../lib/mvvm";
 import { useInboxViewModel } from "../../bindings/use-inbox-view-model";
@@ -9,7 +10,7 @@ import { ProjectGroup } from "./project-group";
 import type { InboxProps } from "./types";
 
 export function InboxScreen(props: InboxProps) {
-  return <Inbox key={props.host.id} {...props} />;
+  return <TextAnimationProvider><Inbox key={props.host.id} {...props} /></TextAnimationProvider>;
 }
 const Inbox = observer(function Inbox(props: InboxProps) {
   const binding = useInboxViewModel(props);

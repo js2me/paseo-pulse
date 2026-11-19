@@ -15,7 +15,7 @@ try {
   await mkdir(assets, { recursive: true });
   const bundle = join(temp, 'client.js');
   await build({ entryPoints: [join(root, 'tests/listing/client.jsx')], outfile: bundle, bundle: true, platform: 'browser',
-    format: 'iife', jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"' },
+    format: 'iife', jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"', global: "globalThis" },
     alias: { 'react-native': 'react-native-web', '@getpaseo/plugin/client': join(root, 'tests/listing/host.jsx'),
       '@getpaseo/plugin/client/ui': join(root, 'tests/listing/host.jsx') } });
   const html = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Paseo Pulse sample data</title><style>html,body,#root{margin:0;width:100%;height:100%;overflow:hidden}#root{display:flex}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#191e1b}svg{display:block}</style><div id="root"></div><script src="/client.js"></script></html>';
@@ -64,6 +64,33 @@ try {
     ].map(row => row.children[1].getBoundingClientRect().left - row.getBoundingClientRect().left));
     assert.equal(textOffsets[0], textOffsets[1], `${name} running and idle text must align`);
     assert.equal(await page.$eval('[aria-label="Session tokens, input and output including cache: 12345"]', text => text.textContent), "≈12.3K ◈");
+    // Exercise real query updates through both animated row fields.
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
+    await page.evaluate(() => globalThis.__pulseDemo.updateReply('checkout', {
+      text: 'New streamed preview', totalTokens: 25000,
+    }));
+    await page.waitForFunction(() => {
+      const tokens = document.querySelector('[aria-label="Session tokens, input and output including cache: 25000"]');
+      return tokens && Number(getComputedStyle(tokens).opacity) < 0.99;
+    }, { polling: 'raf' });
+    await page.waitForFunction(() => [...document.querySelectorAll('div')].some(element =>
+      element.textContent === 'New streamed preview' && Number(getComputedStyle(element).opacity) < 0.99), { polling: 'raf' });
+    await page.waitForFunction(() => {
+      const tokens = document.querySelector('[aria-label="Session tokens, input and output including cache: 25000"]');
+      return tokens && Number(getComputedStyle(tokens).opacity) === 1;
+    }, { polling: 'raf' });
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 50)));
+    await page.evaluate(() => globalThis.__pulseDemo.updateReply('checkout', {
+      text: 'Reduced motion preview', totalTokens: 30000,
+    }));
+    await page.waitForSelector('[aria-label="Session tokens, input and output including cache: 30000"]');
+    assert.equal(await page.$eval('[aria-label="Session tokens, input and output including cache: 30000"]',
+      element => Number(getComputedStyle(element).opacity)), 1, `${name} reduced motion disables animation`);
+    await page.evaluate(() => globalThis.__pulseDemo.updateReply('checkout', {
+      text: 'Updating responsive states and keyboard navigation.', totalTokens: 12345,
+    }));
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
     const idle = await page.evaluate(async () => {
       const before = globalThis.__pulseDemo.settingsRenders;
       await new Promise(resolve => setTimeout(resolve, 1200));

@@ -20,7 +20,11 @@ inputs are development dependencies pinned by the committed lock. There are
 no installed production dependencies, lifecycle scripts or manifest preparation
 commands, so no npm shrinkwrap is required.
 
-`release:check` first regenerates this shared runtime with `build:runtime`.
+`react-native-animatable` 1.4.0 is bundled separately in
+`client/generated/text-animation.js`; it uses Paseo’s React and React Native.
+Both bundles include declarations, source maps and notices in `client/generated/LICENSES.txt`.
+
+`release:check` first regenerates these shared runtimes with `build:runtime`.
 Commit the generated files with their sources. CI verifies they are in sync.
 The runtime exports the real library hooks and observer; it uses Paseo’s React
 instance. Its batching adapter relies on React 19 automatic batching, and its
