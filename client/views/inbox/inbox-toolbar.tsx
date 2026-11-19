@@ -126,7 +126,6 @@ const InboxGroupingToggle = observer(function InboxGroupingToggle({ context }: {
   const c = props.theme.colors;
   return (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <Text style={{ color: c.foregroundMuted, fontSize: 12 }}>{t("grouping")}:</Text>
           <View
             accessibilityRole="radiogroup"
             accessibilityLabel={t("grouping")}
