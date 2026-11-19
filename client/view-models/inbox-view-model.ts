@@ -1,4 +1,5 @@
 import type { PluginScreenProps } from "@getpaseo/plugin/client";
+import type { InboxGrouping } from "../../shared/inbox-preferences";
 import type { IconProject } from "../../shared/projects/project-icons";
 import { groupIconProject } from "../../shared/projects/project-icons";
 import { canAcknowledge } from "../../shared/sessions/acknowledgements";
@@ -22,6 +23,8 @@ import { PulseViewModel } from "../lib/pulse-view-model";
 import { sessionEmphasis } from "./session-emphasis";
 
 export const GROUP_PREVIEW_LIMIT = 6;
+export const STATUS_GROUPS = ["action", "running", "finished", "other"] as const;
+export type InboxStatusGroup = typeof STATUS_GROUPS[number];
 type Payload = {
   entries: readonly SessionEntry[];
   replies: ReadonlyMap<string, LatestReplyQueryData>;
@@ -30,28 +33,41 @@ type Payload = {
   navigation: PluginScreenProps["navigation"];
   hostId: string;
   trackVisit(id: string): void;
+  onlyAttention?: boolean;
+  setOnlyAttention?(value: boolean): void;
+  grouping?: InboxGrouping;
+  setGrouping?(value: InboxGrouping): void;
 };
 export class InboxViewModel extends PulseViewModel<Payload> {
   search = "";
   searchOpen = false;
-  onlyAttention = true;
+  private localOnlyAttention = true;
+  private localGrouping: InboxGrouping = "workspace";
   private expanded = new Map<string, boolean>();
   private revealed = new Set<string>();
   constructor(params: ViewModelParams<Payload>) {
     super(params);
-    makeObservable<this, "expanded" | "revealed">(this, {
+    makeObservable<this, "expanded" | "revealed" | "localGrouping" | "localOnlyAttention">(this, {
       search: observable,
       searchOpen: observable,
-      onlyAttention: observable,
+      localOnlyAttention: observable,
+      onlyAttention: computed,
+      localGrouping: observable,
+      grouping: computed,
+      groupByProject: computed,
+      statusGroups: computed,
+      statusItems: computed,
       expanded: observable.shallow,
       revealed: observable.shallow,
       groups: computed,
+      flatRows: computed,
       attentionGroups: computed,
       totalAttention: computed,
       totalCount: computed,
       setSearch: action.bound,
       toggleSearch: action.bound,
       setOnlyAttention: action.bound,
+      setGrouping: action.bound,
       toggleGroup: action.bound,
       toggleRevealed: action.bound,
       openSession: action.bound,
@@ -68,7 +84,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
   }
   get groups() {
     const { entries, now, replies, iconProjects } = this.payload;
-    return groupSessions(entries, this.search, this.onlyAttention, now).map((group) => {
+    return groupSessions(entries, this.search, this.onlyAttention, now, this.groupByProject).map((group) => {
       const expansionKey = `${this.onlyAttention ? "attention" : "all"}:${group.key}`;
       const inactive = this.onlyAttention && group.entries.every(({ agent }) => {
         const timestamp = activity(agent);
@@ -86,7 +102,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
               activity(b.agent) - activity(a.agent) || a.agent.id.localeCompare(b.agent.id),
           );
       const revealKey = `${this.onlyAttention ? "attention" : "all"}:${group.key}`;
-      const showAll = !!this.search.trim() || this.revealed.has(revealKey);
+      const showAll = !this.groupByProject || !!this.search.trim() || this.revealed.has(revealKey);
       const previewCount = this.onlyAttention ? primaryEntries.length : GROUP_PREVIEW_LIMIT;
       const hiddenCount = Math.max(0, orderedEntries.length - previewCount);
       const visibleEntries = showAll ? orderedEntries : orderedEntries.slice(0, previewCount);
@@ -131,6 +147,41 @@ export class InboxViewModel extends PulseViewModel<Payload> {
       };
     });
   }
+  get flatRows() {
+    return this.groups.flatMap((group) => group.rows);
+  }
+  get onlyAttention() {
+    return this.payload.onlyAttention ?? this.localOnlyAttention;
+  }
+  get grouping() {
+    return this.payload.grouping ?? this.localGrouping;
+  }
+  get groupByProject() {
+    return this.grouping === "workspace";
+  }
+  get statusGroups() {
+    const groups = new Map<InboxStatusGroup, InboxRow[]>(STATUS_GROUPS.map((key) => [key, []]));
+    for (const row of this.flatRows) {
+      const key = row.reason === "permission" || row.reason === "error" ? "action"
+        : row.reason === "running" ? "running"
+        : row.reason === "finished" ? "finished" : "other";
+      groups.get(key)!.push(row);
+    }
+    return STATUS_GROUPS.flatMap((key) => {
+      const rows = groups.get(key)!;
+      return rows.length ? [{ key, rows }] : [];
+    });
+  }
+  get statusItems(): StatusListItem[] {
+    return this.statusGroups.flatMap(({ key, rows }) => [
+      { kind: "header", key: `status:${key}`, status: key, count: rows.length } as const,
+      ...rows.map((row) => ({ kind: "session", key: `session:${row.agent.id}`, row } as const)),
+    ]);
+  }
+  setGrouping(value: InboxGrouping) {
+    this.localGrouping = value;
+    this.payload.setGrouping?.(value);
+  }
   setSearch(value: string) {
     this.search = value;
   }
@@ -139,7 +190,8 @@ export class InboxViewModel extends PulseViewModel<Payload> {
     this.search = "";
   }
   setOnlyAttention(value: boolean) {
-    this.onlyAttention = value;
+    this.localOnlyAttention = value;
+    this.payload.setOnlyAttention?.(value);
   }
   toggleGroup(key: string) {
     const group = this.groups.find((group) => group.key === key);
@@ -158,3 +210,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
 }
 export type InboxGroup = InboxViewModel["groups"][number];
 export type InboxRow = InboxGroup["rows"][number];
+
+export type StatusListItem =
+  | { kind: "header"; key: string; status: InboxStatusGroup; count: number }
+  | { kind: "session"; key: string; row: InboxRow };

@@ -267,3 +267,115 @@ test("ten-hour collapse uses real message activity and leaves active or unknown 
   model.setPayload({ ...base, entries: [entry("old", { ...old, lastUserMessageAt: at(3000), updatedAt: at(0) })] });
   assert.equal(model.groups[0].isExpanded, false, "metadata updates cannot revive old groups");
 });
+
+
+test('ungrouped inbox shows every matching session in global order and preserves group expansion', () => {
+  const entries = Array.from({ length: 10 }, (_, i) => ({
+    ...entry(`session-${i}`, { lastUserMessageAt: at(i + 1),
+      status: i === 8 ? 'running' : 'idle', pinnedAt: i === 9 ? at(10) : null }),
+    project: { projectKey: `project-${i % 2}`, projectName: `Project ${i % 2}` },
+  }));
+  const model = new InboxViewModel({ id: 'grouping', payload: { entries, now,
+    replies: new Map(), iconProjects: [], hostId: 'host', trackVisit() {} } });
+  assert.equal(model.groupByProject, true);
+  assert.equal(model.groups.length, 2);
+  model.toggleGroup('project-0');
+  model.setGrouping("none");
+  assert.equal(model.flatRows.length, 10);
+  assert.equal(model.flatRows[0].agent.id, 'session-8', 'attention priority applies across projects');
+  model.setOnlyAttention(false);
+  assert.equal(model.flatRows.length, 10, 'flat list has no six-session preview limit');
+  assert.equal(model.flatRows[0].agent.id, 'session-9', 'pins sort first across projects');
+  model.setSearch('Project 1');
+  assert.equal(model.flatRows.length, 5);
+  assert.ok(model.flatRows.every(row => row.sessionEntry.project.projectKey === 'project-1'));
+  model.setSearch('missing');
+  assert.deepEqual(model.flatRows, []);
+  model.setSearch('');
+  model.setOnlyAttention(true);
+  model.setGrouping("workspace");
+  assert.equal(model.groups.find(group => group.key === 'project-0').isExpanded, false);
+});
+
+
+test('status grouping partitions filtered sessions, omits empty groups and reacts to status changes', () => {
+  const entries = [
+    entry('permission', { pendingPermissions: [{}] }),
+    entry('error', { status: 'error', requiresAttention: true }),
+    entry('running', { status: 'running' }),
+    entry('starting', { status: 'initializing' }),
+    entry('finished', { requiresAttention: true, attentionReason: 'finished' }),
+    entry('read', { requiresAttention: false, attentionReason: 'finished' }),
+    entry('old', { lastUserMessageAt: at(3000) }),
+    entry('weekly', { lastUserMessageAt: at(3000), revisitedUntil: now + 1000 }),
+    entry('archived', { status: 'running', archivedAt: at(1) }),
+    entry('internal', { status: 'running', internal: true }),
+  ].map((value, i) => ({ ...value, project: { projectKey: `p-${i}`, projectName: `Project ${i}` } }));
+  const payload = { entries, now, replies: new Map(), iconProjects: [], hostId: 'host', trackVisit() {} };
+  const model = new InboxViewModel({ id: 'status-grouping', payload });
+  model.setGrouping('status');
+  const groups = () => model.statusGroups.map(group => [group.key, group.rows.map(row => row.agent.id)]);
+  assert.deepEqual(groups(), [
+    ['action', ['permission', 'error']], ['running', ['running', 'starting']],
+    ['finished', ['finished']], ['other', ['read', 'weekly']],
+  ]);
+  assert.equal(model.statusItems.filter(item => item.kind === 'header').length, 4);
+  assert.equal(model.statusItems.filter(item => item.kind === 'session').length, 7);
+  model.setOnlyAttention(false);
+  assert.deepEqual(groups().at(-1), ['other', ['read', 'old', 'weekly']]);
+  model.setSearch('Project 4');
+  assert.deepEqual(groups(), [['finished', ['finished']]]);
+  model.setSearch('missing');
+  assert.deepEqual(model.statusItems, []);
+  model.setSearch('');
+  model.setOnlyAttention(true);
+  model.setPayload({ ...payload, entries: [entry('finished', { status: 'running' })] });
+  assert.deepEqual(groups(), [['running', ['finished']]]);
+  model.setPayload({ ...payload, entries: [entry('finished', { requiresAttention: false })] });
+  assert.deepEqual(groups(), [['other', ['finished']]], 'read replies leave Reply ready');
+});
+
+
+test('inbox restores saved grouping and follows persisted updates without changing project expansion', () => {
+  const saved = [];
+  const payload = { entries: [entry('one')], now, replies: new Map(), iconProjects: [],
+    hostId: 'host', trackVisit() {}, grouping: 'status', setGrouping: value => saved.push(value) };
+  const model = new InboxViewModel({ id: 'saved-grouping', payload });
+  assert.equal(model.grouping, 'status');
+  model.setGrouping('none');
+  assert.deepEqual(saved, ['none']);
+  model.setPayload({ ...payload, grouping: 'none' });
+  assert.equal(model.grouping, 'none');
+  const reopened = new InboxViewModel({ id: 'reopened-grouping', payload: { ...payload, grouping: 'none' } });
+  assert.equal(reopened.grouping, 'none');
+  model.setPayload({ ...payload, grouping: 'workspace' });
+  model.toggleGroup('project');
+  model.setPayload({ ...payload, grouping: 'status' });
+  model.setPayload({ ...payload, grouping: 'workspace' });
+  assert.equal(model.groups[0].isExpanded, false);
+});
+
+
+test('inbox restores All and preserves grouping when persisted filters change', () => {
+  const saved = [];
+  const payload = { entries: [entry('old', { lastUserMessageAt: at(3000) })], now,
+    replies: new Map(), iconProjects: [], hostId: 'host', trackVisit() {},
+    grouping: 'status', onlyAttention: false, setOnlyAttention: value => saved.push(value) };
+  const model = new InboxViewModel({ id: 'saved-filter', payload });
+  assert.equal(model.onlyAttention, false);
+  assert.equal(model.statusGroups[0].rows[0].agent.id, 'old');
+  model.setOnlyAttention(true);
+  assert.deepEqual(saved, [true]);
+  model.setPayload({ ...payload, onlyAttention: true });
+  assert.deepEqual(model.statusGroups, []);
+  assert.equal(model.grouping, 'status');
+  const reopened = new InboxViewModel({ id: 'reopened-filter', payload });
+  assert.equal(reopened.onlyAttention, false);
+  assert.equal(reopened.grouping, 'status');
+});
+
+test('existing grouping-only settings retain their mode and default the new filter to Attention', async () => {
+  const { inboxPreferences } = await importClientModule('../shared/inbox-preferences.ts');
+  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'none' }), { grouping: 'none', onlyAttention: true });
+  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'status', onlyAttention: false }), { grouping: 'status', onlyAttention: false });
+});

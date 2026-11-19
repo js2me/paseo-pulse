@@ -22,18 +22,33 @@ const result = await build({
   legalComments: "eof",
   metafile: true,
 });
+const animations = await build({
+  absWorkingDir: root,
+  entryPoints: ["scripts/text-animation-runtime.ts"],
+  loader: { ".js": "jsx" },
+  outfile: "client/generated/text-animation.js",
+  bundle: true,
+  platform: "browser",
+  format: "esm",
+  target: "es2020",
+  sourcemap: "linked",
+  external: ["react", "react/jsx-runtime", "react-native"],
+  define: { "process.env.NODE_ENV": '"production"' },
+  legalComments: "eof",
+  metafile: true,
+});
 const output = result.metafile.outputs["client/generated/mvvm.js"];
-for (const item of output.imports) {
-  if (!["react", "react/jsx-runtime"].includes(item.path) || item.kind !== "import-statement")
+for (const item of [...output.imports, ...animations.metafile.outputs["client/generated/text-animation.js"].imports]) {
+  if (!["react", "react/jsx-runtime", "react-native"].includes(item.path) || item.kind !== "import-statement")
     throw new Error(`Unexpected runtime import: ${JSON.stringify(item)}`);
 }
 const packages = new Set(
-  Object.entries(output.inputs)
+  Object.entries({ ...output.inputs, ...animations.metafile.outputs["client/generated/text-animation.js"].inputs })
     .filter(([, info]) => info.bytesInOutput > 0)
     .map(([path]) => path.match(/node_modules\/((?:@[^/]+\/)?[^/]+)/)?.[1])
     .filter(Boolean),
 );
-const licenses = ["Bundled MVVM runtime licenses. React and its renderer are supplied by Paseo."];
+const licenses = ["Bundled client runtime licenses. React and its renderer are supplied by Paseo."];
 for (const name of [...packages].sort()) {
   const directory = join(root, "node_modules", name);
   const { version } = JSON.parse(await readFile(join(directory, "package.json"), "utf8"));
@@ -64,3 +79,17 @@ for (const match of types.matchAll(/(?:from\s*|import\s*\()(["'])([^"']+)\1/g)) 
   if (match[2] !== "react") throw new Error(`Unexpected declaration import: ${match[2]}`);
 }
 await writeFile(join(root, "client/generated/mvvm.d.ts"), types.replace(/[\t ]+$/gm, ""));
+
+const [animationTypes] = generateDtsBundle([{
+  filePath: join(root, "scripts/text-animation-runtime.ts"),
+  libraries: {
+    inlinedLibraries: ["react-native-animatable"],
+    importedLibraries: ["react", "react-native"],
+    allowedTypesLibraries: [],
+  },
+  output: { noBanner: true },
+}], { preferredConfigPath: join(root, "tsconfig.json") });
+for (const match of animationTypes.matchAll(/(?:from\s*|import\s*\()(["'])([^"']+)\1/g)) {
+  if (!["react", "react-native"].includes(match[2])) throw new Error(`Unexpected animation declaration import: ${match[2]}`);
+}
+await writeFile(join(root, "client/generated/text-animation.d.ts"), animationTypes.replace(/[\t ]+$/gm, ""));

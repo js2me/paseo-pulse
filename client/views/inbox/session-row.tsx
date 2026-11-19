@@ -5,6 +5,7 @@ import type { InboxRow } from "../../view-models/inbox-view-model";
 import { formatTokenCount, relativeTime, useMessages } from "../../i18n/messages";
 import { sessionTextColors } from "../shared/session-text-colors";
 import { statusColor } from "../shared/status-color";
+import { AnimatedText } from "../shared/animated-text";
 import { SessionReplyPreview } from "./session-reply-preview";
 import type { InboxViewContext } from "./types";
 
@@ -105,12 +106,11 @@ export const SessionRow = observer(function SessionRow({
             {relativeTime(lastActivity, t, now)}
           </Text>
           {row.reply?.totalTokens !== undefined && (
-            <Text
+            <AnimatedText
               accessibilityLabel={t("tokenUsageLabel", { count: row.reply.totalTokens })}
               style={{ color: c.foregroundMuted, fontSize: 10, lineHeight: 14 }}
-            >
-              {t("tokenUsage", { amount: formatTokenCount(row.reply.totalTokens, locale) })}
-            </Text>
+              text={t("tokenUsage", { amount: formatTokenCount(row.reply.totalTokens, locale) })}
+            />
           )}
         </View>
       </Pressable>

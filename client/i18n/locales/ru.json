@@ -1,4 +1,15 @@
 {
+  "preferencesError": "Не удалось сохранить или загрузить настройки отображения.",
+  "groupByStatus": "По статусу",
+  "statusGroups": {
+    "action": "Требуют действия",
+    "running": "В работе",
+    "finished": "Ответ готов",
+    "other": "Остальные"
+  },
+  "grouping": "Группировка",
+  "groupByWorkspace": "По пространствам",
+  "noGrouping": "Нет",
   "sidebarProgressCount": "Сессий в работе: {{count}}",
   "sidebarFinishedCount": "Новых завершённых ответов: {{count}}",
   "collapseExtra": "Свернуть",

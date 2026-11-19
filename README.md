@@ -82,13 +82,15 @@ when their view model unmounts.
 | `client/data` | Live directory, caching and transcript-derived activity |
 | `client/services` | Session creation and settings inheritance |
 | `client/i18n` | Translations and formatting |
-| `client/lib`, `client/generated` | Shared library facade and bundled MVVM runtime |
+| `client/lib`, `client/generated` | Shared library facade and bundled MVVM/animation runtimes |
 | `shared/sessions`, `shared/projects` | Domain rules, types and RPC contracts |
 | `server/sessions`, `server/projects` | Host transcript, visit and icon access |
 
 The shared MVVM bundle keeps all models on one MobX instance and uses Paseo’s
 React instance. It ships with source maps and third-party notices; installation
-does not download runtime libraries. Rebuild it with `npm run build:runtime`.
+does not download runtime libraries. The text animation bundle includes
+`react-native-animatable` 1.4.0 and uses Paseo’s React Native. Rebuild both with
+`npm run build:runtime`.
 
 Runtime bundles and their type declarations are committed and self-contained. Loading the installed plugin does not require a local `node_modules` directory. Run `npm ci --ignore-scripts` before developing or rebuilding it.
 

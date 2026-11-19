@@ -1,6 +1,6 @@
 import type { PluginTheme } from "@getpaseo/plugin";
 import type { sessionEmphasis } from "../../view-models/session-emphasis";
-import { statusColor } from "./status-color";
+import { isDarkSurface, statusColor } from "./status-color";
 
 /** Blend theme text tokens instead of fading text into the background. */
 function blend(from: string, to: string, amount: number): string {
@@ -26,8 +26,9 @@ export function sessionTextColors(theme: PluginTheme, emphasis: ReturnType<typeo
       time: status,
     };
   }
+  const title = blend(c.foregroundMuted, c.foreground, emphasis.title);
   return {
-    title: blend(c.foregroundMuted, c.foreground, emphasis.title),
+    title: emphasis.freshTitle ? (isDarkSurface(theme) ? "#c4b5fd" : "#6d28d9") : title,
     preview: blend(c.foregroundMuted, c.foreground, emphasis.preview),
     time: blend(c.foregroundMuted, c.foreground, emphasis.time),
   };

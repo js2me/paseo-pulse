@@ -13,6 +13,10 @@ const directory = createSessionDirectoryStore(demoApi);
 directory.start();
 const runtime = new PluginTranslationRuntime({ getLocale: () => 'en', subscribe: () => () => {} });
 const query = new QueryClient();
+creationDemo.updateReply = (agentId, changes) => query.setQueriesData(
+  { queryKey: ['session-inbox', 'sample-host', 'session-index-v1'] },
+  data => data?.map(entry => entry.agentId === agentId ? { ...entry, ...changes } : entry),
+);
 const sidebar = createInboxSidebar();
 sidebar.update(entries);
 const theme = { colors: { surface0: '#191e1b', surface1: '#222925', surface2: '#2b342f', foreground: '#fafafa',

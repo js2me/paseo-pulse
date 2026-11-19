@@ -60,3 +60,28 @@ test('active state colors override age and read state in light and dark themes',
     assert.equal(sessionTextColors(theme, sessionEmphasis(session(80), now)).time, colors.foregroundMuted);
   }
 });
+
+
+test('titles get a theme-aware lavender tint only for messages under one hour, including read sessions', () => {
+  for (const colors of [
+    { surface0: '#181818', foreground: '#eeeeee', foregroundMuted: '#888888' },
+    { surface0: '#ffffff', foreground: '#111111', foregroundMuted: '#666666' },
+  ]) {
+    const theme = { colors: { ...colors, statusSuccess: '#22aa66', statusWarning: '#cc8800', statusDanger: '#dd3333' } };
+    for (const requiresAttention of [false, true]) {
+      const fresh = sessionEmphasis(session(0.99, { requiresAttention }), now);
+      const tinted = sessionTextColors(theme, fresh);
+      const neutral = sessionTextColors(theme, { ...fresh, freshTitle: false });
+      assert.equal(fresh.freshTitle, true);
+      assert.notEqual(tinted.title, neutral.title);
+      assert.equal(tinted.title, colors.surface0 === '#181818' ? '#c4b5fd' : '#6d28d9');
+      assert.equal(tinted.preview, neutral.preview);
+      assert.equal(tinted.time, neutral.time);
+      for (const hours of [1, 2, 80, -1]) assert.equal(sessionEmphasis(session(hours, { requiresAttention }), now).freshTitle, false);
+    }
+    for (const lastUserMessageAt of [null, 'invalid'])
+      assert.equal(sessionEmphasis(session(0, { lastUserMessageAt }), now).freshTitle, false);
+    const running = sessionEmphasis(session(0.1, { status: 'running' }), now);
+    assert.deepEqual(sessionTextColors(theme, running), sessionTextColors(theme, { ...running, freshTitle: false }), 'active status colors still take precedence');
+  }
+});

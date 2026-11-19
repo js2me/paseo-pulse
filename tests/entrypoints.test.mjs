@@ -24,7 +24,7 @@ test('list-only backend registers preview/icon reads and acknowledgements withou
     on() { throw new Error('The session list must not run message queue or other agent lifecycle hooks'); },
     before() { throw new Error('The session list must not transform agent execution'); },
   });
-  assert.deepEqual(settings, ['acknowledgements']);
+  assert.deepEqual(settings, ['acknowledgements', 'display']);
   assert.deepEqual(handlers.sort(), ['project-icon.read', 'session-index.read', 'session-visits.list', 'session-visits.record']);
   await cleanup();
 });

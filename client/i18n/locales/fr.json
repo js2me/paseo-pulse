@@ -1,4 +1,15 @@
 {
+  "preferencesError": "Impossible de charger ou d’enregistrer les préférences d’affichage.",
+  "groupByStatus": "Par statut",
+  "statusGroups": {
+    "action": "Action requise",
+    "running": "En cours",
+    "finished": "Réponse prête",
+    "other": "Autres"
+  },
+  "grouping": "Regroupement",
+  "groupByWorkspace": "Par espace de travail",
+  "noGrouping": "Aucun",
   "sidebarProgressCount": "Sessions en cours : {{count}}",
   "sidebarFinishedCount": "Nouvelles réponses terminées : {{count}}",
   "collapseExtra": "Réduire",

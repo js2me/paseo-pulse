@@ -1,4 +1,15 @@
 {
+  "preferencesError": "無法儲存或載入顯示設定。",
+  "groupByStatus": "依狀態",
+  "statusGroups": {
+    "action": "需要處理",
+    "running": "進行中",
+    "finished": "回覆已就緒",
+    "other": "其他"
+  },
+  "grouping": "分組",
+  "groupByWorkspace": "依工作區",
+  "noGrouping": "無",
   "sidebarProgressCount": "執行中的工作階段：{{count}}",
   "sidebarFinishedCount": "新的已完成回覆：{{count}}",
   "collapseExtra": "收合",

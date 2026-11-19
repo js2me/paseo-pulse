@@ -1,6 +1,6 @@
 import type { PluginTheme } from "@getpaseo/plugin";
 import { memo } from "react";
-import { Text } from "react-native";
+import { AnimatedText } from "../shared/animated-text";
 import { useMessages } from "../../i18n/messages";
 
 interface Props {
@@ -33,11 +33,10 @@ export const SessionReplyPreview = memo(function SessionReplyPreview({
           ? t("preview.limited")
           : t("preview.empty"));
   return (
-    <Text
+    <AnimatedText
       numberOfLines={1}
       style={{ color: color ?? theme.colors.foregroundMuted, opacity, fontSize: 11, lineHeight: 16 }}
-    >
-      {preview}
-    </Text>
+      text={preview}
+    />
   );
 });

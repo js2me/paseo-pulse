@@ -47,3 +47,11 @@ in [client/generated/LICENSES.txt](client/generated/LICENSES.txt).
 The adjacent source map embeds the sources used to create the bundle.
 `scripts/build-runtime.mjs` reproduces it from the committed development lock.
 React and its renderer are supplied by Paseo and are not bundled.
+
+## Bundled text animation
+
+`client/generated/text-animation.js` includes react-native-animatable 1.4.0 and
+its used helper code. Complete MIT notices are included in
+[client/generated/LICENSES.txt](client/generated/LICENSES.txt).
+The adjacent source map and `scripts/build-runtime.mjs` reproduce the bundle
+from the committed development lock. React and React Native are supplied by Paseo.

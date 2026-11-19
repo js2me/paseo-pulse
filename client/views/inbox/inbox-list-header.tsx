@@ -7,6 +7,7 @@ import type { InboxViewContext } from "./types";
 export const InboxListHeader = observer(function InboxListHeader({ context }: { context: InboxViewContext }) {
   const { props, binding } = context;
   const { model, loading, error, retry, creation, verifying, ackReady, ackError } = binding;
+  const { preferences } = binding;
   const { groups, search, onlyAttention } = model;
   const { t } = useMessages(),
     c = props.theme.colors;
@@ -14,6 +15,11 @@ export const InboxListHeader = observer(function InboxListHeader({ context }: { 
     <>
       {!groups.length && (loading || verifying || (!ackReady && !ackError)) && (
         <Text style={{ color: c.foregroundMuted, fontSize: 13 }}>{t("loading")}</Text>
+      )}
+      {preferences.error && (
+        <Text accessibilityRole="alert" style={{ color: c.statusDanger, fontSize: 12 }}>
+          {t("preferencesError")}
+        </Text>
       )}
       {creation.error && (
         <Text accessibilityRole="alert" style={{ color: c.statusDanger, fontSize: 12 }}>

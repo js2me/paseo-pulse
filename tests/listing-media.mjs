@@ -15,7 +15,7 @@ try {
   await mkdir(assets, { recursive: true });
   const bundle = join(temp, 'client.js');
   await build({ entryPoints: [join(root, 'tests/listing/client.jsx')], outfile: bundle, bundle: true, platform: 'browser',
-    format: 'iife', jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"' },
+    format: 'iife', jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"', global: "globalThis" },
     alias: { 'react-native': 'react-native-web', '@getpaseo/plugin/client': join(root, 'tests/listing/host.jsx'),
       '@getpaseo/plugin/client/ui': join(root, 'tests/listing/host.jsx') } });
   const html = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Paseo Pulse sample data</title><style>html,body,#root{margin:0;width:100%;height:100%;overflow:hidden}#root{display:flex}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#191e1b}svg{display:block}</style><div id="root"></div><script src="/client.js"></script></html>';
@@ -64,6 +64,33 @@ try {
     ].map(row => row.children[1].getBoundingClientRect().left - row.getBoundingClientRect().left));
     assert.equal(textOffsets[0], textOffsets[1], `${name} running and idle text must align`);
     assert.equal(await page.$eval('[aria-label="Session tokens, input and output including cache: 12345"]', text => text.textContent), "≈12.3K ◈");
+    // Exercise real query updates through both animated row fields.
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
+    await page.evaluate(() => globalThis.__pulseDemo.updateReply('checkout', {
+      text: 'New streamed preview', totalTokens: 25000,
+    }));
+    await page.waitForFunction(() => {
+      const tokens = document.querySelector('[aria-label="Session tokens, input and output including cache: 25000"]');
+      return tokens && Number(getComputedStyle(tokens).opacity) < 0.99;
+    }, { polling: 'raf' });
+    await page.waitForFunction(() => [...document.querySelectorAll('div')].some(element =>
+      element.textContent === 'New streamed preview' && Number(getComputedStyle(element).opacity) < 0.99), { polling: 'raf' });
+    await page.waitForFunction(() => {
+      const tokens = document.querySelector('[aria-label="Session tokens, input and output including cache: 25000"]');
+      return tokens && Number(getComputedStyle(tokens).opacity) === 1;
+    }, { polling: 'raf' });
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 50)));
+    await page.evaluate(() => globalThis.__pulseDemo.updateReply('checkout', {
+      text: 'Reduced motion preview', totalTokens: 30000,
+    }));
+    await page.waitForSelector('[aria-label="Session tokens, input and output including cache: 30000"]');
+    assert.equal(await page.$eval('[aria-label="Session tokens, input and output including cache: 30000"]',
+      element => Number(getComputedStyle(element).opacity)), 1, `${name} reduced motion disables animation`);
+    await page.evaluate(() => globalThis.__pulseDemo.updateReply('checkout', {
+      text: 'Updating responsive states and keyboard navigation.', totalTokens: 12345,
+    }));
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
     const idle = await page.evaluate(async () => {
       const before = globalThis.__pulseDemo.settingsRenders;
       await new Promise(resolve => setTimeout(resolve, 1200));
@@ -106,6 +133,45 @@ try {
     await page.waitForFunction(() => !document.body.innerText.includes('Approve the navigation plan'));
     await page.$eval('[aria-label="Atlas Studio, 4 sessions"]', button => button.click());
     await page.waitForFunction(() => document.body.innerText.includes('Approve the navigation plan'));
+    const grouped = '[role="radio"][aria-checked="true"]';
+    assert.equal(await page.$eval(grouped, element => element.textContent), 'By workspace');
+    await page.$eval('[role="radio"][aria-label="None"]', button => button.click());
+    await page.waitForFunction(() => !document.querySelector('[aria-label="Atlas Studio, 4 sessions"]'));
+    assert.equal(await page.$eval(grouped, element => element.textContent), 'None');
+    assert.ok(await page.$('[aria-label^="Approve the navigation plan,"]'), `${name} flat sessions remain visible`);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${name} grouping control overflows`);
+    await page.click('[role="radio"][aria-label="By status"]');
+    await page.waitForFunction(() => document.body.innerText.includes('Needs action'));
+    assert.equal(await page.$eval(grouped, element => element.textContent), 'By status');
+    assert.deepEqual(await page.$$eval('[role="heading"]', headers => headers.map(header => header.textContent)),
+      ['Needs action', 'In progress', 'Reply ready', 'Other']);
+    const runningColors = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll('[role="heading"]')].find(element => element.textContent === 'In progress');
+      const row = document.querySelector('[aria-label$=", Working"]');
+      return [getComputedStyle(heading.parentElement).borderLeftColor, getComputedStyle(row).borderLeftColor];
+    });
+    assert.equal(runningColors[0], runningColors[1], `${name} running group and session use the same blue`);
+    assert.equal(await page.$('[aria-label="New workspace in Horizon API"]'), null, `${name} status groups have no project actions`);
+    assert.ok(await page.$('[aria-label^="Approve the navigation plan,"]'), `${name} status sessions remain visible`);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${name} status control overflows`);
+    await page.click('[aria-label="Find a session"]');
+    await page.type('[aria-label="Search sessions"]', 'Approve the navigation');
+    await page.waitForFunction(() => document.querySelectorAll('[role="heading"]').length === 1);
+    assert.equal(await page.$eval('[role="heading"]', header => header.textContent), 'Needs action');
+    await page.click('[aria-label="Close search"]');
+    await page.waitForFunction(() => document.querySelectorAll('[role="heading"]').length === 4);
+    await page.click('[role="radio"][aria-label="By workspace"]');
+    await page.waitForSelector('[aria-label="Atlas Studio, 4 sessions"]');
+    await page.evaluate(() => { globalThis.__pulseDemo.failPreferences = true; });
+    await page.click('[role="radio"][aria-label="None"]');
+    await page.waitForFunction(() => document.body.innerText.includes('Could not save or load the display preferences.'));
+    assert.equal(await page.$eval('[role="radio"][aria-checked="true"]', element => element.textContent), 'By workspace', `${name} failed save restores the persisted mode`);
+    await page.evaluate(() => { globalThis.__pulseDemo.failPreferences = false; });
+    await page.click('[role="tab"][aria-label="All"]');
+    await page.waitForSelector('[role="tab"][aria-label="All"][aria-selected="true"]');
+    // Keep non-default filter and grouping while unmounting and reopening the whole inbox.
+    await page.click('[role="radio"][aria-label="By status"]');
+    await page.waitForFunction(() => document.querySelector('[role="radio"][aria-label="By status"]')?.getAttribute('aria-checked') === 'true');
     const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
     await page.waitForFunction(() => !document.querySelector('[aria-label="New workspace"]'));
@@ -120,6 +186,10 @@ try {
     const reopened = await page.evaluate(() => ({ text: document.body.innerText,
       reads: [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions] }));
     assert.deepEqual(reopened.reads, reads, `${name} reopening must keep the owned directory`);
+    assert.equal(await page.$eval('[role="radio"][aria-checked="true"]', element => element.textContent), 'By status', `${name} reopening restores the saved grouping`);
+    assert.equal(await page.$('[aria-label="Atlas Studio, 4 sessions"]'), null, `${name} restored status mode has no project headers`);
+    assert.equal(await page.$eval('[role="tab"][aria-selected="true"]', element => element.getAttribute('aria-label')), 'All', `${name} reopening restores All`);
+
     assert.ok(reopened.text.includes('Labels are consistent on desktop and mobile.'), `${name} immediate cached previews`);
     assert.equal(reopened.text.includes('Loading…'), false, `${name} no repeat loading screen`);
     console.log(`${name}: idle renders=${idle}, 40 host updates=${churn}, closed-screen idle renders=${closedIdle}`);

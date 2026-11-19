@@ -1,4 +1,15 @@
 {
+  "preferencesError": "Could not save or load the display preferences.",
+  "groupByStatus": "By status",
+  "statusGroups": {
+    "action": "Needs action",
+    "running": "In progress",
+    "finished": "Reply ready",
+    "other": "Other"
+  },
+  "grouping": "Grouping",
+  "groupByWorkspace": "By workspace",
+  "noGrouping": "None",
   "sidebarProgressCount": "Sessions in progress: {{count}}",
   "sidebarFinishedCount": "New completed replies: {{count}}",
   "collapseExtra": "Collapse",
