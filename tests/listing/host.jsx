@@ -15,7 +15,7 @@ const seen = {};
 const readySettings = { status: 'ready', revision: 'sample', values: { seen }, saving: false, saveError: null,
   save: async () => { throw new Error('Sample media is read-only.'); } };
 // Match Paseo: schema parsing, callbacks and the result object are fresh on every render.
-let display = { grouping: 'workspace', revision: 1 };
+let display = { grouping: 'workspace', onlyAttention: true, revision: 1 };
 const displayListeners = new Set();
 const subscribeDisplay = listener => { displayListeners.add(listener); return () => displayListeners.delete(listener); };
 const getDisplay = () => display;
@@ -27,11 +27,11 @@ export function useSettings(definition) {
     throw new Error('Render loop: useSettings exceeded its regression render budget');
   }
   if (definition.id === 'display') return {
-    ...readySettings, values: { grouping: saved.grouping }, revision: String(saved.revision),
+    ...readySettings, values: { grouping: saved.grouping, onlyAttention: saved.onlyAttention }, revision: String(saved.revision),
     save: async (values, revision) => {
       if (creationDemo.failPreferences) return false;
       if (revision !== String(display.revision)) return false;
-      display = { grouping: definition.schema.parse(values).grouping, revision: display.revision + 1 };
+      display = { ...definition.schema.parse(values), revision: display.revision + 1 };
       for (const listener of displayListeners) listener();
       return true;
     },

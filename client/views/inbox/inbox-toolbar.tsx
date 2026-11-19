@@ -7,7 +7,7 @@ import type { InboxViewContext } from "./types";
 
 export const InboxToolbar = observer(function InboxToolbar({ context }: { context: InboxViewContext }) {
   const { props, binding } = context;
-  const { model, creation, creationDisabled } = binding;
+  const { model, creation, creationDisabled, preferences } = binding;
   const { search, searchOpen, onlyAttention, totalAttention, attentionGroups } = model;
   const { t } = useMessages(),
     c = props.theme.colors;
@@ -36,7 +36,11 @@ export const InboxToolbar = observer(function InboxToolbar({ context }: { contex
             <Pressable
               key={tab.label}
               accessibilityRole="tab"
-              accessibilityState={{ selected: onlyAttention === tab.value }}
+              accessibilityLabel={tab.label}
+              aria-selected={preferences.ready && onlyAttention === tab.value}
+              disabled={!preferences.ready || preferences.pending}
+              accessibilityState={{ selected: preferences.ready && onlyAttention === tab.value,
+                disabled: !preferences.ready || preferences.pending, busy: preferences.pending }}
               onPress={() => model.setOnlyAttention(tab.value)}
               style={{
                 flexDirection: "row",

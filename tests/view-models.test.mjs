@@ -354,3 +354,28 @@ test('inbox restores saved grouping and follows persisted updates without changi
   model.setPayload({ ...payload, grouping: 'workspace' });
   assert.equal(model.groups[0].isExpanded, false);
 });
+
+
+test('inbox restores All and preserves grouping when persisted filters change', () => {
+  const saved = [];
+  const payload = { entries: [entry('old', { lastUserMessageAt: at(3000) })], now,
+    replies: new Map(), iconProjects: [], hostId: 'host', trackVisit() {},
+    grouping: 'status', onlyAttention: false, setOnlyAttention: value => saved.push(value) };
+  const model = new InboxViewModel({ id: 'saved-filter', payload });
+  assert.equal(model.onlyAttention, false);
+  assert.equal(model.statusGroups[0].rows[0].agent.id, 'old');
+  model.setOnlyAttention(true);
+  assert.deepEqual(saved, [true]);
+  model.setPayload({ ...payload, onlyAttention: true });
+  assert.deepEqual(model.statusGroups, []);
+  assert.equal(model.grouping, 'status');
+  const reopened = new InboxViewModel({ id: 'reopened-filter', payload });
+  assert.equal(reopened.onlyAttention, false);
+  assert.equal(reopened.grouping, 'status');
+});
+
+test('existing grouping-only settings retain their mode and default the new filter to Attention', async () => {
+  const { inboxPreferences } = await importClientModule('../shared/inbox-preferences.ts');
+  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'none' }), { grouping: 'none', onlyAttention: true });
+  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'status', onlyAttention: false }), { grouping: 'status', onlyAttention: false });
+});

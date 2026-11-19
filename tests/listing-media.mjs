@@ -164,10 +164,12 @@ try {
     await page.waitForSelector('[aria-label="Atlas Studio, 4 sessions"]');
     await page.evaluate(() => { globalThis.__pulseDemo.failPreferences = true; });
     await page.click('[role="radio"][aria-label="None"]');
-    await page.waitForFunction(() => document.body.innerText.includes('Could not save or load the grouping preference.'));
+    await page.waitForFunction(() => document.body.innerText.includes('Could not save or load the display preferences.'));
     assert.equal(await page.$eval('[role="radio"][aria-checked="true"]', element => element.textContent), 'By workspace', `${name} failed save restores the persisted mode`);
     await page.evaluate(() => { globalThis.__pulseDemo.failPreferences = false; });
-    // Keep a non-default mode while unmounting and reopening the whole inbox.
+    await page.click('[role="tab"][aria-label="All"]');
+    await page.waitForSelector('[role="tab"][aria-label="All"][aria-selected="true"]');
+    // Keep non-default filter and grouping while unmounting and reopening the whole inbox.
     await page.click('[role="radio"][aria-label="By status"]');
     await page.waitForFunction(() => document.querySelector('[role="radio"][aria-label="By status"]')?.getAttribute('aria-checked') === 'true');
     const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
@@ -186,6 +188,7 @@ try {
     assert.deepEqual(reopened.reads, reads, `${name} reopening must keep the owned directory`);
     assert.equal(await page.$eval('[role="radio"][aria-checked="true"]', element => element.textContent), 'By status', `${name} reopening restores the saved grouping`);
     assert.equal(await page.$('[aria-label="Atlas Studio, 4 sessions"]'), null, `${name} restored status mode has no project headers`);
+    assert.equal(await page.$eval('[role="tab"][aria-selected="true"]', element => element.getAttribute('aria-label')), 'All', `${name} reopening restores All`);
 
     assert.ok(reopened.text.includes('Labels are consistent on desktop and mobile.'), `${name} immediate cached previews`);
     assert.equal(reopened.text.includes('Loading…'), false, `${name} no repeat loading screen`);

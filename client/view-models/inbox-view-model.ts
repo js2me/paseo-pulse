@@ -33,22 +33,25 @@ type Payload = {
   navigation: PluginScreenProps["navigation"];
   hostId: string;
   trackVisit(id: string): void;
+  onlyAttention?: boolean;
+  setOnlyAttention?(value: boolean): void;
   grouping?: InboxGrouping;
   setGrouping?(value: InboxGrouping): void;
 };
 export class InboxViewModel extends PulseViewModel<Payload> {
   search = "";
   searchOpen = false;
-  onlyAttention = true;
+  private localOnlyAttention = true;
   private localGrouping: InboxGrouping = "workspace";
   private expanded = new Map<string, boolean>();
   private revealed = new Set<string>();
   constructor(params: ViewModelParams<Payload>) {
     super(params);
-    makeObservable<this, "expanded" | "revealed" | "localGrouping">(this, {
+    makeObservable<this, "expanded" | "revealed" | "localGrouping" | "localOnlyAttention">(this, {
       search: observable,
       searchOpen: observable,
-      onlyAttention: observable,
+      localOnlyAttention: observable,
+      onlyAttention: computed,
       localGrouping: observable,
       grouping: computed,
       groupByProject: computed,
@@ -147,6 +150,9 @@ export class InboxViewModel extends PulseViewModel<Payload> {
   get flatRows() {
     return this.groups.flatMap((group) => group.rows);
   }
+  get onlyAttention() {
+    return this.payload.onlyAttention ?? this.localOnlyAttention;
+  }
   get grouping() {
     return this.payload.grouping ?? this.localGrouping;
   }
@@ -184,7 +190,8 @@ export class InboxViewModel extends PulseViewModel<Payload> {
     this.search = "";
   }
   setOnlyAttention(value: boolean) {
-    this.onlyAttention = value;
+    this.localOnlyAttention = value;
+    this.payload.setOnlyAttention?.(value);
   }
   toggleGroup(key: string) {
     const group = this.groups.find((group) => group.key === key);

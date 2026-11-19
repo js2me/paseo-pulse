@@ -1,5 +1,5 @@
 {
-  "preferencesError": "Impossible de charger ou d’enregistrer le regroupement.",
+  "preferencesError": "Impossible de charger ou d’enregistrer les préférences d’affichage.",
   "groupByStatus": "Par statut",
   "statusGroups": {
     "action": "Action requise",

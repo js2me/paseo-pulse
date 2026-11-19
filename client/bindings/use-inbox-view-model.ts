@@ -28,6 +28,8 @@ export function useInboxViewModel(props: InboxProps) {
     navigation: props.navigation,
     hostId: props.host.id,
     trackVisit: visits.trackVisit,
+    onlyAttention: preferences.onlyAttention,
+    setOnlyAttention: preferences.setOnlyAttention,
     grouping: preferences.grouping,
     setGrouping: preferences.setGrouping,
   });
