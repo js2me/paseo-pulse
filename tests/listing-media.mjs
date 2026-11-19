@@ -156,6 +156,14 @@ try {
     await page.waitForFunction(() => document.querySelectorAll('[role="heading"]').length === 4);
     await page.click('[role="radio"][aria-label="By workspace"]');
     await page.waitForSelector('[aria-label="Atlas Studio, 4 sessions"]');
+    await page.evaluate(() => { globalThis.__pulseDemo.failPreferences = true; });
+    await page.click('[role="radio"][aria-label="None"]');
+    await page.waitForFunction(() => document.body.innerText.includes('Could not save or load the grouping preference.'));
+    assert.equal(await page.$eval('[role="radio"][aria-checked="true"]', element => element.textContent), 'By workspace', `${name} failed save restores the persisted mode`);
+    await page.evaluate(() => { globalThis.__pulseDemo.failPreferences = false; });
+    // Keep a non-default mode while unmounting and reopening the whole inbox.
+    await page.click('[role="radio"][aria-label="By status"]');
+    await page.waitForFunction(() => document.querySelector('[role="radio"][aria-label="By status"]')?.getAttribute('aria-checked') === 'true');
     const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
     await page.waitForFunction(() => !document.querySelector('[aria-label="New workspace"]'));
@@ -170,6 +178,9 @@ try {
     const reopened = await page.evaluate(() => ({ text: document.body.innerText,
       reads: [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions] }));
     assert.deepEqual(reopened.reads, reads, `${name} reopening must keep the owned directory`);
+    assert.equal(await page.$eval('[role="radio"][aria-checked="true"]', element => element.textContent), 'By status', `${name} reopening restores the saved grouping`);
+    assert.equal(await page.$('[aria-label="Atlas Studio, 4 sessions"]'), null, `${name} restored status mode has no project headers`);
+
     assert.ok(reopened.text.includes('Labels are consistent on desktop and mobile.'), `${name} immediate cached previews`);
     assert.equal(reopened.text.includes('Loading…'), false, `${name} no repeat loading screen`);
     console.log(`${name}: idle renders=${idle}, 40 host updates=${churn}, closed-screen idle renders=${closedIdle}`);

@@ -334,3 +334,23 @@ test('status grouping partitions filtered sessions, omits empty groups and react
   model.setPayload({ ...payload, entries: [entry('finished', { requiresAttention: false })] });
   assert.deepEqual(groups(), [['other', ['finished']]], 'read replies leave Reply ready');
 });
+
+
+test('inbox restores saved grouping and follows persisted updates without changing project expansion', () => {
+  const saved = [];
+  const payload = { entries: [entry('one')], now, replies: new Map(), iconProjects: [],
+    hostId: 'host', trackVisit() {}, grouping: 'status', setGrouping: value => saved.push(value) };
+  const model = new InboxViewModel({ id: 'saved-grouping', payload });
+  assert.equal(model.grouping, 'status');
+  model.setGrouping('none');
+  assert.deepEqual(saved, ['none']);
+  model.setPayload({ ...payload, grouping: 'none' });
+  assert.equal(model.grouping, 'none');
+  const reopened = new InboxViewModel({ id: 'reopened-grouping', payload: { ...payload, grouping: 'none' } });
+  assert.equal(reopened.grouping, 'none');
+  model.setPayload({ ...payload, grouping: 'workspace' });
+  model.toggleGroup('project');
+  model.setPayload({ ...payload, grouping: 'status' });
+  model.setPayload({ ...payload, grouping: 'workspace' });
+  assert.equal(model.groups[0].isExpanded, false);
+});

@@ -15,12 +15,28 @@ const seen = {};
 const readySettings = { status: 'ready', revision: 'sample', values: { seen }, saving: false, saveError: null,
   save: async () => { throw new Error('Sample media is read-only.'); } };
 // Match Paseo: schema parsing, callbacks and the result object are fresh on every render.
-export function useSettings() {
+let display = { grouping: 'workspace', revision: 1 };
+const displayListeners = new Set();
+const subscribeDisplay = listener => { displayListeners.add(listener); return () => displayListeners.delete(listener); };
+const getDisplay = () => display;
+export function useSettings(definition) {
+  const saved = React.useSyncExternalStore(subscribeDisplay, getDisplay, getDisplay);
   creationDemo.settingsRenders = (creationDemo.settingsRenders ?? 0) + 1;
   if (creationDemo.settingsRenders > 1000) {
     creationDemo.renderBudgetExceeded = true;
     throw new Error('Render loop: useSettings exceeded its regression render budget');
   }
+  if (definition.id === 'display') return {
+    ...readySettings, values: { grouping: saved.grouping }, revision: String(saved.revision),
+    save: async (values, revision) => {
+      if (creationDemo.failPreferences) return false;
+      if (revision !== String(display.revision)) return false;
+      display = { grouping: definition.schema.parse(values).grouping, revision: display.revision + 1 };
+      for (const listener of displayListeners) listener();
+      return true;
+    },
+    reload: async () => {},
+  };
   return { ...readySettings, values: { seen: { ...seen } },
     save: (...args) => readySettings.save(...args), reset: async () => false, reload: async () => {} };
 }

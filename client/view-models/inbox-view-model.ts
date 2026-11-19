@@ -1,4 +1,5 @@
 import type { PluginScreenProps } from "@getpaseo/plugin/client";
+import type { InboxGrouping } from "../../shared/inbox-preferences";
 import type { IconProject } from "../../shared/projects/project-icons";
 import { groupIconProject } from "../../shared/projects/project-icons";
 import { canAcknowledge } from "../../shared/sessions/acknowledgements";
@@ -22,7 +23,6 @@ import { PulseViewModel } from "../lib/pulse-view-model";
 import { sessionEmphasis } from "./session-emphasis";
 
 export const GROUP_PREVIEW_LIMIT = 6;
-export type InboxGrouping = "workspace" | "status" | "none";
 export const STATUS_GROUPS = ["action", "running", "finished", "other"] as const;
 export type InboxStatusGroup = typeof STATUS_GROUPS[number];
 type Payload = {
@@ -33,21 +33,24 @@ type Payload = {
   navigation: PluginScreenProps["navigation"];
   hostId: string;
   trackVisit(id: string): void;
+  grouping?: InboxGrouping;
+  setGrouping?(value: InboxGrouping): void;
 };
 export class InboxViewModel extends PulseViewModel<Payload> {
   search = "";
   searchOpen = false;
   onlyAttention = true;
-  grouping: InboxGrouping = "workspace";
+  private localGrouping: InboxGrouping = "workspace";
   private expanded = new Map<string, boolean>();
   private revealed = new Set<string>();
   constructor(params: ViewModelParams<Payload>) {
     super(params);
-    makeObservable<this, "expanded" | "revealed">(this, {
+    makeObservable<this, "expanded" | "revealed" | "localGrouping">(this, {
       search: observable,
       searchOpen: observable,
       onlyAttention: observable,
-      grouping: observable,
+      localGrouping: observable,
+      grouping: computed,
       groupByProject: computed,
       statusGroups: computed,
       statusItems: computed,
@@ -144,6 +147,9 @@ export class InboxViewModel extends PulseViewModel<Payload> {
   get flatRows() {
     return this.groups.flatMap((group) => group.rows);
   }
+  get grouping() {
+    return this.payload.grouping ?? this.localGrouping;
+  }
   get groupByProject() {
     return this.grouping === "workspace";
   }
@@ -167,7 +173,8 @@ export class InboxViewModel extends PulseViewModel<Payload> {
     ]);
   }
   setGrouping(value: InboxGrouping) {
-    this.grouping = value;
+    this.localGrouping = value;
+    this.payload.setGrouping?.(value);
   }
   setSearch(value: string) {
     this.search = value;

@@ -1,4 +1,5 @@
 {
+  "preferencesError": "無法儲存或載入分組設定。",
   "groupByStatus": "依狀態",
   "statusGroups": {
     "action": "需要處理",

@@ -120,7 +120,7 @@ export const InboxToolbar = observer(function InboxToolbar({ context }: { contex
 });
 
 const InboxGroupingToggle = observer(function InboxGroupingToggle({ context }: { context: InboxViewContext }) {
-  const { props, binding: { model } } = context;
+  const { props, binding: { model, preferences } } = context;
   const { grouping } = model;
   const { t } = useMessages();
   const c = props.theme.colors;
@@ -140,8 +140,10 @@ const InboxGroupingToggle = observer(function InboxGroupingToggle({ context }: {
                 key={option.label}
                 accessibilityRole="radio"
                 accessibilityLabel={option.label}
-                aria-checked={grouping === option.value}
-                accessibilityState={{ checked: grouping === option.value }}
+                aria-checked={preferences.ready && grouping === option.value}
+                accessibilityState={{ checked: preferences.ready && grouping === option.value,
+                  disabled: !preferences.ready || preferences.pending, busy: preferences.pending }}
+                disabled={!preferences.ready || preferences.pending}
                 onPress={() => model.setGrouping(option.value)}
                 style={{
                   paddingHorizontal: 9,

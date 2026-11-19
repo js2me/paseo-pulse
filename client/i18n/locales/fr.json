@@ -1,4 +1,5 @@
 {
+  "preferencesError": "Impossible de charger ou d’enregistrer le regroupement.",
   "groupByStatus": "Par statut",
   "statusGroups": {
     "action": "Action requise",
