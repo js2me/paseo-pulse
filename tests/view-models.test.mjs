@@ -336,6 +336,25 @@ test('status grouping partitions filtered sessions, omits empty groups and react
 });
 
 
+test('ungrouped and status rows resolve each session icon, including projects sharing a remote key', () => {
+  const iconProjects = [
+    { projectId: 'first', projectKey: 'shared', projectDisplayName: 'First', projectRootPath: '/first' },
+    { projectId: 'second', projectKey: 'shared', projectDisplayName: 'Second', projectRootPath: '/second' },
+  ];
+  const entries = iconProjects.map(project => ({
+    ...entry(project.projectId, { cwd: `${project.projectRootPath}/src` }),
+    project: { projectKey: project.projectKey, projectName: project.projectDisplayName },
+  }));
+  entries.push({ ...entry('unknown', { cwd: '/unknown' }),
+    project: { projectKey: 'unknown', projectName: 'Unknown' } });
+  const model = new InboxViewModel({ id: 'row-icons', payload: { entries, now, replies: new Map(),
+    iconProjects, hostId: 'host', trackVisit() {} } });
+  for (const grouping of ['none', 'status']) {
+    model.setGrouping(grouping);
+    assert.deepEqual(model.flatRows.map(row => row.iconProject?.projectId), ['first', 'second', undefined]);
+  }
+});
+
 test('inbox restores saved grouping and follows persisted updates without changing project expansion', () => {
   const saved = [];
   const payload = { entries: [entry('one')], now, replies: new Map(), iconProjects: [],

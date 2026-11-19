@@ -106,6 +106,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
       const previewCount = this.onlyAttention ? primaryEntries.length : GROUP_PREVIEW_LIMIT;
       const hiddenCount = Math.max(0, orderedEntries.length - previewCount);
       const visibleEntries = showAll ? orderedEntries : orderedEntries.slice(0, previewCount);
+      const iconProject = groupIconProject(group, iconProjects);
       return {
         ...group,
         isExpanded,
@@ -114,7 +115,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
         hiddenCount,
         visibleEntries,
         readGroup: group.entries.every(({ agent }) => isReadSession(agent)),
-        iconProject: groupIconProject(group, iconProjects),
+        iconProject,
         acknowledgeableCount: visibleEntries.filter(({ agent }) => canAcknowledge(agent)).length,
         rows: visibleEntries.map((sessionEntry) => {
           const { agent } = sessionEntry;
@@ -124,6 +125,12 @@ export class InboxViewModel extends PulseViewModel<Payload> {
           const withinDay =
             lastActivity > 0 && lastActivity <= now && now - lastActivity < 24 * 60 * 60 * 1000;
           return {
+            iconProject: this.groupByProject ? iconProject : groupIconProject({
+              ...group,
+              key: sessionEntry.project.projectKey,
+              name: sessionEntry.project.projectName,
+              entries: [sessionEntry],
+            }, iconProjects),
             emphasis: sessionEmphasis(agent, now),
             sessionEntry,
             agent,
