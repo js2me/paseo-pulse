@@ -145,6 +145,12 @@ try {
     assert.equal(await page.$eval(grouped, element => element.textContent), 'By status');
     assert.deepEqual(await page.$$eval('[role="heading"]', headers => headers.map(header => header.textContent)),
       ['Needs action', 'In progress', 'Reply ready', 'Other']);
+    const runningColors = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll('[role="heading"]')].find(element => element.textContent === 'In progress');
+      const row = document.querySelector('[aria-label$=", Working"]');
+      return [getComputedStyle(heading.parentElement).borderLeftColor, getComputedStyle(row).borderLeftColor];
+    });
+    assert.equal(runningColors[0], runningColors[1], `${name} running group and session use the same blue`);
     assert.equal(await page.$('[aria-label="New workspace in Horizon API"]'), null, `${name} status groups have no project actions`);
     assert.ok(await page.$('[aria-label^="Approve the navigation plan,"]'), `${name} status sessions remain visible`);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${name} status control overflows`);

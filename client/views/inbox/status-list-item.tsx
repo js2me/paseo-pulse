@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 import { useMessages } from "../../i18n/messages";
 import type { StatusListItem } from "../../view-models/inbox-view-model";
+import { statusColor } from "../shared/status-color";
 import { SessionRow } from "./session-row";
 import type { InboxViewContext } from "./types";
 
@@ -9,7 +10,7 @@ export function StatusListItemView({ context, item }: { context: InboxViewContex
   if (item.kind === "session") return <SessionRow context={context} row={item.row} />;
   const c = context.props.theme.colors;
   const color = item.status === "action" ? c.statusWarning
-    : item.status === "running" ? c.accent
+    : item.status === "running" ? statusColor(context.props.theme, "running")
     : item.status === "finished" ? c.statusSuccess : c.foregroundMuted;
   return (
     <View style={{
