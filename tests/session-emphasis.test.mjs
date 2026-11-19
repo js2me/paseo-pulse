@@ -62,7 +62,7 @@ test('active state colors override age and read state in light and dark themes',
 });
 
 
-test('titles get a subtle green tint only for messages under one hour, including read sessions', () => {
+test('titles get a theme-aware lavender tint only for messages under one hour, including read sessions', () => {
   for (const colors of [
     { surface0: '#181818', foreground: '#eeeeee', foregroundMuted: '#888888' },
     { surface0: '#ffffff', foreground: '#111111', foregroundMuted: '#666666' },
@@ -74,7 +74,7 @@ test('titles get a subtle green tint only for messages under one hour, including
       const neutral = sessionTextColors(theme, { ...fresh, freshTitle: false });
       assert.equal(fresh.freshTitle, true);
       assert.notEqual(tinted.title, neutral.title);
-      assert.notEqual(tinted.title, theme.colors.statusSuccess, 'the tint remains subtle');
+      assert.equal(tinted.title, colors.surface0 === '#181818' ? '#c4b5fd' : '#6d28d9');
       assert.equal(tinted.preview, neutral.preview);
       assert.equal(tinted.time, neutral.time);
       for (const hours of [1, 2, 80, -1]) assert.equal(sessionEmphasis(session(hours, { requiresAttention }), now).freshTitle, false);
