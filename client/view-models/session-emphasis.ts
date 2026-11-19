@@ -15,6 +15,7 @@ export function sessionEmphasis(session: Session, now: number) {
   const familiar = !!session.pinnedAt || isFrequentlyViewedSession(session, now);
   return {
     reason,
+    freshTitle: age < 1,
     title: familiar ? Math.max(title, 0.4) : title,
     preview,
     time,

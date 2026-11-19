@@ -26,8 +26,9 @@ export function sessionTextColors(theme: PluginTheme, emphasis: ReturnType<typeo
       time: status,
     };
   }
+  const title = blend(c.foregroundMuted, c.foreground, emphasis.title);
   return {
-    title: blend(c.foregroundMuted, c.foreground, emphasis.title),
+    title: emphasis.freshTitle ? blend(title, c.statusSuccess, 0.22) : title,
     preview: blend(c.foregroundMuted, c.foreground, emphasis.preview),
     time: blend(c.foregroundMuted, c.foreground, emphasis.time),
   };
