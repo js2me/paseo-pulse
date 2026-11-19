@@ -90,7 +90,7 @@ export interface SessionGroup {
   updatedAt: number;
 }
 const attentionRank = (reason: Attention) => reason ? rank[reason] : 0;
-export function groupSessions(entries: readonly SessionEntry[], search = "", onlyAttention = false, now = Date.now()) {
+export function groupSessions(entries: readonly SessionEntry[], search = "", onlyAttention = false, now = Date.now(), groupByProject = true) {
   const groups = new Map<string, SessionGroup>();
   const query = search.trim().toLocaleLowerCase();
   for (const entry of entries) {
@@ -101,11 +101,12 @@ export function groupSessions(entries: readonly SessionEntry[], search = "", onl
     if (onlyAttention && !reason && !recent && !isFrequentlyViewedSession(agent, now) && !isRevisitedSession(agent, now)) continue;
     if (query && ![agent.title, agent.cwd, agent.provider, project.projectName, project.workspaceName]
       .some((value) => value?.toLocaleLowerCase().includes(query))) continue;
-    let group = groups.get(project.projectKey);
+    const key = groupByProject ? project.projectKey : "ungrouped";
+    let group = groups.get(key);
     if (!group) {
-      group = { key: project.projectKey, name: project.projectName, entries: [], attention: null, count: 0, recentCount: 0,
+      group = { key, name: groupByProject ? project.projectName : "", entries: [], attention: null, count: 0, recentCount: 0,
         counts: { permission: 0, error: 0, running: 0, finished: 0 }, updatedAt: 0 };
-      groups.set(project.projectKey, group);
+      groups.set(key, group);
     }
     group.entries.push(entry);
     group.updatedAt = Math.max(group.updatedAt, activity(agent));

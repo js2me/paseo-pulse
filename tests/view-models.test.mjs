@@ -267,3 +267,32 @@ test("ten-hour collapse uses real message activity and leaves active or unknown 
   model.setPayload({ ...base, entries: [entry("old", { ...old, lastUserMessageAt: at(3000), updatedAt: at(0) })] });
   assert.equal(model.groups[0].isExpanded, false, "metadata updates cannot revive old groups");
 });
+
+
+test('ungrouped inbox shows every matching session in global order and preserves group expansion', () => {
+  const entries = Array.from({ length: 10 }, (_, i) => ({
+    ...entry(`session-${i}`, { lastUserMessageAt: at(i + 1),
+      status: i === 8 ? 'running' : 'idle', pinnedAt: i === 9 ? at(10) : null }),
+    project: { projectKey: `project-${i % 2}`, projectName: `Project ${i % 2}` },
+  }));
+  const model = new InboxViewModel({ id: 'grouping', payload: { entries, now,
+    replies: new Map(), iconProjects: [], hostId: 'host', trackVisit() {} } });
+  assert.equal(model.groupByProject, true);
+  assert.equal(model.groups.length, 2);
+  model.toggleGroup('project-0');
+  model.setGroupByProject(false);
+  assert.equal(model.flatRows.length, 10);
+  assert.equal(model.flatRows[0].agent.id, 'session-8', 'attention priority applies across projects');
+  model.setOnlyAttention(false);
+  assert.equal(model.flatRows.length, 10, 'flat list has no six-session preview limit');
+  assert.equal(model.flatRows[0].agent.id, 'session-9', 'pins sort first across projects');
+  model.setSearch('Project 1');
+  assert.equal(model.flatRows.length, 5);
+  assert.ok(model.flatRows.every(row => row.sessionEntry.project.projectKey === 'project-1'));
+  model.setSearch('missing');
+  assert.deepEqual(model.flatRows, []);
+  model.setSearch('');
+  model.setOnlyAttention(true);
+  model.setGroupByProject(true);
+  assert.equal(model.groups.find(group => group.key === 'project-0').isExpanded, false);
+});

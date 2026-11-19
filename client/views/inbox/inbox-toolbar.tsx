@@ -8,7 +8,7 @@ import type { InboxViewContext } from "./types";
 export const InboxToolbar = observer(function InboxToolbar({ context }: { context: InboxViewContext }) {
   const { props, binding } = context;
   const { model, creation, creationDisabled } = binding;
-  const { search, searchOpen, onlyAttention, totalAttention, attentionGroups } = model;
+  const { search, searchOpen, onlyAttention, groupByProject, totalAttention, attentionGroups } = model;
   const { t } = useMessages(),
     c = props.theme.colors;
   const countColor =
@@ -64,6 +64,39 @@ export const InboxToolbar = observer(function InboxToolbar({ context }: { contex
               </Text>
             </Pressable>
           ))}
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <Text style={{ color: c.foregroundMuted, fontSize: 12 }}>{t("grouping")}:</Text>
+          <View
+            accessibilityRole="radiogroup"
+            accessibilityLabel={t("grouping")}
+            style={{ flexDirection: "row", gap: 2, borderRadius: 6, backgroundColor: c.surface1, padding: 2 }}
+          >
+            {[
+              { value: true, label: t("groupByWorkspace") },
+              { value: false, label: t("noGrouping") },
+            ].map((option) => (
+              <Pressable
+                key={option.label}
+                accessibilityRole="radio"
+                aria-checked={groupByProject === option.value}
+                accessibilityState={{ checked: groupByProject === option.value }}
+                onPress={() => model.setGroupByProject(option.value)}
+                style={{
+                  paddingHorizontal: 9,
+                  paddingVertical: 6,
+                  borderRadius: 4,
+                  backgroundColor: groupByProject === option.value ? c.surface2 : c.surface1,
+                }}
+              >
+                <Text style={{
+                  color: groupByProject === option.value ? c.foreground : c.foregroundMuted,
+                  fontSize: 13,
+                  fontWeight: groupByProject === option.value ? "600" : "400",
+                }}>{option.label}</Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
         <View style={{ flex: 1 }} />
         <Pressable

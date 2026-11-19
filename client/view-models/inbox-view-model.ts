@@ -35,6 +35,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
   search = "";
   searchOpen = false;
   onlyAttention = true;
+  groupByProject = true;
   private expanded = new Map<string, boolean>();
   private revealed = new Set<string>();
   constructor(params: ViewModelParams<Payload>) {
@@ -43,15 +44,18 @@ export class InboxViewModel extends PulseViewModel<Payload> {
       search: observable,
       searchOpen: observable,
       onlyAttention: observable,
+      groupByProject: observable,
       expanded: observable.shallow,
       revealed: observable.shallow,
       groups: computed,
+      flatRows: computed,
       attentionGroups: computed,
       totalAttention: computed,
       totalCount: computed,
       setSearch: action.bound,
       toggleSearch: action.bound,
       setOnlyAttention: action.bound,
+      setGroupByProject: action.bound,
       toggleGroup: action.bound,
       toggleRevealed: action.bound,
       openSession: action.bound,
@@ -68,7 +72,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
   }
   get groups() {
     const { entries, now, replies, iconProjects } = this.payload;
-    return groupSessions(entries, this.search, this.onlyAttention, now).map((group) => {
+    return groupSessions(entries, this.search, this.onlyAttention, now, this.groupByProject).map((group) => {
       const expansionKey = `${this.onlyAttention ? "attention" : "all"}:${group.key}`;
       const inactive = this.onlyAttention && group.entries.every(({ agent }) => {
         const timestamp = activity(agent);
@@ -86,7 +90,7 @@ export class InboxViewModel extends PulseViewModel<Payload> {
               activity(b.agent) - activity(a.agent) || a.agent.id.localeCompare(b.agent.id),
           );
       const revealKey = `${this.onlyAttention ? "attention" : "all"}:${group.key}`;
-      const showAll = !!this.search.trim() || this.revealed.has(revealKey);
+      const showAll = !this.groupByProject || !!this.search.trim() || this.revealed.has(revealKey);
       const previewCount = this.onlyAttention ? primaryEntries.length : GROUP_PREVIEW_LIMIT;
       const hiddenCount = Math.max(0, orderedEntries.length - previewCount);
       const visibleEntries = showAll ? orderedEntries : orderedEntries.slice(0, previewCount);
@@ -130,6 +134,12 @@ export class InboxViewModel extends PulseViewModel<Payload> {
         }),
       };
     });
+  }
+  get flatRows() {
+    return this.groups.flatMap((group) => group.rows);
+  }
+  setGroupByProject(value: boolean) {
+    this.groupByProject = value;
   }
   setSearch(value: string) {
     this.search = value;

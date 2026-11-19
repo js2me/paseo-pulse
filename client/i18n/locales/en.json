@@ -1,4 +1,7 @@
 {
+  "grouping": "Grouping",
+  "groupByWorkspace": "By workspace",
+  "noGrouping": "None",
   "sidebarProgressCount": "Sessions in progress: {{count}}",
   "sidebarFinishedCount": "New completed replies: {{count}}",
   "collapseExtra": "Collapse",

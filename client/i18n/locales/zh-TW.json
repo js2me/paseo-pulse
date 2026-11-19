@@ -1,4 +1,7 @@
 {
+  "grouping": "分組",
+  "groupByWorkspace": "依工作區",
+  "noGrouping": "無",
   "sidebarProgressCount": "執行中的工作階段：{{count}}",
   "sidebarFinishedCount": "新的已完成回覆：{{count}}",
   "collapseExtra": "收合",

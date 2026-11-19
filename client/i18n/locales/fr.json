@@ -1,4 +1,7 @@
 {
+  "grouping": "Regroupement",
+  "groupByWorkspace": "Par espace de travail",
+  "noGrouping": "Aucun",
   "sidebarProgressCount": "Sessions en cours : {{count}}",
   "sidebarFinishedCount": "Nouvelles réponses terminées : {{count}}",
   "collapseExtra": "Réduire",

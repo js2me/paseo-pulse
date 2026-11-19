@@ -1,4 +1,7 @@
 {
+  "grouping": "Группировка",
+  "groupByWorkspace": "По пространствам",
+  "noGrouping": "Нет",
   "sidebarProgressCount": "Сессий в работе: {{count}}",
   "sidebarFinishedCount": "Новых завершённых ответов: {{count}}",
   "collapseExtra": "Свернуть",

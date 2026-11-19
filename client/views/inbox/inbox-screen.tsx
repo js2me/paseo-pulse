@@ -3,6 +3,7 @@ import { observer } from "../../lib/mvvm";
 import { useInboxViewModel } from "../../bindings/use-inbox-view-model";
 import { InboxToolbar } from "./inbox-toolbar";
 import { InboxListHeader } from "./inbox-list-header";
+import { SessionRow } from "./session-row";
 import { ProjectGroup } from "./project-group";
 import type { InboxProps } from "./types";
 
@@ -22,7 +23,7 @@ const Inbox = observer(function Inbox(props: InboxProps) {
     >
       <View style={{ flex: 1, minWidth: 0 }}>
         <InboxToolbar context={context} />
-        <FlatList
+        {binding.model.groupByProject ? <FlatList
           style={{ flex: 1 }}
           data={binding.model.groups}
           keyExtractor={(group) => group.key}
@@ -32,7 +33,17 @@ const Inbox = observer(function Inbox(props: InboxProps) {
           contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10, gap: 12 }}
           ListHeaderComponent={<InboxListHeader context={context} />}
           renderItem={({ item }) => <ProjectGroup context={context} group={item} />}
-        />
+        /> : <FlatList
+          style={{ flex: 1 }}
+          data={binding.model.flatRows}
+          keyExtractor={(row) => row.agent.id}
+          initialNumToRender={20}
+          maxToRenderPerBatch={20}
+          windowSize={5}
+          contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10, gap: 2 }}
+          ListHeaderComponent={<InboxListHeader context={context} />}
+          renderItem={({ item }) => <SessionRow context={context} row={item} />}
+        />}
       </View>
     </View>
   );

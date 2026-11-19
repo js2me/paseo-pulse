@@ -106,6 +106,15 @@ try {
     await page.waitForFunction(() => !document.body.innerText.includes('Approve the navigation plan'));
     await page.$eval('[aria-label="Atlas Studio, 4 sessions"]', button => button.click());
     await page.waitForFunction(() => document.body.innerText.includes('Approve the navigation plan'));
+    const grouped = '[role="radio"][aria-checked="true"]';
+    assert.equal(await page.$eval(grouped, element => element.textContent), 'By workspace');
+    await page.$eval('[role="radio"][aria-checked="false"]', button => button.click());
+    await page.waitForFunction(() => !document.querySelector('[aria-label="Atlas Studio, 4 sessions"]'));
+    assert.equal(await page.$eval(grouped, element => element.textContent), 'None');
+    assert.ok(await page.$('[aria-label^="Approve the navigation plan,"]'), `${name} flat sessions remain visible`);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${name} grouping control overflows`);
+    await page.$eval('[role="radio"][aria-checked="false"]', button => button.click());
+    await page.waitForSelector('[aria-label="Atlas Studio, 4 sessions"]');
     const reads = await page.evaluate(() => [globalThis.__pulseDemo.directoryReads, globalThis.__pulseDemo.subscriptions]);
     await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
     await page.waitForFunction(() => !document.querySelector('[aria-label="New workspace"]'));
