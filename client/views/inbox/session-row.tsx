@@ -1,11 +1,12 @@
 import { Icon } from "@getpaseo/plugin/client/ui";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Platform, Pressable, Text, View } from "react-native";
 import { observer } from "../../lib/mvvm";
 import type { InboxRow } from "../../view-models/inbox-view-model";
 import { formatTokenCount, relativeTime, useMessages } from "../../i18n/messages";
 import { sessionTextColors } from "../shared/session-text-colors";
 import { statusColor } from "../shared/status-color";
 import { AnimatedText } from "../shared/animated-text";
+import { ProjectLogo } from "../projects/project-logo";
 import { SessionReplyPreview } from "./session-reply-preview";
 import type { InboxViewContext } from "./types";
 
@@ -72,17 +73,39 @@ export const SessionRow = observer(function SessionRow({
           )}
         </View>
         <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
-          <Text
-            numberOfLines={1}
-            style={{
-              color: textColors.title,
-              fontSize: 14,
-              lineHeight: 19,
-              fontWeight: row.emphasis.weight,
-            }}
-          >
-            {agent.title || t("untitled")}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Text
+              numberOfLines={1}
+              style={{
+                color: textColors.title,
+                fontSize: 14,
+                lineHeight: 19,
+                fontWeight: row.emphasis.weight,
+                flexShrink: 1,
+                minWidth: 0,
+              }}
+            >
+              {agent.title || t("untitled")}
+            </Text>
+            {!model.groupByProject && (
+              <View
+                accessibilityLabel={sessionEntry.project.projectName}
+                ref={(element) => {
+                  // React Native Web filters the title prop; set it on the host element.
+                  if (Platform.OS === "web" && element)
+                    (element as unknown as { title: string }).title = sessionEntry.project.projectName;
+                }}
+              >
+                <ProjectLogo
+                  project={row.iconProject}
+                  projectKey={sessionEntry.project.projectKey}
+                  name={sessionEntry.project.projectName}
+                  hostId={props.host.id}
+                  color={c.foreground}
+                />
+              </View>
+            )}
+          </View>
           <SessionReplyPreview
             theme={theme}
             text={row.reply?.text}

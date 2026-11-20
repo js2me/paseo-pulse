@@ -1,133 +1,127 @@
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
-var __commonJS = (cb, mod) => function __require() {
+var ft = Object.create;
+var R = Object.defineProperty;
+var mt = Object.getOwnPropertyDescriptor;
+var dt = Object.getOwnPropertyNames;
+var gt = Object.getPrototypeOf;
+var ht = Object.prototype.hasOwnProperty;
+var yt = (t, e, n) => e in t ? R(t, e, { enumerable: true, configurable: true, writable: true, value: n }) : t[e] = n;
+var j = (t, e) => () => {
   try {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-  } catch (e) {
-    throw mod = 0, e;
+    return e || t((e = { exports: {} }).exports, e), e.exports;
+  } catch (n) {
+    throw e = 0, n;
   }
 };
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
+var xt = (t, e) => {
+  for (var n in e)
+    R(t, n, { get: e[n], enumerable: true });
 };
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+var bt = (t, e, n, i) => {
+  if (e && typeof e === "object" || typeof e === "function") {
+    for (let m of dt(e))
+      if (!ht.call(t, m) && m !== n)
+        R(t, m, { get: () => e[m], enumerable: !(i = mt(e, m)) || i.enumerable });
   }
-  return to;
+  return t;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+var Xt = (t, e, n) => (n = t != null ? ft(gt(t)) : {}, bt(
   // If the importer is in node compatibility mode or this is not an ESM
   // file that has been converted to a CommonJS file using a Babel-
   // compatible transform (i.e. "__esModule" has not been set), then set
   // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
+  e || !t || !t.__esModule ? R(n, "default", { value: t, enumerable: true }) : n,
+  t
 ));
-var __publicField = (obj, key, value2) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value2);
+var S = (t, e, n) => yt(t, typeof e !== "symbol" ? e + "" : e, n);
 
 // node_modules/prop-types/lib/ReactPropTypesSecret.js
-var require_ReactPropTypesSecret = __commonJS({
-  "node_modules/prop-types/lib/ReactPropTypesSecret.js"(exports, module) {
-    "use strict";
-    var ReactPropTypesSecret = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
-    module.exports = ReactPropTypesSecret;
-  }
+var K = j((He, Z) => {
+  "use strict";
+  var Ot = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
+  Z.exports = Ot;
 });
 
 // node_modules/prop-types/factoryWithThrowingShims.js
-var require_factoryWithThrowingShims = __commonJS({
-  "node_modules/prop-types/factoryWithThrowingShims.js"(exports, module) {
-    "use strict";
-    var ReactPropTypesSecret = require_ReactPropTypesSecret();
-    function emptyFunction() {
-    }
-    function emptyFunctionWithReset() {
-    }
-    emptyFunctionWithReset.resetWarningCache = emptyFunction;
-    module.exports = function() {
-      function shim(props, propName, componentName, location, propFullName, secret) {
-        if (secret === ReactPropTypesSecret) {
-          return;
-        }
-        var err = new Error(
-          "Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types"
-        );
-        err.name = "Invariant Violation";
-        throw err;
-      }
-      ;
-      shim.isRequired = shim;
-      function getShim() {
-        return shim;
-      }
-      ;
-      var ReactPropTypes = {
-        array: shim,
-        bigint: shim,
-        bool: shim,
-        func: shim,
-        number: shim,
-        object: shim,
-        string: shim,
-        symbol: shim,
-        any: shim,
-        arrayOf: getShim,
-        element: shim,
-        elementType: shim,
-        instanceOf: getShim,
-        node: shim,
-        objectOf: getShim,
-        oneOf: getShim,
-        oneOfType: getShim,
-        shape: getShim,
-        exact: getShim,
-        checkPropTypes: emptyFunctionWithReset,
-        resetWarningCache: emptyFunction
-      };
-      ReactPropTypes.PropTypes = ReactPropTypes;
-      return ReactPropTypes;
-    };
+var $ = j((Je, G) => {
+  "use strict";
+  var Tt = K();
+  function H() {
   }
+  function J() {
+  }
+  J.resetWarningCache = H;
+  G.exports = function() {
+    function t(i, m, y, a, o, r) {
+      if (r === Tt) {
+        return;
+      }
+      var s = new Error(
+        "Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types"
+      );
+      s.name = "Invariant Violation";
+      throw s;
+    }
+    ;
+    t.isRequired = t;
+    function e() {
+      return t;
+    }
+    ;
+    var n = {
+      array: t,
+      bigint: t,
+      bool: t,
+      func: t,
+      number: t,
+      object: t,
+      string: t,
+      symbol: t,
+      any: t,
+      arrayOf: e,
+      element: t,
+      elementType: t,
+      instanceOf: e,
+      node: t,
+      objectOf: e,
+      oneOf: e,
+      oneOfType: e,
+      shape: e,
+      exact: e,
+      checkPropTypes: J,
+      resetWarningCache: H
+    };
+    n.PropTypes = n;
+    return n;
+  };
 });
 
 // node_modules/prop-types/index.js
-var require_prop_types = __commonJS({
-  "node_modules/prop-types/index.js"(exports, module) {
-    if (false) {
-      ReactIs = null;
-      throwOnDirectAccess = true;
-      module.exports = null(ReactIs.isElement, throwOnDirectAccess);
-    } else {
-      module.exports = require_factoryWithThrowingShims()();
-    }
-    var ReactIs;
-    var throwOnDirectAccess;
+var tt = j((Qe, Q) => {
+  if (false) {
+    Ge = null;
+    $e = true;
+    Q.exports = null(Ge.isElement, $e);
+  } else {
+    Q.exports = $()();
   }
+  var Ge;
+  var $e;
 });
 
 // node_modules/react-native-animatable/index.js
 import {
-  View as CoreView,
-  Text as CoreText,
-  Image as CoreImage
+  View as qe,
+  Text as Me,
+  Image as We
 } from "react-native";
 
 // node_modules/react-native-animatable/createAnimatableComponent.js
-var import_prop_types = __toESM(require_prop_types());
-import React, { Component } from "react";
-import { Animated, Easing as Easing2 } from "react-native";
+var u = Xt(tt());
+import Vt, { Component as zt } from "react";
+import { Animated as Y, Easing as Rt } from "react-native";
 
 // node_modules/react-native-animatable/wrapStyleTransforms.js
-var TRANSFORM_STYLE_PROPERTIES = [
+var Yt = [
   "perspective",
   "rotate",
   "rotateX",
@@ -141,39 +135,39 @@ var TRANSFORM_STYLE_PROPERTIES = [
   "translateX",
   "translateY"
 ];
-function wrapStyleTransforms(style) {
-  const wrapped = {};
-  Object.keys(style).forEach((key) => {
-    if (TRANSFORM_STYLE_PROPERTIES.indexOf(key) !== -1) {
-      if (!wrapped.transform) {
-        wrapped.transform = [];
+function v(t) {
+  const e = {};
+  Object.keys(t).forEach((n) => {
+    if (Yt.indexOf(n) !== -1) {
+      if (!e.transform) {
+        e.transform = [];
       }
-      wrapped.transform.push({
-        [key]: style[key]
+      e.transform.push({
+        [n]: t[n]
       });
     } else {
-      wrapped[key] = style[key];
+      e[n] = t[n];
     }
   });
-  return wrapped;
+  return e;
 }
 
 // node_modules/react-native-animatable/flattenStyle.js
-import { StyleSheet } from "react-native";
-function flattenStyle(style) {
-  const flatStyle = Object.assign({}, StyleSheet.flatten(style));
-  if (flatStyle.transform) {
-    flatStyle.transform.forEach((transform) => {
-      const key = Object.keys(transform)[0];
-      flatStyle[key] = transform[key];
+import { StyleSheet as wt } from "react-native";
+function O(t) {
+  const e = Object.assign({}, wt.flatten(t));
+  if (e.transform) {
+    e.transform.forEach((n) => {
+      const i = Object.keys(n)[0];
+      e[i] = n[i];
     });
-    delete flatStyle.transform;
+    delete e.transform;
   }
-  return flatStyle;
+  return e;
 }
 
 // node_modules/react-native-animatable/getDefaultStyleValue.js
-var DIRECTIONAL_FALLBACKS = {
+var nt = {
   Top: ["Vertical", ""],
   Bottom: ["Vertical", ""],
   Vertical: [""],
@@ -181,33 +175,33 @@ var DIRECTIONAL_FALLBACKS = {
   Right: ["Horizontal", ""],
   Horizontal: [""]
 };
-var DIRECTIONAL_SUFFICES = Object.keys(DIRECTIONAL_FALLBACKS);
-function getDefaultStyleValue(key, flatStyle) {
-  if (key === "backgroundColor") {
+var et = Object.keys(nt);
+function P(t, e) {
+  if (t === "backgroundColor") {
     return "rgba(0,0,0,0)";
   }
-  if (key === "color" || key.indexOf("Color") !== -1) {
+  if (t === "color" || t.indexOf("Color") !== -1) {
     return "rgba(0,0,0,1)";
   }
-  if (key.indexOf("rotate") === 0 || key.indexOf("skew") === 0) {
+  if (t.indexOf("rotate") === 0 || t.indexOf("skew") === 0) {
     return "0deg";
   }
-  if (key === "opacity" || key.indexOf("scale") === 0) {
+  if (t === "opacity" || t.indexOf("scale") === 0) {
     return 1;
   }
-  if (key === "fontSize") {
+  if (t === "fontSize") {
     return 14;
   }
-  if (key.indexOf("margin") === 0 || key.indexOf("padding") === 0) {
-    for (let suffix, i = 0; i < DIRECTIONAL_SUFFICES.length; i++) {
-      suffix = DIRECTIONAL_SUFFICES[i];
-      if (key.substr(-suffix.length) === suffix) {
-        const prefix = key.substr(0, key.length - suffix.length);
-        const fallbacks = DIRECTIONAL_FALLBACKS[suffix];
-        for (let fallback, j = 0; j < fallbacks.length; j++) {
-          fallback = prefix + fallbacks[j];
-          if (fallback in flatStyle) {
-            return flatStyle[fallback];
+  if (t.indexOf("margin") === 0 || t.indexOf("padding") === 0) {
+    for (let n, i = 0; i < et.length; i++) {
+      n = et[i];
+      if (t.substr(-n.length) === n) {
+        const m = t.substr(0, t.length - n.length);
+        const y = nt[n];
+        for (let a, o = 0; o < y.length; o++) {
+          a = m + y[o];
+          if (a in e) {
+            return e[a];
           }
         }
         break;
@@ -218,141 +212,141 @@ function getDefaultStyleValue(key, flatStyle) {
 }
 
 // node_modules/react-native-animatable/getStyleValues.js
-function getStyleValues(keys, style) {
-  const values = {};
-  const flatStyle = flattenStyle(style);
-  (typeof keys === "string" ? [keys] : keys).forEach((key) => {
-    values[key] = key in flatStyle ? flatStyle[key] : getDefaultStyleValue(key, flatStyle);
+function V(t, e) {
+  const n = {};
+  const i = O(e);
+  (typeof t === "string" ? [t] : t).forEach((m) => {
+    n[m] = m in i ? i[m] : P(m, i);
   });
-  return values;
+  return n;
 }
 
 // node_modules/react-native-animatable/createAnimation.js
-function compareNumbers(a, b) {
-  return a - b;
+function It(t, e) {
+  return t - e;
 }
-function notNull(value2) {
-  return value2 !== null;
+function St(t) {
+  return t !== null;
 }
-function parsePosition(value2) {
-  if (value2 === "from") {
+function At(t) {
+  if (t === "from") {
     return 0;
   }
-  if (value2 === "to") {
+  if (t === "to") {
     return 1;
   }
-  const parsed = parseFloat(value2, 10);
-  if (Number.isNaN(parsed) || parsed < 0 || parsed > 1) {
+  const e = parseFloat(t, 10);
+  if (Number.isNaN(e) || e < 0 || e > 1) {
     return null;
   }
-  return parsed;
+  return e;
 }
-var cache = {};
-function createAnimation(definition) {
-  const cacheKey = JSON.stringify(definition);
-  if (cache[cacheKey]) {
-    return cache[cacheKey];
+var _ = {};
+function A(t) {
+  const e = JSON.stringify(t);
+  if (_[e]) {
+    return _[e];
   }
-  const positions = Object.keys(definition).map(parsePosition).filter(notNull);
-  positions.sort(compareNumbers);
-  if (positions.length < 2) {
+  const n = Object.keys(t).map(At).filter(St);
+  n.sort(It);
+  if (n.length < 2) {
     throw new Error("Animation definitions must have at least two values.");
   }
-  const compiled = {};
-  if (definition.easing) {
-    compiled.easing = definition.easing;
+  const i = {};
+  if (t.easing) {
+    i.easing = t.easing;
   }
-  if (definition.style) {
-    compiled.style = definition.style;
+  if (t.style) {
+    i.style = t.style;
   }
-  for (let i = 0; i < positions.length; i += 1) {
-    const position = positions[i];
-    let keyframe = definition[position];
-    if (!keyframe) {
-      if (position === 0) {
-        keyframe = definition.from;
-      } else if (position === 1) {
-        keyframe = definition.to;
+  for (let m = 0; m < n.length; m += 1) {
+    const y = n[m];
+    let a = t[y];
+    if (!a) {
+      if (y === 0) {
+        a = t.from;
+      } else if (y === 1) {
+        a = t.to;
       }
     }
-    if (!keyframe) {
+    if (!a) {
       throw new Error("Missing animation keyframe, this should not happen");
     }
-    keyframe = flattenStyle(keyframe);
-    Object.keys(keyframe).forEach((key) => {
-      if (!(key in compiled)) {
-        compiled[key] = {
+    a = O(a);
+    Object.keys(a).forEach((o) => {
+      if (!(o in i)) {
+        i[o] = {
           inputRange: [],
           outputRange: []
         };
       }
-      compiled[key].inputRange.push(position);
-      compiled[key].outputRange.push(keyframe[key]);
+      i[o].inputRange.push(y);
+      i[o].outputRange.push(a[o]);
     });
   }
-  cache[cacheKey] = compiled;
-  return compiled;
+  _[e] = i;
+  return i;
 }
 
 // node_modules/react-native-animatable/registry.js
-var animationRegistry = {};
-function registerAnimation(animationName, animation) {
-  animationRegistry[animationName] = animation;
+var F = {};
+function at(t, e) {
+  F[t] = e;
 }
-function getAnimationByName(animationName) {
-  return animationRegistry[animationName];
+function ot(t) {
+  return F[t];
 }
-function getAnimationNames() {
-  return Object.keys(animationRegistry);
+function it() {
+  return Object.keys(F);
 }
-function initializeRegistryWithDefinitions(definitions) {
-  Object.keys(definitions).forEach((animationName) => {
-    registerAnimation(
-      animationName,
-      createAnimation(definitions[animationName])
+function U(t) {
+  Object.keys(t).forEach((e) => {
+    at(
+      e,
+      A(t[e])
     );
   });
 }
 
 // node_modules/react-native-animatable/easing.js
-import { Easing } from "react-native";
-var EASING_FUNCTIONS = {
+import { Easing as p } from "react-native";
+var Et = {
   // Standard CSS easings
-  linear: Easing.linear,
-  ease: Easing.bezier(0.25, 0.1, 0.25, 1),
-  "ease-in": Easing.bezier(0.42, 0, 1, 1),
-  "ease-out": Easing.bezier(0, 0, 0.58, 1),
-  "ease-in-out": Easing.bezier(0.42, 0, 0.58, 1),
+  linear: p.linear,
+  ease: p.bezier(0.25, 0.1, 0.25, 1),
+  "ease-in": p.bezier(0.42, 0, 1, 1),
+  "ease-out": p.bezier(0, 0, 0.58, 1),
+  "ease-in-out": p.bezier(0.42, 0, 0.58, 1),
   // Penner Equations - http://matthewlein.com/ceaser/ & http://easings.net
-  "ease-in-cubic": Easing.bezier(0.55, 0.055, 0.675, 0.19),
-  "ease-out-cubic": Easing.bezier(0.215, 0.61, 0.355, 1),
-  "ease-in-out-cubic": Easing.bezier(0.645, 0.045, 0.355, 1),
-  "ease-in-circ": Easing.bezier(0.6, 0.04, 0.98, 0.335),
-  "ease-out-circ": Easing.bezier(0.075, 0.82, 0.165, 1),
-  "ease-in-out-circ": Easing.bezier(0.785, 0.135, 0.15, 0.86),
-  "ease-in-expo": Easing.bezier(0.95, 0.05, 0.795, 0.035),
-  "ease-out-expo": Easing.bezier(0.19, 1, 0.22, 1),
-  "ease-in-out-expo": Easing.bezier(1, 0, 0, 1),
-  "ease-in-quad": Easing.bezier(0.55, 0.085, 0.68, 0.53),
-  "ease-out-quad": Easing.bezier(0.25, 0.46, 0.45, 0.94),
-  "ease-in-out-quad": Easing.bezier(0.455, 0.03, 0.515, 0.955),
-  "ease-in-quart": Easing.bezier(0.895, 0.03, 0.685, 0.22),
-  "ease-out-quart": Easing.bezier(0.165, 0.84, 0.44, 1),
-  "ease-in-out-quart": Easing.bezier(0.77, 0, 0.175, 1),
-  "ease-in-quint": Easing.bezier(0.755, 0.05, 0.855, 0.06),
-  "ease-out-quint": Easing.bezier(0.23, 1, 0.32, 1),
-  "ease-in-out-quint": Easing.bezier(0.86, 0, 0.07, 1),
-  "ease-in-sine": Easing.bezier(0.47, 0, 0.745, 0.715),
-  "ease-out-sine": Easing.bezier(0.39, 0.575, 0.565, 1),
-  "ease-in-out-sine": Easing.bezier(0.445, 0.05, 0.55, 0.95),
-  "ease-in-back": Easing.bezier(0.6, -0.28, 0.735, 0.045),
-  "ease-out-back": Easing.bezier(0.175, 0.885, 0.32, 1.275),
-  "ease-in-out-back": Easing.bezier(0.68, -0.55, 0.265, 1.55)
+  "ease-in-cubic": p.bezier(0.55, 0.055, 0.675, 0.19),
+  "ease-out-cubic": p.bezier(0.215, 0.61, 0.355, 1),
+  "ease-in-out-cubic": p.bezier(0.645, 0.045, 0.355, 1),
+  "ease-in-circ": p.bezier(0.6, 0.04, 0.98, 0.335),
+  "ease-out-circ": p.bezier(0.075, 0.82, 0.165, 1),
+  "ease-in-out-circ": p.bezier(0.785, 0.135, 0.15, 0.86),
+  "ease-in-expo": p.bezier(0.95, 0.05, 0.795, 0.035),
+  "ease-out-expo": p.bezier(0.19, 1, 0.22, 1),
+  "ease-in-out-expo": p.bezier(1, 0, 0, 1),
+  "ease-in-quad": p.bezier(0.55, 0.085, 0.68, 0.53),
+  "ease-out-quad": p.bezier(0.25, 0.46, 0.45, 0.94),
+  "ease-in-out-quad": p.bezier(0.455, 0.03, 0.515, 0.955),
+  "ease-in-quart": p.bezier(0.895, 0.03, 0.685, 0.22),
+  "ease-out-quart": p.bezier(0.165, 0.84, 0.44, 1),
+  "ease-in-out-quart": p.bezier(0.77, 0, 0.175, 1),
+  "ease-in-quint": p.bezier(0.755, 0.05, 0.855, 0.06),
+  "ease-out-quint": p.bezier(0.23, 1, 0.32, 1),
+  "ease-in-out-quint": p.bezier(0.86, 0, 0.07, 1),
+  "ease-in-sine": p.bezier(0.47, 0, 0.745, 0.715),
+  "ease-out-sine": p.bezier(0.39, 0.575, 0.565, 1),
+  "ease-in-out-sine": p.bezier(0.445, 0.05, 0.55, 0.95),
+  "ease-in-back": p.bezier(0.6, -0.28, 0.735, 0.045),
+  "ease-out-back": p.bezier(0.175, 0.885, 0.32, 1.275),
+  "ease-in-out-back": p.bezier(0.68, -0.55, 0.265, 1.55)
 };
-var easing_default = EASING_FUNCTIONS;
+var N = Et;
 
 // node_modules/react-native-animatable/createAnimatableComponent.js
-var INTERPOLATION_STYLE_PROPERTIES = [
+var q = [
   // Transform styles
   "rotate",
   "rotateX",
@@ -375,205 +369,205 @@ var INTERPOLATION_STYLE_PROPERTIES = [
   // Image styles
   "tintColor"
 ];
-var ZERO_CLAMPED_STYLE_PROPERTIES = ["width", "height"];
-function omit(keys, source) {
-  const filtered = {};
-  Object.keys(source).forEach((key) => {
-    if (keys.indexOf(key) === -1) {
-      filtered[key] = source[key];
+var rt = ["width", "height"];
+function vt(t, e) {
+  const n = {};
+  Object.keys(e).forEach((i) => {
+    if (t.indexOf(i) === -1) {
+      n[i] = e[i];
     }
   });
-  return filtered;
+  return n;
 }
-function deepEquals(a, b) {
-  return a === b || JSON.stringify(a) === JSON.stringify(b);
+function Nt(t, e) {
+  return t === e || JSON.stringify(t) === JSON.stringify(e);
 }
-function getAnimationTarget(iteration, direction) {
-  switch (direction) {
+function ut(t, e) {
+  switch (e) {
     case "reverse":
       return 0;
     case "alternate":
-      return iteration % 2 ? 0 : 1;
+      return t % 2 ? 0 : 1;
     case "alternate-reverse":
-      return iteration % 2 ? 1 : 0;
+      return t % 2 ? 1 : 0;
     case "normal":
     default:
       return 1;
   }
 }
-function getAnimationOrigin(iteration, direction) {
-  return getAnimationTarget(iteration, direction) ? 0 : 1;
+function st(t, e) {
+  return ut(t, e) ? 0 : 1;
 }
-function getCompiledAnimation(animation) {
-  if (typeof animation === "string") {
-    const compiledAnimation = getAnimationByName(animation);
-    if (!compiledAnimation) {
-      throw new Error(`No animation registred by the name of ${animation}`);
+function ct(t) {
+  if (typeof t === "string") {
+    const e = ot(t);
+    if (!e) {
+      throw new Error(`No animation registred by the name of ${t}`);
     }
-    return compiledAnimation;
+    return e;
   }
-  return createAnimation(animation);
+  return A(t);
 }
-function makeInterpolatedStyle(compiledAnimation, animationValue) {
-  const style = {};
-  Object.keys(compiledAnimation).forEach((key) => {
-    if (key === "style") {
-      Object.assign(style, compiledAnimation.style);
-    } else if (key !== "easing") {
-      style[key] = animationValue.interpolate(compiledAnimation[key]);
+function lt(t, e) {
+  const n = {};
+  Object.keys(t).forEach((i) => {
+    if (i === "style") {
+      Object.assign(n, t.style);
+    } else if (i !== "easing") {
+      n[i] = e.interpolate(t[i]);
     }
   });
-  return wrapStyleTransforms(style);
+  return v(n);
 }
-function transitionToValue(property, transitionValue, toValue, duration, easing, useNativeDriver = false, delay, onTransitionBegin, onTransitionEnd) {
-  const animation = duration || easing || delay ? Animated.timing(transitionValue, {
-    toValue,
-    delay,
-    duration: duration || 1e3,
-    easing: typeof easing === "function" ? easing : easing_default[easing || "ease"],
-    useNativeDriver
-  }) : Animated.spring(transitionValue, { toValue, useNativeDriver });
-  setTimeout(() => onTransitionBegin(property), delay);
-  animation.start(() => onTransitionEnd(property));
+function pt(t, e, n, i, m, y = false, a, o, r) {
+  const s = i || m || a ? Y.timing(e, {
+    toValue: n,
+    delay: a,
+    duration: i || 1e3,
+    easing: typeof m === "function" ? m : N[m || "ease"],
+    useNativeDriver: y
+  }) : Y.spring(e, { toValue: n, useNativeDriver: y });
+  setTimeout(() => o(t), a);
+  s.start(() => r(t));
 }
-function createAnimatableComponent(WrappedComponent) {
-  var _a;
-  const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || "Component";
-  const Animatable = Animated.createAnimatedComponent(WrappedComponent);
-  return _a = class extends Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "ref", null);
-      __publicField(this, "handleRef", (ref) => {
-        this.ref = ref;
+function z(t) {
+  var i;
+  const e = t.displayName || t.name || "Component";
+  const n = Y.createAnimatedComponent(t);
+  return i = class extends zt {
+    constructor(a) {
+      super(a);
+      S(this, "ref", null);
+      S(this, "handleRef", (a) => {
+        this.ref = a;
       });
-      const animationValue = new Animated.Value(
-        getAnimationOrigin(0, this.props.direction)
+      const o = new Y.Value(
+        st(0, this.props.direction)
       );
-      let animationStyle = {};
-      let compiledAnimation = {};
-      if (props.animation) {
-        compiledAnimation = getCompiledAnimation(props.animation);
-        animationStyle = makeInterpolatedStyle(
-          compiledAnimation,
-          animationValue
+      let r = {};
+      let s = {};
+      if (a.animation) {
+        s = ct(a.animation);
+        r = lt(
+          s,
+          o
         );
       }
       this.state = {
-        animationValue,
-        animationStyle,
-        compiledAnimation,
+        animationValue: o,
+        animationStyle: r,
+        compiledAnimation: s,
         transitionStyle: {},
         transitionValues: {},
         currentTransitionValues: {}
       };
-      if (props.transition) {
+      if (a.transition) {
         this.state = {
           ...this.state,
-          ...this.initializeTransitionState(props.transition)
+          ...this.initializeTransitionState(a.transition)
         };
       }
       this.delayTimer = null;
-      getAnimationNames().forEach((animationName) => {
-        if (!(animationName in this)) {
-          this[animationName] = this.animate.bind(this, animationName);
+      it().forEach((l) => {
+        if (!(l in this)) {
+          this[l] = this.animate.bind(this, l);
         }
       });
     }
-    initializeTransitionState(transitionKeys) {
-      const transitionValues = {};
-      const styleValues = {};
-      const currentTransitionValues = getStyleValues(
-        transitionKeys,
+    initializeTransitionState(a) {
+      const o = {};
+      const r = {};
+      const s = V(
+        a,
         this.props.style
       );
-      Object.keys(currentTransitionValues).forEach((key) => {
-        const value2 = currentTransitionValues[key];
-        if (INTERPOLATION_STYLE_PROPERTIES.indexOf(key) !== -1 || typeof value2 !== "number") {
-          transitionValues[key] = new Animated.Value(0);
-          styleValues[key] = value2;
+      Object.keys(s).forEach((l) => {
+        const d = s[l];
+        if (q.indexOf(l) !== -1 || typeof d !== "number") {
+          o[l] = new Y.Value(0);
+          r[l] = d;
         } else {
-          const animationValue = new Animated.Value(value2);
-          transitionValues[key] = animationValue;
-          styleValues[key] = animationValue;
+          const c = new Y.Value(d);
+          o[l] = c;
+          r[l] = c;
         }
       });
       return {
-        currentTransitionValues,
-        transitionStyle: styleValues,
-        transitionValues
+        currentTransitionValues: s,
+        transitionStyle: r,
+        transitionValues: o
       };
     }
-    getTransitionState(keys) {
-      const transitionKeys = typeof keys === "string" ? [keys] : keys;
-      let { transitionValues, currentTransitionValues, transitionStyle } = this.state;
-      const missingKeys = transitionKeys.filter(
-        (key) => !this.state.transitionValues[key]
+    getTransitionState(a) {
+      const o = typeof a === "string" ? [a] : a;
+      let { transitionValues: r, currentTransitionValues: s, transitionStyle: l } = this.state;
+      const d = o.filter(
+        (c) => !this.state.transitionValues[c]
       );
-      if (missingKeys.length) {
-        const transitionState = this.initializeTransitionState(missingKeys);
-        transitionValues = {
-          ...transitionValues,
-          ...transitionState.transitionValues
+      if (d.length) {
+        const c = this.initializeTransitionState(d);
+        r = {
+          ...r,
+          ...c.transitionValues
         };
-        currentTransitionValues = {
-          ...currentTransitionValues,
-          ...transitionState.currentTransitionValues
+        s = {
+          ...s,
+          ...c.currentTransitionValues
         };
-        transitionStyle = {
-          ...transitionStyle,
-          ...transitionState.transitionStyle
+        l = {
+          ...l,
+          ...c.transitionStyle
         };
       }
-      return { transitionValues, currentTransitionValues, transitionStyle };
+      return { transitionValues: r, currentTransitionValues: s, transitionStyle: l };
     }
-    setNativeProps(nativeProps) {
+    setNativeProps(a) {
       if (this.ref) {
-        this.ref.setNativeProps(nativeProps);
+        this.ref.setNativeProps(a);
       }
     }
     componentDidMount() {
-      const { animation, duration, delay, onAnimationBegin, iterationDelay } = this.props;
-      if (animation) {
-        const startAnimation = () => {
-          onAnimationBegin();
+      const { animation: a, duration: o, delay: r, onAnimationBegin: s, iterationDelay: l } = this.props;
+      if (a) {
+        const d = () => {
+          s();
           this.startAnimation(
-            duration,
+            o,
             0,
-            iterationDelay,
-            (endState) => this.props.onAnimationEnd(endState)
+            l,
+            (c) => this.props.onAnimationEnd(c)
           );
           this.delayTimer = null;
         };
-        if (delay) {
-          this.delayTimer = setTimeout(startAnimation, delay);
+        if (r) {
+          this.delayTimer = setTimeout(d, r);
         } else {
-          startAnimation();
+          d();
         }
       }
     }
     // eslint-disable-next-line camelcase
-    UNSAFE_componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(a) {
       const {
-        animation,
-        delay,
-        duration,
-        easing,
-        iterationDelay,
-        transition,
-        onAnimationBegin
-      } = props;
-      if (transition) {
-        const values = getStyleValues(transition, props.style);
-        this.transitionTo(values, duration, easing, delay);
-      } else if (!deepEquals(animation, this.props.animation)) {
-        if (animation) {
+        animation: o,
+        delay: r,
+        duration: s,
+        easing: l,
+        iterationDelay: d,
+        transition: c,
+        onAnimationBegin: f
+      } = a;
+      if (c) {
+        const x = V(c, a.style);
+        this.transitionTo(x, s, l, r);
+      } else if (!Nt(o, this.props.animation)) {
+        if (o) {
           if (this.delayTimer) {
-            this.setAnimation(animation);
+            this.setAnimation(o);
           } else {
-            onAnimationBegin();
-            this.animate(animation, duration, iterationDelay).then(
-              (endState) => this.props.onAnimationEnd(endState)
+            f();
+            this.animate(o, s, d).then(
+              (x) => this.props.onAnimationEnd(x)
             );
           }
         } else {
@@ -586,23 +580,23 @@ function createAnimatableComponent(WrappedComponent) {
         clearTimeout(this.delayTimer);
       }
     }
-    setAnimation(animation, callback) {
-      const compiledAnimation = getCompiledAnimation(animation);
+    setAnimation(a, o) {
+      const r = ct(a);
       this.setState(
-        (state) => ({
-          animationStyle: makeInterpolatedStyle(
-            compiledAnimation,
-            state.animationValue
+        (s) => ({
+          animationStyle: lt(
+            r,
+            s.animationValue
           ),
-          compiledAnimation
+          compiledAnimation: r
         }),
-        callback
+        o
       );
     }
-    animate(animation, duration, iterationDelay) {
-      return new Promise((resolve) => {
-        this.setAnimation(animation, () => {
-          this.startAnimation(duration, 0, iterationDelay, resolve);
+    animate(a, o, r) {
+      return new Promise((s) => {
+        this.setAnimation(a, () => {
+          this.startAnimation(o, 0, r, s);
         });
       });
     }
@@ -617,153 +611,153 @@ function createAnimatableComponent(WrappedComponent) {
         this.delayTimer = null;
       }
     }
-    startAnimation(duration, iteration, iterationDelay, callback) {
-      const { animationValue, compiledAnimation } = this.state;
-      const { direction, iterationCount, useNativeDriver, isInteraction } = this.props;
-      let easing = this.props.easing || compiledAnimation.easing || "ease";
-      let currentIteration = iteration || 0;
-      const fromValue = getAnimationOrigin(currentIteration, direction);
-      const toValue = getAnimationTarget(currentIteration, direction);
-      animationValue.setValue(fromValue);
-      if (typeof easing === "string") {
-        easing = easing_default[easing];
+    startAnimation(a, o, r, s) {
+      const { animationValue: l, compiledAnimation: d } = this.state;
+      const { direction: c, iterationCount: f, useNativeDriver: x, isInteraction: X } = this.props;
+      let g = this.props.easing || d.easing || "ease";
+      let b = o || 0;
+      const T = st(b, c);
+      const h = ut(b, c);
+      l.setValue(T);
+      if (typeof g === "string") {
+        g = N[g];
       }
-      const reversed = direction === "reverse" || direction === "alternate" && !toValue || direction === "alternate-reverse" && !toValue;
-      if (reversed) {
-        easing = Easing2.out(easing);
+      const E = c === "reverse" || c === "alternate" && !h || c === "alternate-reverse" && !h;
+      if (E) {
+        g = Rt.out(g);
       }
-      const config = {
-        toValue,
-        easing,
-        isInteraction: typeof isInteraction !== "undefined" ? isInteraction : iterationCount <= 1,
-        duration: duration || this.props.duration || 1e3,
-        useNativeDriver,
-        delay: iterationDelay && currentIteration > 0 ? iterationDelay : 0
+      const L = {
+        toValue: h,
+        easing: g,
+        isInteraction: typeof X !== "undefined" ? X : f <= 1,
+        duration: a || this.props.duration || 1e3,
+        useNativeDriver: x,
+        delay: r && b > 0 ? r : 0
       };
-      Animated.timing(animationValue, config).start((endState) => {
-        currentIteration += 1;
-        if (endState.finished && this.props.animation && (iterationCount === "infinite" || currentIteration < iterationCount)) {
+      Y.timing(l, L).start((W) => {
+        b += 1;
+        if (W.finished && this.props.animation && (f === "infinite" || b < f)) {
           this.startAnimation(
-            duration,
-            currentIteration,
-            iterationDelay,
-            callback
+            a,
+            b,
+            r,
+            s
           );
-        } else if (callback) {
-          callback(endState);
+        } else if (s) {
+          s(W);
         }
       });
     }
-    transition(fromValues, toValues, duration, easing) {
-      const fromValuesFlat = flattenStyle(fromValues);
-      const toValuesFlat = flattenStyle(toValues);
-      const transitionKeys = Object.keys(toValuesFlat);
-      const { transitionValues, currentTransitionValues, transitionStyle } = this.getTransitionState(transitionKeys);
-      transitionKeys.forEach((property) => {
-        const fromValue = fromValuesFlat[property];
-        const toValue = toValuesFlat[property];
-        let transitionValue = transitionValues[property];
-        if (!transitionValue) {
-          transitionValue = new Animated.Value(0);
+    transition(a, o, r, s) {
+      const l = O(a);
+      const d = O(o);
+      const c = Object.keys(d);
+      const { transitionValues: f, currentTransitionValues: x, transitionStyle: X } = this.getTransitionState(c);
+      c.forEach((g) => {
+        const b = l[g];
+        const T = d[g];
+        let h = f[g];
+        if (!h) {
+          h = new Y.Value(0);
         }
-        const needsInterpolation = INTERPOLATION_STYLE_PROPERTIES.indexOf(property) !== -1 || typeof value !== "number";
-        const needsZeroClamping = ZERO_CLAMPED_STYLE_PROPERTIES.indexOf(property) !== -1;
-        if (needsInterpolation) {
-          transitionValue.setValue(0);
-          transitionStyle[property] = transitionValue.interpolate({
+        const E = q.indexOf(g) !== -1 || typeof value !== "number";
+        const L = rt.indexOf(g) !== -1;
+        if (E) {
+          h.setValue(0);
+          X[g] = h.interpolate({
             inputRange: [0, 1],
-            outputRange: [fromValue, toValue]
+            outputRange: [b, T]
           });
-          currentTransitionValues[property] = toValue;
-          toValuesFlat[property] = 1;
+          x[g] = T;
+          d[g] = 1;
         } else {
-          if (needsZeroClamping) {
-            transitionStyle[property] = transitionValue.interpolate({
+          if (L) {
+            X[g] = h.interpolate({
               inputRange: [0, 1],
               outputRange: [0, 1],
               extrapolateLeft: "clamp"
             });
-            currentTransitionValues[property] = toValue;
+            x[g] = T;
           } else {
-            transitionStyle[property] = transitionValue;
+            X[g] = h;
           }
-          transitionValue.setValue(fromValue);
+          h.setValue(b);
         }
       });
       this.setState(
-        { transitionValues, transitionStyle, currentTransitionValues },
+        { transitionValues: f, transitionStyle: X, currentTransitionValues: x },
         () => {
           this.transitionToValues(
-            toValuesFlat,
-            duration || this.props.duration,
-            easing,
+            d,
+            r || this.props.duration,
+            s,
             this.props.delay
           );
         }
       );
     }
-    transitionTo(toValues, duration, easing, delay) {
-      const { currentTransitionValues } = this.state;
-      const toValuesFlat = flattenStyle(toValues);
-      const transitions = {
+    transitionTo(a, o, r, s) {
+      const { currentTransitionValues: l } = this.state;
+      const d = O(a);
+      const c = {
         from: {},
         to: {}
       };
-      Object.keys(toValuesFlat).forEach((property) => {
-        const toValue = toValuesFlat[property];
-        const needsInterpolation = INTERPOLATION_STYLE_PROPERTIES.indexOf(property) !== -1 || typeof value !== "number";
-        const needsZeroClamping = ZERO_CLAMPED_STYLE_PROPERTIES.indexOf(property) !== -1;
-        const transitionStyle = this.state.transitionStyle[property];
-        const transitionValue = this.state.transitionValues[property];
-        if (!needsInterpolation && !needsZeroClamping && transitionStyle && transitionStyle === transitionValue) {
-          transitionToValue(
-            property,
-            transitionValue,
-            toValue,
-            duration,
-            easing,
+      Object.keys(d).forEach((f) => {
+        const x = d[f];
+        const X = q.indexOf(f) !== -1 || typeof value !== "number";
+        const g = rt.indexOf(f) !== -1;
+        const b = this.state.transitionStyle[f];
+        const T = this.state.transitionValues[f];
+        if (!X && !g && b && b === T) {
+          pt(
+            f,
+            T,
+            x,
+            o,
+            r,
             this.props.useNativeDriver,
-            delay,
-            (prop) => this.props.onTransitionBegin(prop),
-            (prop) => this.props.onTransitionEnd(prop)
+            s,
+            (h) => this.props.onTransitionBegin(h),
+            (h) => this.props.onTransitionEnd(h)
           );
         } else {
-          let currentTransitionValue = currentTransitionValues[property];
-          if (typeof currentTransitionValue === "undefined" && this.props.style) {
-            const style = getStyleValues(property, this.props.style);
-            currentTransitionValue = style[property];
+          let h = l[f];
+          if (typeof h === "undefined" && this.props.style) {
+            const E = V(f, this.props.style);
+            h = E[f];
           }
-          transitions.from[property] = currentTransitionValue;
-          transitions.to[property] = toValue;
+          c.from[f] = h;
+          c.to[f] = x;
         }
       });
-      if (Object.keys(transitions.from).length) {
-        this.transition(transitions.from, transitions.to, duration, easing);
+      if (Object.keys(c.from).length) {
+        this.transition(c.from, c.to, o, r);
       }
     }
-    transitionToValues(toValues, duration, easing, delay) {
-      Object.keys(toValues).forEach((property) => {
-        const transitionValue = this.state.transitionValues[property];
-        const toValue = toValues[property];
-        transitionToValue(
-          property,
-          transitionValue,
-          toValue,
-          duration,
-          easing,
+    transitionToValues(a, o, r, s) {
+      Object.keys(a).forEach((l) => {
+        const d = this.state.transitionValues[l];
+        const c = a[l];
+        pt(
+          l,
+          d,
+          c,
+          o,
+          r,
           this.props.useNativeDriver,
-          delay,
-          (prop) => this.props.onTransitionBegin(prop),
-          (prop) => this.props.onTransitionEnd(prop)
+          s,
+          (f) => this.props.onTransitionBegin(f),
+          (f) => this.props.onTransitionEnd(f)
         );
       });
     }
     render() {
-      const { style, animation, transition } = this.props;
-      if (animation && transition) {
+      const { style: a, animation: o, transition: r } = this.props;
+      if (o && r) {
         throw new Error("You cannot combine animation and transition props");
       }
-      const restProps = omit(
+      const s = vt(
         [
           "animation",
           "duration",
@@ -783,59 +777,59 @@ function createAnimatableComponent(WrappedComponent) {
         ],
         this.props
       );
-      return /* @__PURE__ */ React.createElement(
-        Animatable,
+      return /* @__PURE__ */ Vt.createElement(
+        n,
         {
           ref: this.handleRef,
           style: [
-            style,
+            a,
             this.state.animationStyle,
-            wrapStyleTransforms(this.state.transitionStyle)
+            v(this.state.transitionStyle)
           ],
-          ...restProps
+          ...s
         }
       );
     }
-  }, __publicField(_a, "displayName", `withAnimatable(${wrappedComponentName})`), __publicField(_a, "propTypes", {
-    animation: import_prop_types.default.oneOfType([import_prop_types.default.string, import_prop_types.default.object]),
-    duration: import_prop_types.default.number,
-    direction: import_prop_types.default.oneOf([
+  }, S(i, "displayName", `withAnimatable(${e})`), S(i, "propTypes", {
+    animation: u.default.oneOfType([u.default.string, u.default.object]),
+    duration: u.default.number,
+    direction: u.default.oneOf([
       "normal",
       "reverse",
       "alternate",
       "alternate-reverse"
     ]),
-    delay: import_prop_types.default.number,
-    easing: import_prop_types.default.oneOfType([
-      import_prop_types.default.oneOf(Object.keys(easing_default)),
-      import_prop_types.default.func
+    delay: u.default.number,
+    easing: u.default.oneOfType([
+      u.default.oneOf(Object.keys(N)),
+      u.default.func
     ]),
-    iterationCount(props, propName) {
-      const val = props[propName];
-      if (val !== "infinite" && !(typeof val === "number" && val >= 1)) {
+    iterationCount(a, o) {
+      const r = a[o];
+      if (r !== "infinite" && !(typeof r === "number" && r >= 1)) {
         return new Error(
           'iterationCount must be a positive number or "infinite"'
         );
       }
       return null;
     },
-    iterationDelay: import_prop_types.default.number,
-    onAnimationBegin: import_prop_types.default.func,
-    onAnimationEnd: import_prop_types.default.func,
-    onTransitionBegin: import_prop_types.default.func,
-    onTransitionEnd: import_prop_types.default.func,
-    style: import_prop_types.default.oneOfType([
-      import_prop_types.default.number,
-      import_prop_types.default.array,
-      import_prop_types.default.object
+    iterationDelay: u.default.number,
+    onAnimationBegin: u.default.func,
+    onAnimationEnd: u.default.func,
+    onTransitionBegin: u.default.func,
+    onTransitionEnd: u.default.func,
+    style: u.default.oneOfType([
+      u.default.number,
+      u.default.array,
+      u.default.object
     ]),
-    transition: import_prop_types.default.oneOfType([
-      import_prop_types.default.string,
-      import_prop_types.default.arrayOf(import_prop_types.default.string)
+    transition: u.default.oneOfType([
+      u.default.string,
+      u.default.arrayOf(u.default.string)
     ]),
-    useNativeDriver: import_prop_types.default.bool,
-    isInteraction: import_prop_types.default.bool
-  }), __publicField(_a, "defaultProps", {
+    useNativeDriver: u.default.bool,
+    isInteraction: u.default.bool
+  }), S(i, "defaultProps", {
     animation: void 0,
     delay: 0,
     direction: "normal",
@@ -855,78 +849,78 @@ function createAnimatableComponent(WrappedComponent) {
     transition: void 0,
     useNativeDriver: false,
     isInteraction: void 0
-  }), _a;
+  }), i;
 }
 
 // node_modules/react-native-animatable/definitions/index.js
-var definitions_exports = {};
-__export(definitions_exports, {
-  bounce: () => bounce,
-  bounceIn: () => bounceIn,
-  bounceInDown: () => bounceInDown,
-  bounceInLeft: () => bounceInLeft,
-  bounceInRight: () => bounceInRight,
-  bounceInUp: () => bounceInUp,
-  bounceOut: () => bounceOut,
-  bounceOutDown: () => bounceOutDown,
-  bounceOutLeft: () => bounceOutLeft,
-  bounceOutRight: () => bounceOutRight,
-  bounceOutUp: () => bounceOutUp,
-  fadeIn: () => fadeIn,
-  fadeInDown: () => fadeInDown,
-  fadeInDownBig: () => fadeInDownBig,
-  fadeInLeft: () => fadeInLeft,
-  fadeInLeftBig: () => fadeInLeftBig,
-  fadeInRight: () => fadeInRight,
-  fadeInRightBig: () => fadeInRightBig,
-  fadeInUp: () => fadeInUp,
-  fadeInUpBig: () => fadeInUpBig,
-  fadeOut: () => fadeOut,
-  fadeOutDown: () => fadeOutDown,
-  fadeOutDownBig: () => fadeOutDownBig,
-  fadeOutLeft: () => fadeOutLeft,
-  fadeOutLeftBig: () => fadeOutLeftBig,
-  fadeOutRight: () => fadeOutRight,
-  fadeOutRightBig: () => fadeOutRightBig,
-  fadeOutUp: () => fadeOutUp,
-  fadeOutUpBig: () => fadeOutUpBig,
-  flash: () => flash,
-  flipInX: () => flipInX,
-  flipInY: () => flipInY,
-  flipOutX: () => flipOutX,
-  flipOutY: () => flipOutY,
-  jello: () => jello,
-  lightSpeedIn: () => lightSpeedIn,
-  lightSpeedOut: () => lightSpeedOut,
-  pulse: () => pulse,
-  rotate: () => rotate,
-  rubberBand: () => rubberBand,
-  shake: () => shake,
-  slideInDown: () => slideInDown,
-  slideInLeft: () => slideInLeft,
-  slideInRight: () => slideInRight,
-  slideInUp: () => slideInUp,
-  slideOutDown: () => slideOutDown,
-  slideOutLeft: () => slideOutLeft,
-  slideOutRight: () => slideOutRight,
-  slideOutUp: () => slideOutUp,
-  swing: () => swing,
-  tada: () => tada,
-  wobble: () => wobble,
-  zoomIn: () => zoomIn,
-  zoomInDown: () => zoomInDown,
-  zoomInLeft: () => zoomInLeft,
-  zoomInRight: () => zoomInRight,
-  zoomInUp: () => zoomInUp,
-  zoomOut: () => zoomOut,
-  zoomOutDown: () => zoomOutDown,
-  zoomOutLeft: () => zoomOutLeft,
-  zoomOutRight: () => zoomOutRight,
-  zoomOutUp: () => zoomOutUp
+var M = {};
+xt(M, {
+  bounce: () => Ct,
+  bounceIn: () => qt,
+  bounceInDown: () => Wt,
+  bounceInLeft: () => Kt,
+  bounceInRight: () => Zt,
+  bounceInUp: () => Mt,
+  bounceOut: () => Ht,
+  bounceOutDown: () => Gt,
+  bounceOutLeft: () => Qt,
+  bounceOutRight: () => $t,
+  bounceOutUp: () => Jt,
+  fadeIn: () => te,
+  fadeInDown: () => ee,
+  fadeInDownBig: () => ie,
+  fadeInLeft: () => ae,
+  fadeInLeftBig: () => se,
+  fadeInRight: () => oe,
+  fadeInRightBig: () => ce,
+  fadeInUp: () => ne,
+  fadeInUpBig: () => re,
+  fadeOut: () => le,
+  fadeOutDown: () => pe,
+  fadeOutDownBig: () => de,
+  fadeOutLeft: () => fe,
+  fadeOutLeftBig: () => he,
+  fadeOutRight: () => me,
+  fadeOutRightBig: () => ye,
+  fadeOutUp: () => ue,
+  fadeOutUpBig: () => ge,
+  flash: () => kt,
+  flipInX: () => xe,
+  flipInY: () => be,
+  flipOutX: () => Xe,
+  flipOutY: () => Oe,
+  jello: () => Dt,
+  lightSpeedIn: () => Te,
+  lightSpeedOut: () => Ye,
+  pulse: () => Bt,
+  rotate: () => Lt,
+  rubberBand: () => _t,
+  shake: () => jt,
+  slideInDown: () => we,
+  slideInLeft: () => Se,
+  slideInRight: () => Ae,
+  slideInUp: () => Ie,
+  slideOutDown: () => Ee,
+  slideOutLeft: () => ze,
+  slideOutRight: () => Re,
+  slideOutUp: () => Ve,
+  swing: () => Pt,
+  tada: () => Ft,
+  wobble: () => Ut,
+  zoomIn: () => Ne,
+  zoomInDown: () => Ce,
+  zoomInLeft: () => De,
+  zoomInRight: () => Be,
+  zoomInUp: () => ke,
+  zoomOut: () => je,
+  zoomOutDown: () => Pe,
+  zoomOutLeft: () => Fe,
+  zoomOutRight: () => Ue,
+  zoomOutUp: () => _e
 });
 
 // node_modules/react-native-animatable/definitions/attention-seekers.js
-var bounce = {
+var Ct = {
   0: {
     translateY: 0
   },
@@ -955,7 +949,7 @@ var bounce = {
     translateY: 0
   }
 };
-var flash = {
+var kt = {
   0: {
     opacity: 1
   },
@@ -972,7 +966,7 @@ var flash = {
     opacity: 1
   }
 };
-var jello = {
+var Dt = {
   0: {
     skewX: "0deg",
     skewY: "0deg"
@@ -1014,7 +1008,7 @@ var jello = {
     skewY: "0deg"
   }
 };
-var pulse = {
+var Bt = {
   0: {
     scale: 1
   },
@@ -1025,7 +1019,7 @@ var pulse = {
     scale: 1
   }
 };
-var rotate = {
+var Lt = {
   0: {
     rotate: "0deg"
   },
@@ -1042,7 +1036,7 @@ var rotate = {
     rotate: "360deg"
   }
 };
-var shake = {
+var jt = {
   0: {
     translateX: 0
   },
@@ -1077,7 +1071,7 @@ var shake = {
     translateX: 0
   }
 };
-var swing = {
+var Pt = {
   0: {
     rotate: "0deg"
   },
@@ -1097,7 +1091,7 @@ var swing = {
     rotate: "0deg"
   }
 };
-var rubberBand = {
+var _t = {
   0: {
     scaleX: 1,
     scaleY: 1
@@ -1127,7 +1121,7 @@ var rubberBand = {
     scaleY: 1
   }
 };
-var tada = {
+var Ft = {
   0: {
     scale: 1,
     rotate: "0deg"
@@ -1168,7 +1162,7 @@ var tada = {
     rotate: "0deg"
   }
 };
-var wobble = {
+var Ut = {
   0: {
     translateX: 0,
     rotate: "0deg"
@@ -1200,7 +1194,7 @@ var wobble = {
 };
 
 // node_modules/react-native-animatable/definitions/bouncing-entrances.js
-var bounceIn = {
+var qt = {
   0: {
     opacity: 0,
     scale: 0.3
@@ -1223,7 +1217,7 @@ var bounceIn = {
     scale: 1
   }
 };
-var bounceInUp = {
+var Mt = {
   0: {
     opacity: 0,
     translateY: 800
@@ -1242,7 +1236,7 @@ var bounceInUp = {
     translateY: 0
   }
 };
-var bounceInDown = {
+var Wt = {
   0: {
     opacity: 0,
     translateY: -800
@@ -1261,7 +1255,7 @@ var bounceInDown = {
     translateY: 0
   }
 };
-var bounceInRight = {
+var Zt = {
   0: {
     opacity: 0,
     translateX: 600
@@ -1280,7 +1274,7 @@ var bounceInRight = {
     translateX: 0
   }
 };
-var bounceInLeft = {
+var Kt = {
   0: {
     opacity: 0,
     translateX: -600
@@ -1301,7 +1295,7 @@ var bounceInLeft = {
 };
 
 // node_modules/react-native-animatable/definitions/bouncing-exits.js
-var bounceOut = {
+var Ht = {
   0: {
     opacity: 1,
     scale: 1
@@ -1321,7 +1315,7 @@ var bounceOut = {
     scale: 0.3
   }
 };
-var bounceOutUp = {
+var Jt = {
   0: {
     opacity: 1,
     translateY: 0
@@ -1344,7 +1338,7 @@ var bounceOutUp = {
     translateY: -800
   }
 };
-var bounceOutDown = {
+var Gt = {
   0: {
     opacity: 1,
     translateY: 0
@@ -1367,7 +1361,7 @@ var bounceOutDown = {
     translateY: 800
   }
 };
-var bounceOutRight = {
+var $t = {
   0: {
     opacity: 1,
     translateX: 0
@@ -1390,7 +1384,7 @@ var bounceOutRight = {
     translateX: 600
   }
 };
-var bounceOutLeft = {
+var Qt = {
   0: {
     opacity: 1,
     translateX: 0
@@ -1415,19 +1409,19 @@ var bounceOutLeft = {
 };
 
 // node_modules/react-native-animatable/definitions/fading-entrances.js
-function makeFadeInTranslation(translationType, fromValue) {
+function w(t, e) {
   return {
     from: {
       opacity: 0,
-      [translationType]: fromValue
+      [t]: e
     },
     to: {
       opacity: 1,
-      [translationType]: 0
+      [t]: 0
     }
   };
 }
-var fadeIn = {
+var te = {
   from: {
     opacity: 0
   },
@@ -1435,29 +1429,29 @@ var fadeIn = {
     opacity: 1
   }
 };
-var fadeInDown = makeFadeInTranslation("translateY", -100);
-var fadeInUp = makeFadeInTranslation("translateY", 100);
-var fadeInLeft = makeFadeInTranslation("translateX", -100);
-var fadeInRight = makeFadeInTranslation("translateX", 100);
-var fadeInDownBig = makeFadeInTranslation("translateY", -500);
-var fadeInUpBig = makeFadeInTranslation("translateY", 500);
-var fadeInLeftBig = makeFadeInTranslation("translateX", -500);
-var fadeInRightBig = makeFadeInTranslation("translateX", 500);
+var ee = w("translateY", -100);
+var ne = w("translateY", 100);
+var ae = w("translateX", -100);
+var oe = w("translateX", 100);
+var ie = w("translateY", -500);
+var re = w("translateY", 500);
+var se = w("translateX", -500);
+var ce = w("translateX", 500);
 
 // node_modules/react-native-animatable/definitions/fading-exits.js
-function makeFadeOutTranslation(translationType, toValue) {
+function I(t, e) {
   return {
     from: {
       opacity: 1,
-      [translationType]: 0
+      [t]: 0
     },
     to: {
       opacity: 0,
-      [translationType]: toValue
+      [t]: e
     }
   };
 }
-var fadeOut = {
+var le = {
   from: {
     opacity: 1
   },
@@ -1465,17 +1459,17 @@ var fadeOut = {
     opacity: 0
   }
 };
-var fadeOutDown = makeFadeOutTranslation("translateY", 100);
-var fadeOutUp = makeFadeOutTranslation("translateY", -100);
-var fadeOutLeft = makeFadeOutTranslation("translateX", -100);
-var fadeOutRight = makeFadeOutTranslation("translateX", 100);
-var fadeOutDownBig = makeFadeOutTranslation("translateY", 500);
-var fadeOutUpBig = makeFadeOutTranslation("translateY", -500);
-var fadeOutLeftBig = makeFadeOutTranslation("translateX", -500);
-var fadeOutRightBig = makeFadeOutTranslation("translateX", 500);
+var pe = I("translateY", 100);
+var ue = I("translateY", -100);
+var fe = I("translateX", -100);
+var me = I("translateX", 100);
+var de = I("translateY", 500);
+var ge = I("translateY", -500);
+var he = I("translateX", -500);
+var ye = I("translateX", 500);
 
 // node_modules/react-native-animatable/definitions/flippers.js
-var flipInX = {
+var xe = {
   easing: "ease-in",
   style: {
     backfaceVisibility: "visible",
@@ -1500,7 +1494,7 @@ var flipInX = {
     rotateX: "0deg"
   }
 };
-var flipInY = {
+var be = {
   easing: "ease-in",
   style: {
     backfaceVisibility: "visible",
@@ -1525,7 +1519,7 @@ var flipInY = {
     rotateY: "0deg"
   }
 };
-var flipOutX = {
+var Xe = {
   style: {
     backfaceVisibility: "visible",
     perspective: 400
@@ -1543,7 +1537,7 @@ var flipOutX = {
     rotateX: "90deg"
   }
 };
-var flipOutY = {
+var Oe = {
   style: {
     backfaceVisibility: "visible",
     perspective: 400
@@ -1563,7 +1557,7 @@ var flipOutY = {
 };
 
 // node_modules/react-native-animatable/definitions/lightspeed.js
-var lightSpeedIn = {
+var Te = {
   easing: "ease-out",
   0: {
     opacity: 0,
@@ -1584,7 +1578,7 @@ var lightSpeedIn = {
     skewX: "0deg"
   }
 };
-var lightSpeedOut = {
+var Ye = {
   easing: "ease-in",
   0: {
     opacity: 1,
@@ -1599,60 +1593,60 @@ var lightSpeedOut = {
 };
 
 // node_modules/react-native-animatable/definitions/sliding-entrances.js
-function makeSlideInTranslation(translationType, fromValue) {
+function C(t, e) {
   return {
     from: {
-      [translationType]: fromValue
+      [t]: e
     },
     to: {
-      [translationType]: 0
+      [t]: 0
     }
   };
 }
-var slideInDown = makeSlideInTranslation("translateY", -100);
-var slideInUp = makeSlideInTranslation("translateY", 100);
-var slideInLeft = makeSlideInTranslation("translateX", -100);
-var slideInRight = makeSlideInTranslation("translateX", 100);
+var we = C("translateY", -100);
+var Ie = C("translateY", 100);
+var Se = C("translateX", -100);
+var Ae = C("translateX", 100);
 
 // node_modules/react-native-animatable/definitions/sliding-exits.js
-function makeSlideOutTranslation(translationType, fromValue) {
+function k(t, e) {
   return {
     from: {
-      [translationType]: 0
+      [t]: 0
     },
     to: {
-      [translationType]: fromValue
+      [t]: e
     }
   };
 }
-var slideOutDown = makeSlideOutTranslation("translateY", 100);
-var slideOutUp = makeSlideOutTranslation("translateY", -100);
-var slideOutLeft = makeSlideOutTranslation("translateX", -100);
-var slideOutRight = makeSlideOutTranslation("translateX", 100);
+var Ee = k("translateY", 100);
+var Ve = k("translateY", -100);
+var ze = k("translateX", -100);
+var Re = k("translateX", 100);
 
 // node_modules/react-native-animatable/definitions/zooming-entrances.js
-import { Easing as Easing3 } from "react-native";
-function makeZoomInTranslation(translationType, pivotPoint) {
-  const modifier = Math.min(1, Math.max(-1, pivotPoint));
+import { Easing as ve } from "react-native";
+function D(t, e) {
+  const n = Math.min(1, Math.max(-1, e));
   return {
-    easing: Easing3.bezier(0.175, 0.885, 0.32, 1),
+    easing: ve.bezier(0.175, 0.885, 0.32, 1),
     0: {
       opacity: 0,
       scale: 0.1,
-      [translationType]: modifier * -1e3
+      [t]: n * -1e3
     },
     0.6: {
       opacity: 1,
       scale: 0.457,
-      [translationType]: pivotPoint
+      [t]: e
     },
     1: {
       scale: 1,
-      [translationType]: 0
+      [t]: 0
     }
   };
 }
-var zoomIn = {
+var Ne = {
   from: {
     opacity: 0,
     scale: 0.3
@@ -1665,35 +1659,35 @@ var zoomIn = {
     scale: 1
   }
 };
-var zoomInDown = makeZoomInTranslation("translateY", 60);
-var zoomInUp = makeZoomInTranslation("translateY", -60);
-var zoomInLeft = makeZoomInTranslation("translateX", 10);
-var zoomInRight = makeZoomInTranslation("translateX", -10);
+var Ce = D("translateY", 60);
+var ke = D("translateY", -60);
+var De = D("translateX", 10);
+var Be = D("translateX", -10);
 
 // node_modules/react-native-animatable/definitions/zooming-exits.js
-import { Easing as Easing4 } from "react-native";
-function makeZoomOutTranslation(translationType, pivotPoint) {
-  const modifier = Math.min(1, Math.max(-1, pivotPoint));
+import { Easing as Le } from "react-native";
+function B(t, e) {
+  const n = Math.min(1, Math.max(-1, e));
   return {
-    easing: Easing4.bezier(0.175, 0.885, 0.32, 1),
+    easing: Le.bezier(0.175, 0.885, 0.32, 1),
     0: {
       opacity: 1,
       scale: 1,
-      [translationType]: 0
+      [t]: 0
     },
     0.4: {
       opacity: 1,
       scale: 0.457,
-      [translationType]: pivotPoint
+      [t]: e
     },
     1: {
       opacity: 0,
       scale: 0.1,
-      [translationType]: modifier * -1e3
+      [t]: n * -1e3
     }
   };
 }
-var zoomOut = {
+var je = {
   from: {
     opacity: 1,
     scale: 1
@@ -1707,17 +1701,17 @@ var zoomOut = {
     scale: 0
   }
 };
-var zoomOutDown = makeZoomOutTranslation("translateY", 60);
-var zoomOutUp = makeZoomOutTranslation("translateY", -60);
-var zoomOutLeft = makeZoomOutTranslation("translateX", 10);
-var zoomOutRight = makeZoomOutTranslation("translateX", -10);
+var Pe = B("translateY", 60);
+var _e = B("translateY", -60);
+var Fe = B("translateX", 10);
+var Ue = B("translateX", -10);
 
 // node_modules/react-native-animatable/index.js
-initializeRegistryWithDefinitions(definitions_exports);
-var View = createAnimatableComponent(CoreView);
-var Text = createAnimatableComponent(CoreText);
-var Image = createAnimatableComponent(CoreImage);
+U(M);
+var Gn = z(qe);
+var Ze = z(Me);
+var $n = z(We);
 export {
-  Text as AnimatableText
+  Ze as AnimatableText
 };
 //# sourceMappingURL=text-animation.js.map

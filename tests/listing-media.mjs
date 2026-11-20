@@ -135,14 +135,30 @@ try {
     await page.waitForFunction(() => document.body.innerText.includes('Approve the navigation plan'));
     const grouped = '[role="radio"][aria-checked="true"]';
     assert.equal(await page.$eval(grouped, element => element.textContent), 'By workspace');
+    const planIcon = '[aria-label^="Approve the navigation plan,"] [aria-label="Atlas Studio"]';
+    const integrationIcon = '[aria-label^="Investigate an integration failure,"] [aria-label="Horizon API"]';
+    assert.equal(await page.$(planIcon), null, `${name} grouped rows do not repeat workspace icons`);
     await page.$eval('[role="radio"][aria-label="None"]', button => button.click());
     await page.waitForFunction(() => !document.querySelector('[aria-label="Atlas Studio, 4 sessions"]'));
     assert.equal(await page.$eval(grouped, element => element.textContent), 'None');
     assert.ok(await page.$('[aria-label^="Approve the navigation plan,"]'), `${name} flat sessions remain visible`);
+    await page.waitForSelector(planIcon);
+    await page.waitForSelector(integrationIcon);
+    assert.equal(await page.$eval(planIcon, icon => icon.title), 'Atlas Studio');
+    assert.equal(await page.$eval(integrationIcon, icon => icon.title), 'Horizon API');
+    const iconPlacement = await page.$eval(planIcon, icon => {
+      const title = icon.previousElementSibling.getBoundingClientRect();
+      const bounds = icon.getBoundingClientRect();
+      return { gap: bounds.left - title.right, aligned: Math.abs(bounds.top - title.top) < 2 };
+    });
+    assert.equal(iconPlacement.gap, 6, `${name} workspace icon follows the title immediately`);
+    assert.equal(iconPlacement.aligned, true, `${name} workspace icon stays on the title line`);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${name} grouping control overflows`);
     await page.click('[role="radio"][aria-label="By status"]');
     await page.waitForFunction(() => document.body.innerText.includes('Needs action'));
     assert.equal(await page.$eval(grouped, element => element.textContent), 'By status');
+    await page.waitForSelector(planIcon);
+    await page.waitForSelector(integrationIcon);
     assert.deepEqual(await page.$$eval('[role="heading"]', headers => headers.map(header => header.textContent)),
       ['Needs action', 'In progress', 'Reply ready', 'Other']);
     const runningColors = await page.evaluate(() => {
@@ -162,6 +178,7 @@ try {
     await page.waitForFunction(() => document.querySelectorAll('[role="heading"]').length === 4);
     await page.click('[role="radio"][aria-label="By workspace"]');
     await page.waitForSelector('[aria-label="Atlas Studio, 4 sessions"]');
+    assert.equal(await page.$(planIcon), null, `${name} workspace grouping hides inline icons again`);
     await page.evaluate(() => { globalThis.__pulseDemo.failPreferences = true; });
     await page.click('[role="radio"][aria-label="None"]');
     await page.waitForFunction(() => document.body.innerText.includes('Could not save or load the display preferences.'));
