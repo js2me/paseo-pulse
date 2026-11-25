@@ -27,7 +27,7 @@ npm ci --ignore-scripts
 paseo plugin install "$PWD"
 ```
 
-Open **Pulse** in the sidebar or **Open Pulse** in the Command Center. The native composer also has an **Open in Pulse** shortcut back to this list.
+Open **Pulse** in the sidebar or **Open Pulse** in the Command Center. Choose **Cards** to compare reply previews side by side. **Switch session** in the native composer shows the last visited chat and suggests sessions across projects by attention priority and message recency, followed by other sessions in the current project. Search reaches all projects. From a chat, press **Ctrl+Shift+Space** (**⌘+Shift+Space** on Mac) to focus session search. Use **↑ / ↓** to select, **Enter** to open and **Esc** to return.
 
 ## What stays in Attention
 

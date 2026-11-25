@@ -395,6 +395,6 @@ test('inbox restores All and preserves grouping when persisted filters change', 
 
 test('existing grouping-only settings retain their mode and default the new filter to Attention', async () => {
   const { inboxPreferences } = await importClientModule('../shared/inbox-preferences.ts');
-  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'none' }), { grouping: 'none', onlyAttention: true });
-  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'status', onlyAttention: false }), { grouping: 'status', onlyAttention: false });
+  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'none' }), { grouping: 'none', onlyAttention: true, view: 'list' });
+  assert.deepEqual(inboxPreferences.schema.parse({ grouping: 'status', onlyAttention: false }), { grouping: 'status', onlyAttention: false, view: 'list' });
 });

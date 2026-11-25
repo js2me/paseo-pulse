@@ -10,6 +10,7 @@ interface Props {
   loading?: boolean;
   error?: boolean;
   color?: string;
+  lines?: number;
   opacity?: number;
 }
 /** A row only renders its batch result; mounting or scrolling never reads history. */
@@ -20,6 +21,7 @@ export const SessionReplyPreview = memo(function SessionReplyPreview({
   loading,
   error,
   color,
+  lines = 1,
   opacity = 1,
 }: Props) {
   const { t } = useMessages();
@@ -34,7 +36,7 @@ export const SessionReplyPreview = memo(function SessionReplyPreview({
           : t("preview.empty"));
   return (
     <AnimatedText
-      numberOfLines={1}
+      numberOfLines={lines}
       style={{ color: color ?? theme.colors.foregroundMuted, opacity, fontSize: 11, lineHeight: 16 }}
       text={preview}
     />

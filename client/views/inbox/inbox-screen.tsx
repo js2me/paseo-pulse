@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { CardGridRow, cardRows } from "./card-grid";
+import type { InboxRow, StatusListItem } from "../../view-models/inbox-view-model";
 import { TextAnimationProvider } from "../shared/animated-text";
 import { FlatList, View } from "react-native";
 import { observer } from "../../lib/mvvm";
@@ -9,12 +12,16 @@ import { SessionRow } from "./session-row";
 import { ProjectGroup } from "./project-group";
 import type { InboxProps } from "./types";
 
+type CardItem = InboxRow[] | Extract<StatusListItem, { kind: "header" }>;
+
 export function InboxScreen(props: InboxProps) {
   return <TextAnimationProvider><Inbox key={props.host.id} {...props} /></TextAnimationProvider>;
 }
 const Inbox = observer(function Inbox(props: InboxProps) {
   const binding = useInboxViewModel(props);
-  const context = { props, binding };
+  const [width, setWidth] = useState(0);
+  const columns = props.layout.compact ? 1 : Math.max(1, Math.min(4, Math.floor((width - 16) / 270)));
+  const context = { props, binding, columns };
   return (
     <View
       style={{
@@ -23,7 +30,7 @@ const Inbox = observer(function Inbox(props: InboxProps) {
         backgroundColor: props.theme.colors.surface0,
       }}
     >
-      <View style={{ flex: 1, minWidth: 0 }}>
+      <View style={{ flex: 1, minWidth: 0 }} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         <InboxToolbar context={context} />
         {binding.model.groupByProject ? <FlatList
           style={{ flex: 1 }}
@@ -35,6 +42,17 @@ const Inbox = observer(function Inbox(props: InboxProps) {
           contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10, gap: 12 }}
           ListHeaderComponent={<InboxListHeader context={context} />}
           renderItem={({ item }) => <ProjectGroup context={context} group={item} />}
+        /> : binding.preferences.view === "cards" ? <FlatList
+          style={{ flex: 1 }}
+          data={binding.model.grouping === "status" ? binding.model.statusGroups.flatMap<CardItem>(({ key, rows }) => [
+            { kind: "header", key: `status:${key}`, status: key, count: rows.length } as const,
+            ...cardRows(rows, columns),
+          ]) : cardRows(binding.model.flatRows, columns)}
+          keyExtractor={item => Array.isArray(item) ? item[0].agent.id : item.key}
+          contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10 }}
+          ListHeaderComponent={<InboxListHeader context={context} />}
+          renderItem={({ item }) => Array.isArray(item) ? <CardGridRow rows={item} context={context} />
+            : <StatusListItemView context={context} item={item} />}
         /> : binding.model.grouping === "status" ? <FlatList
           style={{ flex: 1 }}
           data={binding.model.statusItems}

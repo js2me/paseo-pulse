@@ -6,6 +6,7 @@ export const inboxPreferences = defineSettings({
   scope: "host",
   version: 1,
   schema: z.object({
+    view: z.enum(["list", "cards"]).default("list"),
     grouping: z.enum(["workspace", "status", "none"]).default("workspace"),
     onlyAttention: z.boolean().default(true),
   }),

@@ -10,11 +10,12 @@ export function useInboxPreferences() {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
   const saving = useRef(false);
+  const savedView = settings.status === "ready" ? settings.values.view : undefined;
   const savedGrouping = settings.status === "ready" ? settings.values.grouping : undefined;
   const savedAttention = settings.status === "ready" ? settings.values.onlyAttention : undefined;
   useEffect(() => {
-    if (savedGrouping === draft?.grouping && savedAttention === draft?.onlyAttention) setDraft(null);
-  }, [savedGrouping, savedAttention, draft]);
+    if (savedView === draft?.view && savedGrouping === draft?.grouping && savedAttention === draft?.onlyAttention) setDraft(null);
+  }, [savedView, savedGrouping, savedAttention, draft]);
   const update = useCallback(async (changes: Partial<InboxPreferences>) => {
     const current = latest.current;
     if (current.status !== "ready" || current.saving || saving.current) return;
@@ -41,6 +42,8 @@ export function useInboxPreferences() {
   const setGrouping = useCallback((grouping: InboxGrouping) => update({ grouping }), [update]);
   const setOnlyAttention = useCallback((onlyAttention: boolean) => update({ onlyAttention }), [update]);
   return {
+    view: draft?.view ?? savedView ?? "list",
+    setView: (view: InboxPreferences["view"]) => update({ view }),
     grouping: draft?.grouping ?? savedGrouping ?? "workspace",
     onlyAttention: draft?.onlyAttention ?? savedAttention ?? true,
     setGrouping,

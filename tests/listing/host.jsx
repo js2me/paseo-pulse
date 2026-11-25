@@ -27,7 +27,7 @@ export function useSettings(definition) {
     throw new Error('Render loop: useSettings exceeded its regression render budget');
   }
   if (definition.id === 'display') return {
-    ...readySettings, values: { grouping: saved.grouping, onlyAttention: saved.onlyAttention }, revision: String(saved.revision),
+    ...readySettings, values: { view: saved.view ?? "list", grouping: saved.grouping, onlyAttention: saved.onlyAttention }, revision: String(saved.revision),
     save: async (values, revision) => {
       if (creationDemo.failPreferences) return false;
       if (revision !== String(display.revision)) return false;

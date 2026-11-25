@@ -1,3 +1,4 @@
+import contribute from "../../client/app/contribute";
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { View, Text, useWindowDimensions } from 'react-native-web';
@@ -52,6 +53,41 @@ function Demo() {
     </View>
   </View>;
 }
+// Two mounted composers can share one button registration in Paseo.
+function SwitcherDemo() {
+  const [agentId, setAgent] = React.useState('plan');
+  const [screen, setScreen] = React.useState(null);
+  const [registration, setRegistration] = React.useState(null);
+  const compact = useWindowDimensions().width < 720;
+  React.useEffect(() => {
+    const pills = new Map();
+    const screens = new Map();
+    const dispose = contribute({
+      paseo: demoApi,
+      addScreen(value) { screens.set(value.id, value.Component); },
+      addSidebarHeaderItem() {}, addCommandCenterItem() {},
+      addComposerPill(value) {
+        pills.set(value.agentId, value.button);
+        setRegistration({ pills, screens });
+        return { remove() { pills.delete(value.agentId); } };
+      },
+      openScreen: setScreen,
+    });
+    return dispose;
+  }, []);
+  const props = { host: { id: 'sample-host' }, theme, layout: { compact, platform: 'web' } };
+  const Screen = registration?.screens.get(screen?.screenId);
+  if (Screen) return <Screen {...props} params={screen.params ?? {}}
+    navigation={{ openAgent({agentId}) { setAgent(agentId); setScreen(null); } }} />;
+  const button = registration?.pills.get(agentId);
+  const Shortcut = button?.icon;
+  const icon = Shortcut && <span aria-hidden="true"><Shortcut {...props} context="agent" agentId={agentId} workspaceId="atlas" size={14} color="#fff" /></span>;
+  return <View style={{ flex: 1 }}>
+    <Text>{agentId}</Text>
+    {button && <><button onClick={button.behavior.onPress}>{icon}Switch session</button>
+      <button hidden onClick={button.behavior.onPress}>{icon}Switch session</button></>}
+  </View>;
+}
 createRoot(document.getElementById('root')).render(<PluginTranslationProvider runtime={runtime}>
-  <QueryClientProvider client={query}><Demo /></QueryClientProvider>
+  <QueryClientProvider client={query}>{location.pathname === "/switcher" ? <SwitcherDemo /> : <Demo />}</QueryClientProvider>
 </PluginTranslationProvider>);

@@ -164,6 +164,18 @@ const InboxGroupingToggle = observer(function InboxGroupingToggle({ context }: {
               </Pressable>
             ))}
           </View>
+          <View style={{ flexDirection: "row", backgroundColor: c.surface1, borderRadius: 6, padding: 2 }}>
+            {(["list", "cards"] as const).map(view => (
+              <Pressable key={view} accessibilityRole="button" accessibilityLabel={t(view)}
+                aria-pressed={preferences.view === view}
+                accessibilityState={{ selected: preferences.view === view }}
+                disabled={!preferences.ready || preferences.pending} onPress={() => void preferences.setView(view)}
+                style={{ paddingVertical: 6, paddingHorizontal: 9, borderRadius: 4,
+                  backgroundColor: preferences.view === view ? c.surface2 : c.surface1 }}>
+                <Text style={{ fontSize: 13, color: preferences.view === view ? c.foreground : c.foregroundMuted }}>{t(view)}</Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
   );
 });

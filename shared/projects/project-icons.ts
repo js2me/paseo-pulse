@@ -17,7 +17,7 @@ export interface IconProject {
 }
 
 /** Copies/worktrees may share a remote key. Prefer the actual root, then display name. */
-export function groupIconProject(group: SessionGroup, projects: readonly IconProject[]) {
+export function groupIconProject(group: Pick<SessionGroup, "key" | "name" | "entries">, projects: readonly IconProject[]) {
   const byId = projects.find(({ projectId }) => projectId === group.key);
   if (byId) return byId;
   const candidates = projects.filter((project) => project.projectKey === group.key);
