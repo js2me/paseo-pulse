@@ -236,7 +236,10 @@ try {
       await page.keyboard.press('Space');
       await page.keyboard.up('Shift');
       await page.keyboard.up('Control');
-      await page.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Search sessions');
+      const search = '[aria-label="Search sessions"]';
+      await page.waitForSelector(search);
+      assert.equal(await page.$eval(search, input => document.activeElement === input), name === 'desktop');
+      if (name === 'mobile') await page.click(search);
     };
     await shortcut();
     await page.keyboard.type('Horizon');

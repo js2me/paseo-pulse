@@ -100,7 +100,7 @@ export function SessionSwitcher(props: Props) {
   const heading = (label: string) => <Text accessibilityRole="header" style={{ color: c.foregroundMuted, fontSize: 12 }}>{label}</Text>;
   return <View ref={screen} style={{ flex: 1, backgroundColor: c.surface0 }}>
     <View style={{ alignSelf: "center", width: "100%", maxWidth: 620, flex: 1, padding: 12, gap: 8 }}>
-      <TextInput autoFocus ref={input} aria-activedescendant={active && prefix + active} value={query} onChangeText={text => { setQuery(text); setLimit(12); setSelected(null); }}
+      <TextInput autoFocus={layout.platform === "web" && !layout.compact} ref={input} aria-activedescendant={active && prefix + active} value={query} onChangeText={text => { setQuery(text); setLimit(12); setSelected(null); }}
         placeholder={t("searchPlaceholder")} placeholderTextColor={c.foregroundMuted} accessibilityLabel={t("searchLabel")}
         autoCapitalize="none" style={{ color: c.foreground, borderColor: c.border, borderWidth: 1, borderRadius: 6, padding: 8 }} />
       <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 8 }}>
