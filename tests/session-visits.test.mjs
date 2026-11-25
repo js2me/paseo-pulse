@@ -32,19 +32,19 @@ async function fixture(t) {
 test('three distinct opens qualify for 24 hours, rapid taps/retries do not inflate frequency', async t => {
   const f = await fixture(t), first = f.now;
   await Promise.all(Array.from({ length: 5 }, () => f.store.record({ agentId: 'a' })));
-  assert.deepEqual(await f.store.list(), { sessions: [] });
+  assert.deepEqual((await f.store.list()).sessions, []);
   assert.equal(JSON.parse(await readFile(f.path, 'utf8')).sessions[0].visits.length, 1);
   f.advance(MIN_VISIT_INTERVAL_MS);
   await f.store.record({ agentId: 'a' });
-  assert.deepEqual(await f.store.list(), { sessions: [] });
+  assert.deepEqual((await f.store.list()).sessions, []);
   f.advance(MIN_VISIT_INTERVAL_MS);
   await f.store.record({ agentId: 'a' });
-  assert.deepEqual(await f.store.list(), { sessions: [{ agentId: 'a', frequentlyViewedUntil: first + VISIT_WINDOW_MS }] });
+  assert.deepEqual(await f.store.list(), { recentAgentIds: ['a'], sessions: [{ agentId: 'a', frequentlyViewedUntil: first + VISIT_WINDOW_MS }] });
   assert.equal((await stat(f.path)).mode & 0o777, 0o600);
   f.advance(VISIT_WINDOW_MS - 2 * MIN_VISIT_INTERVAL_MS);
   assert.equal((await f.store.list()).sessions.length, 1, 'the exact day boundary is inclusive');
   f.advance(1);
-  assert.deepEqual(await f.store.list(), { sessions: [] });
+  assert.deepEqual((await f.store.list()).sessions, []);
 });
 
 test('saved visits from earlier days no longer keep old sessions in Attention after reload', async t => {
@@ -55,7 +55,7 @@ test('saved visits from earlier days no longer keep old sessions in Attention af
     { agentId: 'old', visits: [f.now - 60 * hour, f.now - 40 * hour, f.now - 30 * hour] },
     { agentId: 'recent', visits: [f.now - 20 * hour, f.now - 10 * hour, f.now - hour] },
   ] }));
-  assert.deepEqual(await f.store.list(), { sessions: [
+  assert.deepEqual(await f.store.list(), { recentAgentIds: ['recent', 'old'], sessions: [
     { agentId: 'recent', frequentlyViewedUntil: f.now + 4 * hour },
   ] });
 });
@@ -68,7 +68,7 @@ test('views survive reload and remain separate between agents and host stores', 
   const restored = f.open();
   assert.deepEqual((await restored.list()).sessions.map(s => s.agentId), ['a']);
   const other = createSessionVisits({ path: f.path + '.other', now: () => f.now });
-  assert.deepEqual(await other.list(), { sessions: [] });
+  assert.deepEqual(await other.list(), { recentAgentIds: [], sessions: [] });
   await other.cleanup();
   await assert.rejects(f.store.record({ agentId: 'a' }), /перезагружается/);
 });
@@ -89,7 +89,7 @@ test('failed persistence never leaves a successful-looking visit in memory and c
   await f.store.list();
   await mkdir(f.path);
   await assert.rejects(f.store.record({ agentId: 'a' }));
-  assert.deepEqual(await f.store.list(), { sessions: [] });
+  assert.deepEqual((await f.store.list()).sessions, []);
   await rm(f.path, { recursive: true });
   await f.store.record({ agentId: 'a' });
   assert.equal(JSON.parse(await readFile(f.path, 'utf8')).sessions[0].visits.length, 1);
@@ -111,7 +111,16 @@ test("four weekly opens qualify only for extra attention after daily qualificati
     { agentId: "weekly", visits: [f.now - 100 * hour, f.now - 80 * hour, f.now - 60 * hour, f.now - 30 * hour] },
     { agentId: "only-three", visits: [f.now - 100 * hour, f.now - 60 * hour, f.now - 30 * hour] },
   ] }));
-  assert.deepEqual(await f.store.list(), { sessions: [{ agentId: "weekly", revisitedUntil: f.now + 68 * hour }] });
+  assert.deepEqual(await f.store.list(), { recentAgentIds: ["only-three", "weekly"], sessions: [{ agentId: "weekly", revisitedUntil: f.now + 68 * hour }] });
   f.advance(68 * hour + 1);
-  assert.deepEqual(await f.store.list(), { sessions: [] });
+  assert.deepEqual((await f.store.list()).sessions, []);
+});
+
+test('rapid switching persists the latest order independently of frequency', async t => {
+  const f = await fixture(t);
+  for (const agentId of ['a', 'b', 'a']) {
+    await f.store.record({ agentId });
+    f.advance(1);
+  }
+  assert.deepEqual(await f.open().list(), { recentAgentIds: ['a', 'b'], sessions: [] });
 });

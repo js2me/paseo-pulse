@@ -209,6 +209,92 @@ try {
 
     assert.ok(reopened.text.includes('Labels are consistent on desktop and mobile.'), `${name} immediate cached previews`);
     assert.equal(reopened.text.includes('Loading…'), false, `${name} no repeat loading screen`);
+    await page.click('[aria-label="Cards"]');
+    const cardSelector = '[role="button"]';
+    const cardByPreview = async text => page.evaluateHandle(text =>
+      [...document.querySelectorAll('[role="button"]')].find(button => button.innerText.includes(text)), text);
+    const statusCard = await cardByPreview('Labels are consistent on desktop and mobile.');
+    await statusCard.asElement().click();
+    assert.equal(await page.evaluate(() => globalThis.__pulseDemo.opened.at(-1).agentId), 'labels');
+    await page.click('[role="radio"][aria-label="None"]');
+    const cardColumns = await page.$$eval(cardSelector, buttons => {
+      const cards = buttons.filter(button => button.innerText.includes('Atlas Studio') && button.innerText.includes('\n'));
+      return new Set(cards.map(card => card.getBoundingClientRect().left)).size;
+    });
+    assert.equal(cardColumns > 1, name === 'desktop', `${name} card columns`);
+    await page.click('[role="radio"][aria-label="By workspace"]');
+    await page.evaluate(() => globalThis.__pulseDemo.setVisible(false));
+    await page.waitForFunction(() => !document.querySelector('[aria-label="Cards"]'));
+    await page.evaluate(() => globalThis.__pulseDemo.setVisible(true));
+    await page.waitForSelector('[aria-label="Cards"][aria-pressed="true"]');
+
+    await page.goto(origin + '/switcher', { waitUntil: 'networkidle0' });
+    const openSwitcher = () => page.click('button');
+    const shortcut = async () => {
+      await page.keyboard.down('Control');
+      await page.keyboard.down('Shift');
+      await page.keyboard.press('Space');
+      await page.keyboard.up('Shift');
+      await page.keyboard.up('Control');
+      const search = '[aria-label="Search sessions"]';
+      await page.waitForSelector(search);
+      assert.equal(await page.$eval(search, input => document.activeElement === input), name === 'desktop');
+      if (name === 'mobile') await page.click(search);
+    };
+    await shortcut();
+    await page.keyboard.type('Horizon');
+    await page.waitForFunction(() => document.body.innerText.includes('Check webhook retry handling'));
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.body.innerText.startsWith('webhooks\n'));
+    await shortcut();
+    await page.keyboard.type('Approve the navigation plan');
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.body.innerText.startsWith('plan\n'));
+    // Reset demo visit history before exercising first-launch suggestions.
+    await page.goto(origin + '/switcher', { waitUntil: 'networkidle0' });
+    await openSwitcher();
+    await page.waitForFunction(() => document.body.innerText.includes('Labels are consistent on desktop and mobile.'));
+    assert.equal(await page.$$eval('[aria-label="Search sessions"]', inputs => inputs.length), 1);
+    for (const search of ['', 'Horizon']) {
+      if (search) await page.type('[aria-label="Search sessions"]', search);
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => document.body.innerText.startsWith('plan\n') && !document.querySelector('[aria-label="Search sessions"]'));
+      await openSwitcher();
+      await page.waitForFunction(() => document.body.innerText.includes('Labels are consistent on desktop and mobile.'));
+    }
+    const projectCard = await cardByPreview('Labels are consistent on desktop and mobile.');
+    assert.ok(await projectCard.evaluate(el => el.innerText.split('\n').includes('A')), 'project initial on a switcher card');
+    const initial = await page.evaluate(() => document.body.innerText);
+    assert.equal(initial.includes('Quick switch'), true);
+    assert.ok(initial.includes('Investigate an integration failure'), 'suggest an actionable session across projects without visits');
+    const runningCard = await cardByPreview('Updating responsive states');
+    const runningStyle = await runningCard.evaluate(el => [getComputedStyle(el).borderLeftColor, getComputedStyle(el).backgroundColor]);
+    assert.equal(runningStyle[0], 'rgb(96, 165, 250)');
+    assert.notEqual(runningStyle[1], await projectCard.evaluate(el => getComputedStyle(el).backgroundColor));
+    assert.equal(initial.includes('Approve the navigation plan'), false);
+    assert.equal(initial.split('\n').filter(line => line === 'Review').length, 2);
+    const originalOrder = await page.$$eval('[role="button"]', buttons => buttons.map(b => b.innerText));
+    await page.evaluate(() => globalThis.__pulseDemo.updateReply('checkout', { text: 'Revised checkout preview' }));
+    await page.waitForFunction(() => document.body.innerText.includes('Revised checkout preview'));
+    const updatedOrder = await page.$$eval('[role="button"]', buttons => buttons.map(b => b.innerText));
+    assert.deepEqual(updatedOrder, originalOrder.map(text => text.replace('Updating responsive states and keyboard navigation.', 'Revised checkout preview')));
+    await (await cardByPreview('Labels are consistent on desktop and mobile.')).asElement().click();
+    await page.waitForFunction(() => document.body.innerText.startsWith('labels\n'));
+    await openSwitcher();
+    await page.type('[aria-label="Search sessions"]', 'Horizon');
+    await page.waitForFunction(() => document.body.innerText.includes('Check webhook retry handling'));
+    await (await cardByPreview('Checking retry timing')).asElement().click();
+    await page.waitForFunction(() => document.body.innerText.startsWith('webhooks\n'));
+    await openSwitcher();
+    await page.waitForFunction(() => document.body.innerText.includes('Quick switch') && document.body.innerText.includes('Labels are consistent on desktop and mobile.'));
+    await (await cardByPreview('Labels are consistent on desktop and mobile.')).asElement().click();
+    await page.waitForFunction(() => document.body.innerText.startsWith('labels\n'));
+    await openSwitcher();
+    await (await cardByPreview('All sessions')).asElement().click();
+    await page.waitForSelector('[aria-label="Cards"]');
     console.log(`${name}: idle renders=${idle}, 40 host updates=${churn}, closed-screen idle renders=${closedIdle}`);
     assert.equal(errors.length, 0, errors.join('\n'));
     await page.close();

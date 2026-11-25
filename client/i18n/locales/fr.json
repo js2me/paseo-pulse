@@ -1,4 +1,10 @@
 {
+  "list": "Liste",
+  "cards": "Cartes",
+  "switchSession": "Changer de session",
+  "recentSessions": "Accès rapide",
+  "thisProject": "Ce projet",
+  "allSessions": "Toutes les sessions",
   "preferencesError": "Impossible de charger ou d’enregistrer les préférences d’affichage.",
   "groupByStatus": "Par statut",
   "statusGroups": {
@@ -18,7 +24,6 @@
   "tokenUsageLabel": "Jetons de la session, entrée et sortie avec cache : {{count}}",
   "title": "Pulse",
   "openInbox": "Ouvrir Pulse",
-  "openInInbox": "Ouvrir dans Pulse",
   "attention": "À suivre",
   "all": "Toutes",
   "untitled": "Sans titre",

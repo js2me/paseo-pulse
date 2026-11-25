@@ -1,4 +1,10 @@
 {
+  "list": "List",
+  "cards": "Cards",
+  "switchSession": "Switch session",
+  "recentSessions": "Quick switch",
+  "thisProject": "This project",
+  "allSessions": "All sessions",
   "preferencesError": "Could not save or load the display preferences.",
   "groupByStatus": "By status",
   "statusGroups": {
@@ -18,7 +24,6 @@
   "tokenUsageLabel": "Session tokens, input and output including cache: {{count}}",
   "title": "Pulse",
   "openInbox": "Open Pulse",
-  "openInInbox": "Open in Pulse",
   "attention": "Attention",
   "all": "All",
   "untitled": "Untitled",

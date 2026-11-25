@@ -1,3 +1,4 @@
+import { CardGridRow, cardRows } from "./card-grid";
 import { Icon } from "@getpaseo/plugin/client/ui";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { observer } from "../../lib/mvvm";
@@ -149,7 +150,9 @@ export const ProjectGroup = observer(function ProjectGroup({
           </Pressable>
         )}
       </View>
-      {isExpanded && group.rows.map((row) => <SessionRow key={row.agent.id} context={context} row={row} />)}
+      {isExpanded && binding.preferences.view === "cards" && cardRows(group.rows, context.columns).map(rows =>
+        <CardGridRow key={rows[0].agent.id} context={context} rows={rows} />)}
+      {isExpanded && binding.preferences.view === "list" && group.rows.map((row) => <SessionRow key={row.agent.id} context={context} row={row} />)}
       {isExpanded && hiddenCount > 0 && !model.search.trim() && (
         <Pressable
           accessibilityRole="button"

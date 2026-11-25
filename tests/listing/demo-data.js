@@ -27,6 +27,10 @@ export const entries = [
   session('relay', 'navigation', 'Refine compact navigation', 'Sidebar and navigation fit narrow screens.', 47),
   session('relay', 'safe-areas', 'Adjust safe-area spacing', 'Screen edges and bottom spacing are aligned.', 192),
 ];
+if (globalThis.location?.pathname === '/switcher') {
+  for (const id of ['checkout', 'labels']) entries.find(entry => entry.agent.id === id).agent.title = 'Review';
+}
+let recentAgentIds = [];
 const page = { entries: entries.map(({ preview, ...entry }) => entry), pageInfo: { hasMore: false, nextCursor: null, prevCursor: null } };
 export const creationDemo = { created: [], opened: [], fail: false, directoryReads: 0, subscriptions: 0 };
 export const demoApi = {
@@ -56,7 +60,10 @@ export async function demoRpc(name, input) {
       ...(agentId === "checkout" ? { totalTokens: 12345 } : {}) };
   }) };
   if (name === 'project-icon.read') return { icon: null };
-  if (name === 'session-visits.list') return { sessions: [] };
-  if (name === 'session-visits.record') return {};
+  if (name === 'session-visits.list') return { sessions: [], recentAgentIds };
+  if (name === 'session-visits.record') {
+    recentAgentIds = [input.agentId, ...recentAgentIds.filter(id => id !== input.agentId)];
+    return {};
+  }
   throw new Error(`Unexpected sample-media RPC: ${name}`);
 }

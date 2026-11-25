@@ -90,6 +90,11 @@ export interface SessionGroup {
   updatedAt: number;
 }
 const attentionRank = (reason: Attention) => reason ? rank[reason] : 0;
+export function matchesSession({ agent, project }: SessionEntry, normalizedQuery: string) {
+  return [agent.title, agent.cwd, agent.provider, project.projectName, project.workspaceName]
+    .some(value => value?.toLocaleLowerCase().includes(normalizedQuery));
+}
+
 export function groupSessions(entries: readonly SessionEntry[], search = "", onlyAttention = false, now = Date.now(), groupByProject = true) {
   const groups = new Map<string, SessionGroup>();
   const query = search.trim().toLocaleLowerCase();
@@ -99,8 +104,7 @@ export function groupSessions(entries: readonly SessionEntry[], search = "", onl
     const reason = attention(agent);
     const recent = !reason && isRecentSession(agent, now);
     if (onlyAttention && !reason && !recent && !isFrequentlyViewedSession(agent, now) && !isRevisitedSession(agent, now)) continue;
-    if (query && ![agent.title, agent.cwd, agent.provider, project.projectName, project.workspaceName]
-      .some((value) => value?.toLocaleLowerCase().includes(query))) continue;
+    if (query && !matchesSession(entry, query)) continue;
     const key = groupByProject ? project.projectKey : "ungrouped";
     let group = groups.get(key);
     if (!group) {

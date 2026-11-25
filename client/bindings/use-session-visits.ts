@@ -43,5 +43,5 @@ export function useSessionVisits(entries: readonly SessionEntry[], hostId: strin
     },
     [record, client, key],
   );
-  return { entries: enriched, trackVisit };
+  return { entries: enriched, trackVisit, loading: query.isPending, recentAgentIds: query.data?.recentAgentIds ?? [] };
 }

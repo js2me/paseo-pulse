@@ -1,9 +1,9 @@
-import type { PluginButtonRegistration, PluginClientContext } from "@getpaseo/plugin/client";
+import type { PluginButtonIcon, PluginButtonRegistration, PluginClientContext } from "@getpaseo/plugin/client";
 import type { SessionEntry } from "../../shared/sessions/sessions";
 import { messages } from "../i18n/messages";
 
 /** Keep native composer buttons stable while session status and history update. */
-export function createInboxPills(client: Pick<PluginClientContext, "addComposerPill" | "openScreen">) {
+export function createInboxPills(client: Pick<PluginClientContext, "addComposerPill" | "openScreen">, icon: PluginButtonIcon) {
   const pills = new Map<string, { workspaceId: string; registration: PluginButtonRegistration }>();
   let disposed = false;
   return {
@@ -22,15 +22,12 @@ export function createInboxPills(client: Pick<PluginClientContext, "addComposerP
           workspaceId,
           agentId,
           button: {
-            title: messages.message("openInInbox"),
-            icon: "Inbox",
-            label: messages.message("openInInbox"),
+            title: messages.message("switchSession"),
+            icon,
+            label: messages.message("switchSession"),
             behavior: {
               kind: "action",
-              onPress() {
-                if (disposed) return;
-                client.openScreen({ screenId: "inbox" });
-              },
+              onPress: () => client.openScreen({ screenId: "switch-session", params: { agentId } }),
             },
           },
         });

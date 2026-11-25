@@ -3,7 +3,7 @@ import type { sessionEmphasis } from "../../view-models/session-emphasis";
 import { isDarkSurface, statusColor } from "./status-color";
 
 /** Blend theme text tokens instead of fading text into the background. */
-function blend(from: string, to: string, amount: number): string {
+export function blend(from: string, to: string, amount: number): string {
   const rgb = (value: string) => {
     const hex = value.replace(/^#/, "");
     const full = hex.length === 3 ? [...hex].map((digit) => digit + digit).join("") : hex;

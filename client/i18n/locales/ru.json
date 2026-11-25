@@ -1,4 +1,10 @@
 {
+  "list": "Список",
+  "cards": "Карточки",
+  "switchSession": "Переключить сессию",
+  "recentSessions": "Быстрый переход",
+  "thisProject": "Этот проект",
+  "allSessions": "Все сессии",
   "preferencesError": "Не удалось сохранить или загрузить настройки отображения.",
   "groupByStatus": "По статусу",
   "statusGroups": {
@@ -18,7 +24,6 @@
   "tokenUsageLabel": "Токены сессии: вход и выход с учётом кеша — {{count}}",
   "title": "Пульс",
   "openInbox": "Открыть Пульс",
-  "openInInbox": "Пульс",
   "attention": "Внимание",
   "all": "Все",
   "untitled": "Без названия",

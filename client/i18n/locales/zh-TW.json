@@ -1,4 +1,10 @@
 {
+  "list": "清單",
+  "cards": "卡片",
+  "switchSession": "切換工作階段",
+  "recentSessions": "快速切換",
+  "thisProject": "此專案",
+  "allSessions": "所有工作階段",
   "preferencesError": "無法儲存或載入顯示設定。",
   "groupByStatus": "依狀態",
   "statusGroups": {
@@ -18,7 +24,6 @@
   "tokenUsageLabel": "工作階段用量，包含快取的輸入與輸出：{{count}} tokens",
   "title": "Pulse",
   "openInbox": "開啟 Pulse",
-  "openInInbox": "在 Pulse 中開啟",
   "attention": "需關注",
   "all": "全部",
   "untitled": "未命名",

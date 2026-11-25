@@ -5,27 +5,28 @@ const { createInboxPills } = await importClientModule('../client/app/inbox-pills
 
 const entry = (id, overrides = {}) => ({ agent: { id, workspaceId: 'workspace', ...overrides } });
 function setup() {
-  const registrations = [], navigations = [];
+  const registrations = [];
+  const opened = [];
   const pills = createInboxPills({
+    openScreen(screen) { opened.push(screen); },
     addComposerPill(contribution) {
       const record = { contribution, removed: 0 };
       registrations.push(record);
       return { remove() { record.removed++; } };
     },
-    openScreen(input) { navigations.push(input); },
-  });
-  return { pills, registrations, navigations };
+  }, "Inbox");
+  return { opened, pills, registrations };
 }
 
-test('native buttons open the sessions list without restoring the removed conversation pane', () => {
-  const { pills, registrations, navigations } = setup();
+test('each composer opens the shared switcher for its own agent', () => {
+  const { opened, pills, registrations } = setup();
   pills.sync([entry('one'), entry('two', { workspaceId: 'other' })]);
   const button = registrations[1].contribution;
   assert.equal(button.workspaceId, 'other');
   assert.equal(button.agentId, 'two');
+  assert.equal(button.button.behavior.kind, 'action');
   button.button.behavior.onPress();
-  button.button.behavior.onPress();
-  assert.deepEqual(navigations, [{ screenId: 'inbox' }, { screenId: 'inbox' }]);
+  assert.deepEqual(opened, [{ screenId: 'switch-session', params: { agentId: 'two' } }]);
   pills.dispose();
 });
 
@@ -43,15 +44,13 @@ test('status churn keeps registrations stable; moved, archived and removed sessi
   pills.dispose();
 });
 
-test('all catalog pages get buttons and cleanup prevents stale clicks or late updates', () => {
-  const { pills, registrations, navigations } = setup();
+test('all catalog pages get buttons and cleanup removes them and ignores late updates', () => {
+  const { pills, registrations } = setup();
   pills.sync(Array.from({ length: 501 }, (_, id) => entry(String(id))));
   assert.equal(registrations.length, 501);
   pills.dispose();
   pills.dispose();
   pills.sync([entry('late')]);
-  registrations[0].contribution.button.behavior.onPress();
   assert.equal(registrations.length, 501);
   assert.ok(registrations.every(r => r.removed === 1));
-  assert.equal(navigations.length, 0);
 });

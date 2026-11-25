@@ -8,5 +8,5 @@ export const MIN_VISIT_INTERVAL_MS = 60_000;
 export const FREQUENT_VISIT_COUNT = 3;
 const agentId = z.string().min(1).max(256).refine((value) => !/[\x00-\x1f\x7f]/.test(value));
 export const listSessionVisitsRpc = defineRpc({ name: "session-visits.list", input: z.object({}),
-  output: z.object({ sessions: z.array(z.object({ agentId, frequentlyViewedUntil: z.number().int().positive().optional(), revisitedUntil: z.number().int().positive().optional() })).max(2000) }) });
+  output: z.object({ recentAgentIds: z.array(agentId).max(2000).optional(), sessions: z.array(z.object({ agentId, frequentlyViewedUntil: z.number().int().positive().optional(), revisitedUntil: z.number().int().positive().optional() })).max(2000) }) });
 export const recordSessionVisitRpc = defineRpc({ name: "session-visits.record", input: z.object({ agentId }), output: z.object({}) });

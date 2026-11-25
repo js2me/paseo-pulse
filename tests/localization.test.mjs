@@ -24,13 +24,13 @@ test('app locales select English, Russian, French and Traditional Chinese; unsup
 });
 
 test('persistent screen/pill labels resolve again on app language changes without re-registration', () => {
-  const r = runtime('en'), pill = messages.message('openInInbox');
+  const r = runtime('en'), pill = messages.message('switchSession');
   let updates = 0;
   const stop = r.i18n.subscribe(() => updates++);
-  assert.equal(r.i18n.resolve(pill), 'Open in Pulse');
-  r.setLocale('fr'); assert.equal(r.i18n.resolve(pill), 'Ouvrir dans Pulse');
-  r.setLocale('zh-TW'); assert.equal(r.i18n.resolve(pill), '在 Pulse 中開啟');
-  r.setLocale('ru'); assert.equal(r.i18n.resolve(pill), 'Пульс');
+  assert.equal(r.i18n.resolve(pill), 'Switch session');
+  r.setLocale('fr'); assert.equal(r.i18n.resolve(pill), 'Changer de session');
+  r.setLocale('zh-TW'); assert.equal(r.i18n.resolve(pill), '切換工作階段');
+  r.setLocale('ru'); assert.equal(r.i18n.resolve(pill), 'Переключить сессию');
   assert.equal(updates, 3);
   stop(); r.i18n.dispose();
 });
